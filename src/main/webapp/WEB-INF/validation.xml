@@ -1,0 +1,671 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE form-validation PUBLIC
+         "-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.3.0//EN"
+         "http://jakarta.apache.org/commons/dtds/validator_1_3_0.dtd">
+
+<!--
+    Validation Rules for the Struts Example Web Application
+
+    $Id: validation.xml,v 1.8 2003/05/25 22:51:20 dgraham Exp $
+-->
+
+<form-validation>
+
+   <global>
+	  <constant>
+	    <constant-name>floor</constant-name>
+	    <constant-value>0.00</constant-value>
+	  </constant>
+	  <constant>
+	    <constant-name>minval</constant-name>
+	    <constant-value>-999999999.99</constant-value>
+	  </constant>
+	  <constant>
+	    <constant-name>maxval</constant-name>
+	    <constant-value>999999999.99</constant-value>
+	  </constant>
+	  <constant>
+	    <constant-name>zipcode</constant-name>
+	   <!-- <constant-value>/^\d{5}([\-]\d{4})?$/</constant-value> -->
+	    <constant-value>^[a-zA-Z0-9]{0,9}$</constant-value>
+	  </constant>
+   </global>
+    
+   <formset>
+    
+    <form name="accountUpdateForm">
+
+		<field  property="portfolioID" depends="required">
+           <arg key="accountform.portfolioID"/>                        
+        </field>
+        
+        <field  property="accountTypeID" depends="required">
+           <arg key="accountform.accountTypeID"/>          
+        </field>
+        
+        <field  property="accountName" depends="required">
+           <arg key="accountform.accountName"/>          
+        </field>  
+        
+         <field  property="accountNameAbbr" depends="required">
+           <arg key="accountform.accountNameAbbr"/>          
+        </field> 
+        
+        <field  property="vestingPercentage" depends="required">
+           <arg key="accountform.vestingPercentage"/>          
+        </field>  
+        
+    </form>    
+        
+    <form name="cashSpentForm">
+
+		<field  property="transactionDate.appmonth" depends="required,integer">
+           <arg key="error.month"/>          
+        </field>
+        
+        <field  property="transactionDate.appday" depends="required,integer">
+           <arg key="error.day"/>          
+        </field>        
+        
+        <field  property="transactionDate.appyear" depends="required,integer">
+           <arg key="error.year"/>          
+        </field>
+
+        <field  property="costProceeds" depends="required,float">
+           <arg key="error.mCostProceeds"/>
+        </field>
+        
+        <field  property="wdCategoryID" depends="required">
+           <arg key="error.CategoryID"/>          
+        </field>
+
+        <field  property="cashDescription" depends="required">
+           <arg key="error.description"/>
+        </field>
+	
+	</form>	  
+   	
+   	<form name="investmentUpdateForm">
+
+		<field  property="investmentTypeID" depends="required">
+           <arg key="investmentUpdateForm.investmentTypeID"/>          
+        </field> 
+        
+        <field  property="description" depends="required">
+           <arg key="investmentUpdateForm.description"/>          
+        </field> 
+        
+        <field  property="optionMultiplier" depends="float">
+           <arg key="investmentUpdateForm.optionMultiplier"/>          
+        </field> 
+        
+        <field  property="currentPrice" depends="float">
+           <arg key="investmentUpdateForm.currentPrice"/>          
+        </field> 
+        
+        <field  property="dividendsPerYear" depends="integer">
+           <arg key="investmentUpdateForm.dividendsPerYear"/>          
+        </field> 
+        
+        <field  property="assetClassID" depends="required">
+           <arg key="investmentUpdateForm.assetClassID"/>          
+        </field> 
+                
+    </form>	  
+        	
+	<form name="jobUpdateForm">
+
+		<field  property="employer" depends="required">
+           <arg key="jobform.employer"/>          
+        </field> 
+        
+		<field  property="jobStartDate.appmonth" depends="required,integer">
+           <arg key="error.month"/>          
+        </field>
+        
+        <field  property="jobStartDate.appday" depends="required,integer">
+           <arg key="error.day"/>          
+        </field>        
+        
+        <field  property="jobStartDate.appyear" depends="required,integer">
+           <arg key="error.year"/>          
+        </field>
+        
+        <field  property="jobEndDate.appmonth" depends="integer">
+           <arg key="error.month"/>          
+        </field>
+        
+        <field  property="jobEndDate.appday" depends="integer">
+           <arg key="error.day"/>          
+        </field>        
+        
+        <field  property="jobEndDate.appyear" depends="integer">
+           <arg key="error.year"/>          
+        </field>
+        
+		<field  property="paydaysPerYear" depends="required,integer">
+           <arg key="jobform.paydaysPerYear"/>          
+        </field> 
+                
+      	<field  property="grossPay" depends="required,float">
+           <arg key="jobform.grossPay"/>
+        </field>
+        
+        <field  property="federalWithholding" depends="required,float">
+           <arg key="jobform.federalWithholding"/>
+        </field>
+        
+        <field  property="stateWithholding" depends="required,float">
+           <arg key="jobform.stateWithholding"/>
+        </field>
+        
+        <field  property="retirementDeferred" depends="float">
+           <arg key="jobform.retirementDeferred"/>
+        </field>
+        
+        <field  property="ssWithholding" depends="required,float">
+           <arg key="jobform.ssWithholding"/>
+        </field>
+        
+        <field  property="medicareWithholding" depends="required,float">
+           <arg key="jobform.medicareWithholding"/>
+        </field>
+        
+        <field  property="dental" depends="float">
+           <arg key="jobform.dental"/>
+        </field>
+        
+        <field  property="medical" depends="float">
+           <arg key="jobform.medical"/>
+        </field>
+        
+        <field  property="groupLifeInsurance" depends="float">
+           <arg key="jobform.groupLifeInsurance"/>
+        </field>
+        
+        <field  property="groupLifeIncome" depends="float">
+           <arg key="jobform.groupLifeIncome"/>
+        </field>
+         
+        <field  property="vision" depends="float">
+           <arg key="jobform.vision"/>
+        </field>
+        
+        <field  property="parking" depends="float">
+           <arg key="jobform.parking"/>
+        </field>
+        
+        <field  property="cafeteria" depends="float">
+           <arg key="jobform.cafeteria"/>
+        </field>    
+        
+        <field  property="roth401k" depends="float">
+           <arg key="jobform.roth401k"/>
+        </field>    
+             
+    </form>	
+	
+	<form name="loginForm">
+
+        <field  property="userId" depends="required">
+           <arg key="error.userId"/>
+        </field>
+
+        <field  property="password" depends="required">
+           <arg key="error.password"/>
+        </field>
+	
+	</form>	
+	
+	<form name="mortgageUpdateForm">
+
+		<field  property="description" depends="required">
+           <arg key="mtgform.description"/>          
+        </field>
+        
+        <field  property="paymentAccountID" depends="required">
+           <arg key="mtgform.paymentaccount"/>          
+        </field>
+        
+        <field  property="principalAccountID" depends="required">
+           <arg key="mtgform.principalaccount"/>          
+        </field>        
+        
+        <field  property="mortgageStartDate.appmonth" depends="required,integer">
+           <arg key="error.month"/>          
+        </field>
+        
+        <field  property="mortgageStartDate.appday" depends="required,integer">
+           <arg key="error.day"/>          
+        </field>        
+        
+        <field  property="mortgageStartDate.appyear" depends="required,integer">
+           <arg key="error.year"/>          
+        </field>
+        
+        <field  property="mortgageEndDate.appmonth" depends="integer">
+           <arg key="error.month"/>          
+        </field>
+        
+        <field  property="mortgageEndDate.appday" depends="integer">
+           <arg key="error.day"/>          
+        </field>        
+        
+        <field  property="mortgageEndDate.appyear" depends="integer">
+           <arg key="error.year"/>          
+        </field>        
+
+        <field  property="originalLoanAmount" depends="required,float">
+           <arg key="mtgform.originalloanamount"/>
+        </field>
+        
+        <field  property="interestRate" depends="required,float">
+           <arg key="mtgform.interestrate"/>
+        </field>
+        
+        <field  property="termInYears" depends="required,integer">
+           <arg key="mtgform.terminyears"/>
+        </field>
+        
+        <field  property="homeownersInsurance" depends="required,float">
+           <arg key="mtgform.homeownersinsurance"/>
+        </field>
+        
+        <field  property="pmi" depends="float">
+           <arg key="mtgform.pmi"/>
+        </field>
+        
+        <field  property="propertyTaxes" depends="required,float">
+           <arg key="mtgform.propertytaxes"/>
+        </field>
+         
+		<field  property="extraPrincipal" depends="float">
+           <arg key="mtgform.extraprincipal"/>
+        </field>	
+	      	
+	</form>	
+	
+    <form name="mortgagePaymentUpdateForm">
+
+		<field  property="mortgageID" depends="required">
+           <arg key="mtgpmtform.mortgageID"/>          
+        </field>        
+        
+        <field  property="mortgagePaymentDate.appmonth" depends="required,integer">
+           <arg key="error.month"/>          
+        </field>
+        
+        <field  property="mortgagePaymentDate.appday" depends="required,integer">
+           <arg key="error.day"/>          
+        </field>        
+        
+        <field  property="mortgagePaymentDate.appyear" depends="required,integer">
+           <arg key="error.year"/>          
+        </field>
+        
+        <field  property="principalPaid" depends="required,float">
+           <arg key="mtgpmtform.principalpaid"/>
+        </field>
+        
+        <field  property="interestPaid" depends="required,float">
+           <arg key="mtgpmtform.interestpaid"/>
+        </field>
+        
+        <field  property="homeownersInsurancePaid" depends="required,float">
+           <arg key="mtgpmtform.homeownersinsurancepaid"/>
+        </field>
+        
+        <field  property="pmiPaid" depends="float">
+           <arg key="mtgpmtform.pmipaid"/>
+        </field>
+        
+        <field  property="propertyTaxesPaid" depends="required,float">
+           <arg key="mtgpmtform.propertytaxespaid"/>
+        </field>		
+	      	
+	</form>	
+	
+	<form name="paycheckAddForm">
+
+		<field  property="paycheckHistoryDate.appmonth" depends="required,integer">
+           <arg key="error.month"/>          
+        </field>
+        
+        <field  property="paycheckHistoryDate.appday" depends="required,integer">
+           <arg key="error.day"/>          
+        </field>        
+        
+        <field  property="paycheckHistoryDate.appyear" depends="required,integer">
+           <arg key="error.year"/>          
+        </field>
+                        
+      	<field  property="grossPay" depends="required,float">
+           <arg key="paycheckaddform.grossPay"/>
+        </field>
+        
+        <field  property="federalWithholding" depends="required,float">
+           <arg key="paycheckaddform.federalWithholding"/>
+        </field>
+        
+        <field  property="stateWithholding" depends="required,float">
+           <arg key="paycheckaddform.stateWithholding"/>
+        </field>
+        
+        <field  property="retirementDeferred" depends="float">
+           <arg key="paycheckaddform.retirementDeferred"/>
+        </field>
+        
+        <field  property="ssWithholding" depends="required,float">
+           <arg key="paycheckaddform.ssWithholding"/>
+        </field>
+        
+        <field  property="medicareWithholding" depends="required,float">
+           <arg key="paycheckaddform.medicareWithholding"/>
+        </field>
+        
+        <field  property="dental" depends="float">
+           <arg key="paycheckaddform.dental"/>
+        </field>
+        
+        <field  property="medical" depends="float">
+           <arg key="paycheckaddform.medical"/>
+        </field>
+        
+        <field  property="groupLifeInsurance" depends="float">
+           <arg key="paycheckaddform.groupLifeInsurance"/>
+        </field>
+        
+        <field  property="groupLifeIncome" depends="float">
+           <arg key="paycheckaddform.groupLifeIncome"/>
+        </field>
+        
+        <field  property="vision" depends="float">
+           <arg key="paycheckaddform.vision"/>
+        </field>
+        
+        <field  property="parking" depends="float">
+           <arg key="paycheckaddform.parking"/>
+        </field>
+        
+        <field  property="cafeteria" depends="float">
+           <arg key="paycheckaddform.cafeteria"/>
+        </field>     
+        
+        <field  property="roth401k" depends="float">
+           <arg key="paycheckaddform.roth401k"/>
+        </field>       
+                  
+    </form>	
+    
+	<form name="paycheckHistoryUpdateForm">
+
+		<field  property="paycheckHistoryDate.appmonth" depends="required,integer">
+           <arg key="error.month"/>          
+        </field>
+        
+        <field  property="paycheckHistoryDate.appday" depends="required,integer">
+           <arg key="error.day"/>          
+        </field>        
+        
+        <field  property="paycheckHistoryDate.appyear" depends="required,integer">
+           <arg key="error.year"/>          
+        </field>
+                              
+      	<field  property="grossPay" depends="required,float">
+           <arg key="paycheckhistoryform.grossPay"/>
+        </field>
+        
+        <field  property="federalWithholding" depends="required,float">
+           <arg key="paycheckhistoryform.federalWithholding"/>
+        </field>
+        
+        <field  property="stateWithholding" depends="required,float">
+           <arg key="paycheckhistoryform.stateWithholding"/>
+        </field>
+        
+        <field  property="retirementDeferred" depends="float">
+           <arg key="paycheckhistoryform.retirementDeferred"/>
+        </field>
+        
+        <field  property="ssWithholding" depends="required,float">
+           <arg key="paycheckhistoryform.ssWithholding"/>
+        </field>
+        
+        <field  property="medicareWithholding" depends="required,float">
+           <arg key="paycheckhistoryform.medicareWithholding"/>
+        </field>
+        
+        <field  property="dental" depends="float">
+           <arg key="paycheckhistoryform.dental"/>
+        </field>
+        
+        <field  property="medical" depends="float">
+           <arg key="paycheckhistoryform.medical"/>
+        </field>
+        
+        <field  property="groupLifeInsurance" depends="float">
+           <arg key="paycheckhistoryform.groupLifeInsurance"/>
+        </field>
+        
+        <field  property="groupLifeIncome" depends="float">
+           <arg key="paycheckhistoryform.groupLifeIncome"/>
+        </field>
+        
+        <field  property="vision" depends="float">
+           <arg key="paycheckhistoryform.vision"/>
+        </field>
+        
+        <field  property="parking" depends="float">
+           <arg key="paycheckhistoryform.parking"/>
+        </field>
+        
+        <field  property="cafeteria" depends="float">
+           <arg key="paycheckhistoryform.cafeteria"/>
+        </field> 
+        
+        <field  property="roth401k" depends="float">
+           <arg key="paycheckhistoryform.roth401k"/>
+        </field>       
+                  
+    </form>	
+    	
+	<form name="paycheckOutflowUpdateForm">
+
+		<field  property="accountID" depends="required">
+           <arg key="paycheckoutflowform.accountID"/>          
+        </field> 
+        
+        <field  property="transactionTypeID" depends="required">
+           <arg key="paycheckoutflowform.transactionTypeID"/>          
+        </field> 
+        
+        <field  property="defaultAmount" depends="required,float">
+           <arg key="paycheckoutflowform.defaultAmount"/>
+        </field>
+        
+        <field  property="description" depends="required">
+           <arg key="paycheckoutflowform.description"/>
+        </field>
+        
+        <field  property="defaultDay" depends="integer">
+           <arg key="paycheckoutflowform.defaultDay"/>
+        </field>
+        
+    </form>	    
+    
+    <form name="portfolioUpdateForm">
+
+		<field  property="portfolioName" depends="required">
+           <arg key="portfolioform.portfolioName"/>          
+        </field> 
+              
+    </form>	 
+    
+    <form name="reportGoalsSelectionForm">
+
+		<field  property="rateOfReturn" depends="required">
+           <arg key="reportGoalsSelectionForm.rateOfReturn"/>          
+        </field> 
+        
+        <field  property="projectionYears" depends="required">
+           <arg key="reportGoalsSelectionForm.projectionYears"/>          
+        </field>
+              
+    </form>	 
+  
+    <form name="taxTableUpdateForm">
+
+		<field  property="incomeLow" depends="float">
+           <arg key="taxTableUpdateForm.incomeLow"/>          
+        </field> 
+        
+        <field  property="incomeHigh" depends="float">
+           <arg key="taxTableUpdateForm.incomeHigh"/>          
+        </field> 
+        
+        <field  property="taxRate" depends="float">
+           <arg key="taxTableUpdateForm.taxRate"/>          
+        </field> 
+        
+        <field  property="fixedTaxAmount" depends="float">
+           <arg key="taxTableUpdateForm.fixedTaxAmount"/>          
+        </field> 
+        
+        <field  property="childCredit" depends="float">
+           <arg key="taxTableUpdateForm.childCredit"/>          
+        </field> 
+        
+        <field  property="standardDeduction" depends="float">
+           <arg key="taxTableUpdateForm.standardDeduction"/>          
+        </field> 
+        
+        <field  property="exemption" depends="float">
+           <arg key="taxTableUpdateForm.exemption"/>          
+        </field> 
+        
+        <field  property="stateTaxCreditRate" depends="float">
+           <arg key="taxTableUpdateForm.stateTaxCreditRate"/>          
+        </field> 
+        
+        <field  property="statePropertyTaxLimit" depends="float">
+           <arg key="taxTableUpdateForm.statePropertyTaxLimit"/>          
+        </field> 
+        
+        <field  property="ncExemptionThreshold" depends="float">
+           <arg key="taxTableUpdateForm.ncExemptionThreshold"/>          
+        </field> 
+        
+        <field  property="ncOverExemptionAmount" depends="float">
+           <arg key="taxTableUpdateForm.ncOverExemptionAmount"/>          
+        </field> 
+        
+        <field  property="ncUnderExemptionAmount" depends="float">
+           <arg key="taxTableUpdateForm.ncUnderExemptionAmount"/>          
+        </field> 
+        
+        <field  property="ncChildCreditThreshold" depends="float">
+           <arg key="taxTableUpdateForm.ncChildCreditThreshold"/>          
+        </field> 
+        
+        <field  property="federalDaycareCreditRate" depends="float">
+           <arg key="taxTableUpdateForm.federalDaycareCreditRate"/>          
+        </field> 
+        
+        <field  property="ncDaycareCreditRate" depends="float">
+           <arg key="taxTableUpdateForm.ncDaycareCreditRate"/>          
+        </field> 
+        
+        <field  property="ncSurtaxRate" depends="float">
+           <arg key="taxTableUpdateForm.ncSurtaxRate"/>          
+        </field> 
+        
+         <field  property="federalRecoveryAmount" depends="float">
+           <arg key="taxTableUpdateForm.federalRecoveryAmount"/>          
+        </field> 
+                    
+    </form>	  
+        
+    <form name="taxGroupUpdateForm">
+
+		<field  property="taxGroupName" depends="required">
+           <arg key="taxGroupUpdateForm.taxGroupName"/>          
+        </field> 
+              
+    </form>	  
+    
+    <form name="taxGroupYearUpdateForm">
+
+		<field  property="filingStatus" depends="required">
+           <arg key="taxGroupYearUpdateForm.filingStatus"/>          
+        </field> 
+        
+        <field  property="dependents" depends="required,integer">
+           <arg key="taxGroupYearUpdateForm.dependents"/>          
+        </field> 
+        
+        <field  property="capitalLossCarryover" depends="float">
+           <arg key="taxGroupYearUpdateForm.capitalLossCarryover"/>          
+        </field> 
+        
+        <field  property="iraDistribution" depends="float">
+           <arg key="taxGroupYearUpdateForm.iraDistribution"/>          
+        </field> 
+        
+        <field  property="prevYearStateRefund" depends="float">
+           <arg key="taxGroupYearUpdateForm.prevYearStateRefund"/>          
+        </field> 
+        
+        <field  property="otherItemized" depends="float">
+           <arg key="taxGroupYearUpdateForm.otherItemized"/>          
+        </field> 
+        
+        <field  property="carTax" depends="float">
+           <arg key="taxGroupYearUpdateForm.carTax"/>          
+        </field> 
+        
+        <field  property="dividendTaxRate" depends="float">
+           <arg key="taxGroupYearUpdateForm.dividendTaxRate"/>          
+        </field> 
+        
+        <field  property="otherIncome" depends="float">
+           <arg key="taxGroupYearUpdateForm.otherIncome"/>          
+        </field> 
+        
+        <field  property="dayCareExpensesPaid" depends="float">
+           <arg key="taxGroupYearUpdateForm.dayCareExpensesPaid"/>          
+        </field> 
+            
+    </form>	  
+    
+    <form name="taxPaymentUpdateForm">
+
+		<field  property="taxYear" depends="required,integer">
+           <arg key="taxPaymentUpdateForm.taxYear"/>          
+        </field> 
+        
+        <field  property="taxPaymentTypeID" depends="required">
+           <arg key="taxPaymentUpdateForm.taxPaymentTypeID"/>          
+        </field> 
+        
+        <field  property="taxPaymentDesc" depends="required">
+           <arg key="taxPaymentUpdateForm.taxPaymentDesc"/>          
+        </field> 
+        
+        <field  property="taxPaymentAmount" depends="required,float">
+           <arg key="taxPaymentUpdateForm.taxPaymentAmount"/>          
+        </field> 
+                
+    </form>	  
+   		
+    <form name="wdCategoryUpdateForm">
+
+		<field  property="wdCategoryDescription" depends="required">
+           <arg key="wdCategoryUpdateForm.wdCategoryDescription"/>          
+        </field> 
+              
+    </form>	    
+        
+  </formset>
+
+</form-validation>

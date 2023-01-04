@@ -1,0 +1,498 @@
+<Property>
+	<AppendToNode>BusinessSettings</AppendToNode>
+	<BusinessSettings>
+
+		<BusinessSetting>
+			<name>AccountListBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>AccountDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>AccountShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>AccountDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>AccountUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>AccountDAO</DAORef>
+		</BusinessSetting>	
+		
+		<BusinessSetting>
+			<name>AssetClassListBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>AssetClassDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>AssetClassShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>AssetClassDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>AssetClassUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>AssetClassDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>CashSpentBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TransactionDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>CashSpentShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TransactionCommonDAO</DAORef>
+		</BusinessSetting>
+				
+		<BusinessSetting>
+			<name>DropdownBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>DropdownDAO</DAORef>
+		</BusinessSetting>
+	
+	    <BusinessSetting>
+			<name>InvestmentChoiceShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>InvestmentDAO</DAORef>
+		</BusinessSetting>	
+		
+	 	<BusinessSetting>
+			<name>InvestmentListBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>InvestmentDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>InvestmentShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>InvestmentDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>InvestmentUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>InvestmentDAO</DAORef>
+		</BusinessSetting>	
+		
+		<BusinessSetting>
+			<name>InvestmentsOwnedShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>InvestmentDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>InvestmentsOwnedUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>InvestmentDAO</DAORef>
+		</BusinessSetting>			
+		
+	    <BusinessSetting>
+			<name>InvestorBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>InvestorDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>InvestorChosenBusiness1</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>InvestorDAO</DAORef>
+		</BusinessSetting>	
+		
+		<BusinessSetting>
+			<name>InvestorChosenBusiness2</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TransactionCommonDAO</DAORef>
+		</BusinessSetting>	
+				
+		<BusinessSetting>
+			<name>JobListBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>JobDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>JobShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>JobDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>JobUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>JobDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>LoginBusiness</name>
+			<class>com.pas.slomfin.business.LoginBusiness</class>
+			<DAORef>LoginDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>MenuBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>MenuDAO</DAORef>
+		</BusinessSetting>
+				
+		<BusinessSetting>
+			<name>MortgageListBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>MortgageDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>MortgageShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>MortgageDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>MortgageUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>MortgageDAO</DAORef>
+		</BusinessSetting>
+				
+		<BusinessSetting>
+			<name>MortgagePaymentListBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>MortgagePaymentDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>MortgagePaymentShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>MortgagePaymentDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>MortgagePaymentUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>MortgagePaymentDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>MortgagePaymentPrincipalTrxBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TransactionDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>PaycheckAddBusiness1</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PaycheckHistoryDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>PaycheckAddBusiness2</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TransactionDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>PaycheckAddShowFormBusiness1</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>JobDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>PaycheckAddShowFormBusiness2</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PaycheckOutflowDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>PaycheckHistoryListBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PaycheckHistoryDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>PaycheckHistoryShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PaycheckHistoryDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>PaycheckHistoryUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PaycheckHistoryDAO</DAORef>
+		</BusinessSetting>
+				
+		<BusinessSetting>
+			<name>PaycheckOutflowListBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PaycheckOutflowDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>PaycheckOutflowShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PaycheckOutflowDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>PaycheckOutflowUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PaycheckOutflowDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>PortfolioHistoryBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PortfolioHistoryDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>PortfolioListBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PortfolioDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>PortfolioShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PortfolioDAO</DAORef>
+		</BusinessSetting>
+				
+		<BusinessSetting>
+			<name>PortfolioUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PortfolioDAO</DAORef>
+		</BusinessSetting>
+			
+		<BusinessSetting>
+			<name>ReportBudgetBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>BudgetDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportCapitalGainsBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>CapitalGainsDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportCostBasisBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>CostBasisDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportDividendsBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>DividendsDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportFederalTaxesBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>FederalTaxesDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportGoalsBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>GoalsDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportGoalsNavigateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>DummyDAO</DAORef>
+		</BusinessSetting>
+			
+		<BusinessSetting>
+			<name>ReportGoalsShowSelectionFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>DummyDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportMortgageAmortizationBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>MortgageAmortizationDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportMortgagePaymentsBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>MortgagePaymentDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportNCTaxesBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>NCTaxesDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportPortfolioByAssetClassBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PortfolioDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportPortfolioHistoryBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PortfolioHistoryDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportPortfolioSummaryBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PortfolioDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportTransactionsBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TransactionDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportTransactionsByInvestmentBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TransactionDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportUnitsOwnedBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>UnitsOwnedDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportWDCategoriesBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TransactionDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>TaxCloneBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TaxTableDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>TaxTableListBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TaxTableDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>TaxTableShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TaxTableDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>TaxTableUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TaxTableDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>TaxGroupListBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TaxGroupDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>TaxGroupShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TaxGroupDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>TaxGroupUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TaxGroupDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>TaxGroupYearListBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TaxGroupYearDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>TaxGroupYearShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TaxGroupYearDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>TaxGroupYearUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TaxGroupYearDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>TaxPaymentListBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TaxPaymentDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>TaxPaymentShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TaxPaymentDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>TaxPaymentUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TaxPaymentDAO</DAORef>
+		</BusinessSetting>
+				
+		<BusinessSetting>
+			<name>TrxListBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TransactionDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>TrxShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TransactionDAO</DAORef>
+		</BusinessSetting>	
+		
+		<BusinessSetting>
+			<name>TrxShowSearchFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TransactionDAO</DAORef>
+		</BusinessSetting>				
+		
+		<BusinessSetting>
+			<name>TrxUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>TransactionDAO</DAORef>
+		</BusinessSetting>
+	
+		<BusinessSetting>
+			<name>WDCategoryListBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>WDCategoryDAO</DAORef>
+		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>WDCategoryShowFormBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>WDCategoryDAO</DAORef>
+		</BusinessSetting>		
+		
+		<BusinessSetting>
+			<name>WDCategoryUpdateBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>WDCategoryDAO</DAORef>
+		</BusinessSetting>		
+	</BusinessSettings>
+	
+</Property>

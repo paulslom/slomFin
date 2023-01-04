@@ -1,0 +1,1034 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN" "struts-config_1_2.dtd">
+
+<struts-config>
+
+	<!-- Data Sources -->
+	<data-sources>
+	</data-sources>
+
+	<!-- Form Beans -->
+	<form-beans>
+	 	<form-bean name="accountListForm" type="com.pas.slomfin.actionform.AccountListForm"/>
+	    <form-bean name="accountUpdateForm" type="com.pas.slomfin.actionform.AccountUpdateForm"/>
+	    <form-bean name="assetClassListForm" type="com.pas.slomfin.actionform.AssetClassListForm"/>
+	    <form-bean name="assetClassUpdateForm" type="com.pas.slomfin.actionform.AssetClassUpdateForm"/>		
+	    <form-bean name="cashSpentForm" type="com.pas.slomfin.actionform.CashSpentForm"/>
+	    <form-bean name="investmentsOwnedUpdateForm" type="com.pas.slomfin.actionform.InvestmentsOwnedUpdateForm"/>
+	    <form-bean name="investmentChoiceForm" type="com.pas.slomfin.actionform.InvestmentChoiceForm"/>
+	    <form-bean name="investmentListForm" type="com.pas.slomfin.actionform.InvestmentListForm"/>
+	    <form-bean name="investmentUpdateForm" type="com.pas.slomfin.actionform.InvestmentUpdateForm"/>	
+	    <form-bean name="investorListForm" type="com.pas.slomfin.actionform.InvestorListForm"/>
+	    <form-bean name="investorForm" type="com.pas.slomfin.actionform.InvestorForm"/>	
+	   	<form-bean name="jobListForm" type="com.pas.slomfin.actionform.JobListForm"/>	
+		<form-bean name="jobUpdateForm" type="com.pas.slomfin.actionform.JobUpdateForm"/>	
+		<form-bean name="loginForm" type="com.pas.slomfin.actionform.LoginForm"/>		
+		<form-bean name="menuForm" type="com.pas.slomfin.actionform.MenuForm"/>	
+		<form-bean name="mortgageListForm" type="com.pas.slomfin.actionform.MortgageListForm"/>	
+		<form-bean name="mortgagePaymentListForm" type="com.pas.slomfin.actionform.MortgagePaymentListForm"/>	
+		<form-bean name="mortgagePaymentUpdateForm" type="com.pas.slomfin.actionform.MortgagePaymentUpdateForm"/>	
+		<form-bean name="mortgageUpdateForm" type="com.pas.slomfin.actionform.MortgageUpdateForm"/>
+		<form-bean name="paycheckAddForm" type="com.pas.slomfin.actionform.PaycheckAddForm"/>	
+		<form-bean name="paycheckHistoryListForm" type="com.pas.slomfin.actionform.PaycheckHistoryListForm"/>
+		<form-bean name="paycheckHistoryUpdateForm" type="com.pas.slomfin.actionform.PaycheckHistoryUpdateForm"/>		
+		<form-bean name="paycheckOutflowListForm" type="com.pas.slomfin.actionform.PaycheckOutflowListForm"/>
+		<form-bean name="paycheckOutflowUpdateForm" type="com.pas.slomfin.actionform.PaycheckOutflowUpdateForm"/>
+	    <form-bean name="portfolioListForm" type="com.pas.slomfin.actionform.PortfolioListForm"/>
+	    <form-bean name="portfolioUpdateForm" type="com.pas.slomfin.actionform.PortfolioUpdateForm"/>
+	    <form-bean name="reportBudgetForm" type="com.pas.slomfin.actionform.ReportBudgetForm"/>
+	    <form-bean name="reportCapitalGainsForm" type="com.pas.slomfin.actionform.ReportCapitalGainsForm"/>
+	    <form-bean name="reportCostBasisForm" type="com.pas.slomfin.actionform.ReportCostBasisForm"/>
+	    <form-bean name="reportDividendsForm" type="com.pas.slomfin.actionform.ReportDividendsForm"/>
+	    <form-bean name="reportFederalTaxesForm" type="com.pas.slomfin.actionform.ReportFederalTaxesForm"/>
+	    <form-bean name="reportGoalsForm" type="com.pas.slomfin.actionform.ReportGoalsForm"/>
+	    <form-bean name="reportGoalsSelectionForm" type="com.pas.slomfin.actionform.ReportGoalsSelectionForm"/>
+	    <form-bean name="reportMortgageAmortizationForm" type="com.pas.slomfin.actionform.ReportMortgageAmortizationForm"/>
+	    <form-bean name="reportMortgagePaymentsForm" type="com.pas.slomfin.actionform.ReportMortgagePaymentsForm"/>
+	    <form-bean name="reportNCTaxesForm" type="com.pas.slomfin.actionform.ReportNCTaxesForm"/>
+	    <form-bean name="reportPortfolioByAssetClassForm" type="com.pas.slomfin.actionform.ReportPortfolioByAssetClassForm"/>
+	    <form-bean name="reportPortfolioHistoryForm" type="com.pas.slomfin.actionform.ReportPortfolioHistoryForm"/>
+	    <form-bean name="reportPortfolioSummaryForm" type="com.pas.slomfin.actionform.ReportPortfolioSummaryForm"/>
+	    <form-bean name="reportTransactionsForm" type="com.pas.slomfin.actionform.ReportTransactionsForm"/>
+	    <form-bean name="reportUnitsOwnedForm" type="com.pas.slomfin.actionform.ReportUnitsOwnedForm"/>
+	    <form-bean name="reportWDCategoriesForm" type="com.pas.slomfin.actionform.ReportWDCategoriesForm"/>
+	    <form-bean name="taxTableListForm" type="com.pas.slomfin.actionform.TaxTableListForm"/>
+		<form-bean name="taxTableUpdateForm" type="com.pas.slomfin.actionform.TaxTableUpdateForm"/>	
+		<form-bean name="taxGroupListForm" type="com.pas.slomfin.actionform.TaxGroupListForm"/>
+		<form-bean name="taxGroupUpdateForm" type="com.pas.slomfin.actionform.TaxGroupUpdateForm"/>	
+		<form-bean name="taxGroupYearListForm" type="com.pas.slomfin.actionform.TaxGroupYearListForm"/>
+		<form-bean name="taxGroupYearUpdateForm" type="com.pas.slomfin.actionform.TaxGroupYearUpdateForm"/>	
+		<form-bean name="taxPaymentListForm" type="com.pas.slomfin.actionform.TaxPaymentListForm"/>
+		<form-bean name="taxPaymentUpdateForm" type="com.pas.slomfin.actionform.TaxPaymentUpdateForm"/>	
+	    <form-bean name="trxListForm" type="com.pas.slomfin.actionform.TrxListForm"/>
+	    <form-bean name="trxSearchForm" type="com.pas.slomfin.actionform.TrxSearchForm"/>	    
+		<form-bean name="trxUpdateForm" type="com.pas.slomfin.actionform.TrxUpdateForm"/>	
+		<form-bean name="wdCategoryListForm" type="com.pas.slomfin.actionform.WDCategoryListForm"/>
+		<form-bean name="wdCategoryUpdateForm" type="com.pas.slomfin.actionform.WDCategoryUpdateForm"/>							
+	</form-beans>
+
+	<!-- Global Exceptions -->
+	<global-exceptions>
+	</global-exceptions>
+
+	<!-- Global Forwards -->
+	<global-forwards>
+		<forward name="ToException" path="ExceptionDef">
+		</forward>	
+		<forward name="ToLogin" path="LoginDef">
+		</forward>
+	</global-forwards>
+
+	<!-- Action Mappings -->
+	<action-mappings>
+	
+	 	<action path="/displayLoginForm"
+	 			forward="LoginDef">
+	 	</action>
+	 	
+	 	<action path="/AccountListAction"
+		       	type="com.pas.slomfin.action.AccountListAction"
+		       	name="accountListForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="AccountListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="AccountListDef"></forward>
+		    <forward name="failure" path="AccountListDef"></forward>        		                
+		</action>
+		
+		<action path="/AccountShowUpdateFormAction"
+		       	type="com.pas.slomfin.action.AccountShowUpdateFormAction"
+		       	name="accountUpdateForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="AccountListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="AccountUpdateDef"></forward>    		                
+		</action>
+		
+		<action path="/AccountUpdateAction"
+		       	type="com.pas.slomfin.action.AccountUpdateAction"
+		       	name="accountUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="AccountUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/AccountListAction.do?operation=inquire"></forward>		     		                
+		</action>
+		
+		<action path="/AssetClassListAction"
+		       	type="com.pas.slomfin.action.AssetClassListAction"
+		       	name="assetClassListForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="AssetClassListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="AssetClassListDef"></forward>
+		    <forward name="failure" path="AssetClassListDef"></forward>        		                
+		</action>
+		
+		<action path="/AssetClassShowUpdateFormAction"
+		       	type="com.pas.slomfin.action.AssetClassShowUpdateFormAction"
+		       	name="assetClassUpdateForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="AssetClassListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="AssetClassUpdateDef"></forward>    		                
+		</action>
+		
+		<action path="/AssetClassUpdateAction"
+		       	type="com.pas.slomfin.action.AssetClassUpdateAction"
+		       	name="assetClassUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="AssetClassUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/AssetClassListAction.do?operation=inquire"></forward>		     		                
+		</action>
+		
+	 	<action path="/CashSpentAction"
+		        type="com.pas.slomfin.action.CashSpentAction"
+				name="cashSpentForm"
+				scope="request"
+				validate="true"
+				parameter="operation"	
+		        input="CashSpentDef">
+		    <set-property property="cancellable" value="true"/> 
+		    <forward name="cancel" path="/InvestorChosenAction2.do?operation=inquire"></forward>	   
+		    <forward name="success" path="/TrxListAction.do?operation=inquire"></forward> 
+		    <forward name="addAnother" path="/CashSpentShowFormAction.do?operation=navigate"></forward>      	               
+		</action>	 
+		
+		<action path="/CashSpentShowFormAction"
+		        type="com.pas.slomfin.action.CashSpentShowFormAction"
+				name="cashSpentForm"
+				scope="request"
+				validate="false"
+				parameter="operation"	
+		        input="CashSpentDef">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="CashSpentDef"></forward>    	               
+		</action>	 
+		
+		<action path="/InvestmentsOwnedShowFormAction"
+		       	type="com.pas.slomfin.action.InvestmentsOwnedShowFormAction"
+		       	name="investmentsOwnedUpdateForm"
+		       	scope="session"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="InvestmentsOwnedDef"></forward>    		                
+		</action>
+		
+		<action path="/InvestmentsOwnedUpdateAction"
+		       	type="com.pas.slomfin.action.InvestmentsOwnedUpdateAction"
+		       	name="investmentsOwnedUpdateForm"
+		       	scope="session"
+				validate="true"
+				parameter="operation"
+				input="InvestmentsOwnedDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/PortfolioHistoryAction.do?operation=add"></forward>		     		                
+		</action>
+		
+		<action path="/InvestmentChoiceShowFormAction"
+		       	type="com.pas.slomfin.action.InvestmentChoiceShowFormAction"
+		       	name="investmentChoiceForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="InvestmentChoiceDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="InvestmentChoiceDef"></forward>
+		    <forward name="failure" path="InvestmentChoiceDef"></forward>        		                
+		</action>
+				
+		<action path="/InvestmentListAction"
+		       	type="com.pas.slomfin.action.InvestmentListAction"
+		       	name="investmentListForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="InvestmentListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="InvestmentListDef"></forward>
+		    <forward name="failure" path="InvestmentListDef"></forward>        		                
+		</action>
+		
+		<action path="/InvestmentShowUpdateFormAction"
+		       	type="com.pas.slomfin.action.InvestmentShowUpdateFormAction"
+		       	name="investmentUpdateForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="InvestmentListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="InvestmentUpdateDef"></forward>    		                
+		</action>
+		
+		<action path="/InvestmentUpdateAction"
+		       	type="com.pas.slomfin.action.InvestmentUpdateAction"
+		       	name="investmentUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="InvestmentUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/InvestmentListAction.do?operation=inquire"></forward>		     		                
+		</action>
+			
+	 	<action path="/InvestorListAction"
+		        type="com.pas.slomfin.action.InvestorListAction"
+				name="investorListForm"
+				scope="request"
+				validate="false"
+				parameter="operation"	
+		        input="LoginDef">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="InvestorListPageDef"></forward>    	               
+		</action>	 
+		
+		<action path="/InvalidateSessionAction"
+                type="com.pas.slomfin.action.InvalidateSessionAction">            
+        </action>
+        
+		<action path="/InvestorChosenAction1"
+		        type="com.pas.slomfin.action.InvestorChosenAction1"
+		       	name="investorForm"
+				scope="request"
+				validate="false"
+				parameter="operation"
+				input="/MenuAction">
+		    <set-property property="cancellable" value="true"/> 
+		    <forward name="success" path="/InvestorChosenAction2.do?operation=inquire"></forward>       		                
+		</action>
+		
+		<action path="/InvestorChosenAction2"
+		        type="com.pas.slomfin.action.InvestorChosenAction2"
+		       	name="investorForm"
+				scope="request"
+				validate="false"
+				parameter="operation"
+				input="/MenuAction">
+		    <set-property property="cancellable" value="true"/> 
+		    <forward name="success" path="/MenuAction.do?operation=inquire"></forward>       		                
+		</action>
+				
+		<action path="/JobListAction"
+		       	type="com.pas.slomfin.action.JobListAction"
+		       	name="jobListForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="JobListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="JobListDef"></forward>
+		    <forward name="failure" path="JobListDef"></forward>        		                
+		</action>
+		
+		<action path="/JobShowUpdateFormAction"
+		       	type="com.pas.slomfin.action.JobShowUpdateFormAction"
+		       	name="jobUpdateForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="JobListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="JobUpdateDef"></forward>    		                
+		</action>
+		
+		<action path="/JobUpdateAction"
+		       	type="com.pas.slomfin.action.JobUpdateAction"
+		       	name="jobUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="JobUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/JobListAction.do?operation=inquire"></forward>		     		                
+		</action>
+		
+		<action path="/LoginAction" 
+		        type="com.pas.slomfin.action.LoginAction" 
+		        name="loginForm"
+		        scope="request"
+		        validate="true"
+		        parameter="operation"
+		        input="LoginDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/InvestorChosenAction1.do?operation=inquire&amp;fromWhere=login"></forward>      
+			<forward name="failure" path="LoginDef"></forward>
+			<forward name="cancel" path="LogoutDef"></forward>			               
+		</action>
+		
+		<action path="/LogoutAction"
+		        type="com.pas.slomfin.action.LogoutAction"
+		        name="loginForm"
+		        scope="request"
+		        validate="false"
+		        parameter="operation"
+		        input="LogoutDef">
+		    <set-property property="cancellable" value="true"/>
+			<forward name="success" path="LogoutDef"></forward>	               
+		</action>
+				
+		<action path="/MenuAction"
+		       	type="com.pas.slomfin.action.MenuAction"
+		       	name="menuForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="InvestorListPageDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="InvestorDef"></forward>    		                
+		</action>	
+		
+		<action path="/MortgageListAction"
+		       	type="com.pas.slomfin.action.MortgageListAction"
+		       	name="mortgageListForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="MortgageListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="MortgageListDef"></forward>
+		    <forward name="failure" path="MortgageListDef"></forward>        		                
+		</action>
+		
+		<action path="/MortgageShowUpdateFormAction"
+		       	type="com.pas.slomfin.action.MortgageShowUpdateFormAction"
+		       	name="mortgageUpdateForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="MortgageListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="MortgageUpdateDef"></forward>    		                
+		</action>
+		
+		<action path="/MortgageUpdateAction"
+		       	type="com.pas.slomfin.action.MortgageUpdateAction"
+		       	name="mortgageUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="MortgageUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/MortgageListAction.do?operation=inquire"></forward>		     		                
+		</action>
+		
+		<action path="/MortgagePaymentListAction"
+		       	type="com.pas.slomfin.action.MortgagePaymentListAction"
+		       	name="mortgagePaymentListForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="MortgagePaymentListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="MortgagePaymentListDef"></forward>
+		    <forward name="failure" path="MortgagePaymentListDef"></forward>        		                
+		</action>
+		
+		<action path="/MortgagePaymentShowUpdateFormAction"
+		       	type="com.pas.slomfin.action.MortgagePaymentShowUpdateFormAction"
+		       	name="mortgagePaymentUpdateForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="MortgagePaymentListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="MortgagePaymentUpdateDef"></forward>    		                
+		</action>
+		
+		<action path="/MortgagePaymentUpdateAction"
+		       	type="com.pas.slomfin.action.MortgagePaymentUpdateAction"
+		       	name="mortgagePaymentUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="MortgagePaymentUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/MortgagePaymentListAction.do?operation=inquire"></forward>
+		    <forward name="successAfterAdd" path="/MortgagePaymentPrincipalTrxAction.do?operation=add"></forward>
+		    <forward name="fwdRptMtgPmt" path="/ReportMortgagePaymentsAction.do?operation=inquire"></forward>					     		     		                
+		</action>
+		
+		<action path="/MortgagePaymentPrincipalTrxAction"
+		       	type="com.pas.slomfin.action.MortgagePaymentPrincipalTrxAction"
+		       	name="mortgagePaymentUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="MortgagePaymentUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/MortgagePaymentListAction.do?operation=inquire"></forward>		    	 		     		                
+		</action>
+		
+		<action path="/PaycheckAddAction1"
+		       	type="com.pas.slomfin.action.PaycheckAddAction1"
+		       	name="paycheckAddForm"
+		       	scope="session"
+				validate="true"
+				parameter="operation"
+				input="PaycheckAddDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="cancel" path="/PaycheckHistoryListAction.do?operation=inquire"></forward>
+		    <forward name="success" path="/PaycheckAddAction2.do?operation=add"></forward>
+		    <forward name="failure" path="/PaycheckHistoryListAction.do?operation=inquire"></forward>        		                
+		</action>
+		
+		<action path="/PaycheckAddAction2"
+		       	type="com.pas.slomfin.action.PaycheckAddAction2"
+		       	name="paycheckAddForm"
+		       	scope="session"
+				validate="true"
+				parameter="operation"
+				input="PaycheckAddDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/PaycheckHistoryListAction.do?operation=inquire"></forward>
+		    <forward name="failure" path="/PaycheckHistoryListAction.do?operation=inquire"></forward>        		                
+		</action>
+		
+		<action path="/PaycheckAddShowFormAction1"
+		       	type="com.pas.slomfin.action.PaycheckAddShowFormAction1"
+		       	name="paycheckAddForm"
+		       	scope="session"
+				validate="false"
+				parameter="operation"
+				input="PaycheckHistoryListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/PaycheckAddShowFormAction2.do?operation=inquire"></forward>    		                
+		</action>
+		
+		<action path="/PaycheckAddShowFormAction2"
+		       	type="com.pas.slomfin.action.PaycheckAddShowFormAction2"
+		       	name="paycheckAddForm"
+		       	scope="session"
+				validate="false"
+				parameter="operation"
+				input="PaycheckHistoryListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="PaycheckAddDef"></forward>    		                
+		</action>
+	
+		<action path="/PaycheckHistoryListAction"
+		       	type="com.pas.slomfin.action.PaycheckHistoryListAction"
+		       	name="paycheckHistoryListForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="PaycheckHistoryListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="PaycheckHistoryListDef"></forward>
+		    <forward name="failure" path="PaycheckHistoryListDef"></forward>        		                
+		</action>
+		
+		<action path="/PaycheckHistoryShowUpdateFormAction"
+		       	type="com.pas.slomfin.action.PaycheckHistoryShowUpdateFormAction"
+		       	name="paycheckHistoryUpdateForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="PaycheckHistoryListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="PaycheckHistoryUpdateDef"></forward>    		                
+		</action>
+		
+		<action path="/PaycheckHistoryUpdateAction"
+		       	type="com.pas.slomfin.action.PaycheckHistoryUpdateAction"
+		       	name="paycheckHistoryUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="PaycheckHistoryUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/PaycheckHistoryListAction.do?operation=inquire"></forward>		     		                
+		</action>
+		
+		<action path="/PaycheckOutflowListAction"
+		       	type="com.pas.slomfin.action.PaycheckOutflowListAction"
+		       	name="paycheckOutflowListForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="PaycheckOutflowListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="PaycheckOutflowListDef"></forward>
+		    <forward name="failure" path="PaycheckOutflowListDef"></forward>        		                
+		</action>
+		
+		<action path="/PaycheckOutflowShowUpdateFormAction"
+		       	type="com.pas.slomfin.action.PaycheckOutflowShowUpdateFormAction"
+		       	name="paycheckOutflowUpdateForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="PaycheckOutflowListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="PaycheckOutflowUpdateDef"></forward>    		                
+		</action>
+		
+		<action path="/PaycheckOutflowUpdateAction"
+		       	type="com.pas.slomfin.action.PaycheckOutflowUpdateAction"
+		       	name="paycheckOutflowUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="PaycheckOutflowUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/PaycheckOutflowListAction.do?operation=inquire"></forward>		     		                
+		</action>
+		
+		<action path="/PortfolioHistoryAction"
+		       	type="com.pas.slomfin.action.PortfolioHistoryAction"
+		       	name="investmentsOwnedUpdateForm"
+		       	scope="session"
+				validate="true"
+				parameter="operation"
+				input="InvestmentsOwnedDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/ReportPortfolioSummaryAction.do?operation=inquire"></forward>		     		                
+		</action>
+		
+		<action path="/PortfolioListAction"
+		       	type="com.pas.slomfin.action.PortfolioListAction"
+		       	name="portfolioListForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="PortfolioListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="PortfolioListDef"></forward>
+		    <forward name="failure" path="PortfolioListDef"></forward>        		                
+		</action>
+		
+		<action path="/PortfolioShowUpdateFormAction"
+		       	type="com.pas.slomfin.action.PortfolioShowUpdateFormAction"
+		       	name="portfolioUpdateForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="PortfolioListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="PortfolioUpdateDef"></forward>    		                
+		</action>
+		
+		<action path="/PortfolioUpdateAction"
+		       	type="com.pas.slomfin.action.PortfolioUpdateAction"
+		       	name="portfolioUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="PortfolioUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/PortfolioListAction.do?operation=inquire"></forward>		     		                
+		</action>
+		
+		<action path="/ReportBudgetAction"
+		        type="com.pas.slomfin.action.ReportBudgetAction"
+				name="reportBudgetForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportBudgetDef"></forward>    	               
+		</action>	 
+		
+		<action path="/ReportCapitalGainsAction"
+		        type="com.pas.slomfin.action.ReportCapitalGainsAction"
+				name="reportCostBasisForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportCapitalGainsDef"></forward>    	               
+		</action>	 
+			
+		<action path="/ReportCostBasisAction"
+		        type="com.pas.slomfin.action.ReportCostBasisAction"
+				name="reportCostBasisForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportCostBasisDef"></forward>    	               
+		</action>	 
+		
+		<action path="/ReportDividendsAction"
+		        type="com.pas.slomfin.action.ReportDividendsAction"
+				name="reportDividendsForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportDividendsDef"></forward>    	               
+		</action>	
+		
+		<action path="/ReportFederalTaxesAction"
+		        type="com.pas.slomfin.action.ReportFederalTaxesAction"
+				name="reportFederalTaxesForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportFederalTaxesDef"></forward>    	               
+		</action>	 
+		
+		<action path="/ReportGoalsShowSelectionFormAction"
+		        type="com.pas.slomfin.action.ReportGoalsShowSelectionFormAction"
+				name="reportGoalsSelectionForm"
+				scope="request"
+				validate="false"
+				input="ReportGoalsShowSelectionFormDef"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportGoalsShowSelectionFormDef"></forward>    	               
+		</action>	 
+		
+		<action path="/ReportGoalsNavigateAction"
+		        type="com.pas.slomfin.action.ReportGoalsNavigateAction"
+				name="reportGoalsSelectionForm"
+				scope="request"
+				validate="true"
+				input="ReportGoalsShowSelectionFormDef"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="/ReportGoalsAction.do?operation=inquire"></forward>    	               
+		</action>	
+		<action path="/ReportGoalsAction"
+		        type="com.pas.slomfin.action.ReportGoalsAction"
+				name="reportGoalsForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportGoalsDef"></forward>    	               
+		</action>	 
+		
+		<action path="/ReportMortgageAmortizationAction"
+		        type="com.pas.slomfin.action.ReportMortgageAmortizationAction"
+				name="reportMortgageAmortizationForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportMortgageAmortizationDef"></forward>    	               
+		</action>	 
+		
+		<action path="/ReportMortgagePaymentsAction"
+		        type="com.pas.slomfin.action.ReportMortgagePaymentsAction"
+				name="reportMortgagePaymentsForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportMortgagePaymentsDef"></forward>    	               
+		</action>	 
+		
+		<action path="/ReportNCTaxesAction"
+		        type="com.pas.slomfin.action.ReportNCTaxesAction"
+				name="reportNCTaxesForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportNCTaxesDef"></forward>    	               
+		</action>			
+		
+		<action path="/ReportPortfolioByAssetClassAction"
+		        type="com.pas.slomfin.action.ReportPortfolioByAssetClassAction"
+				name="reportPortfolioByAssetClassForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportPortfolioByAssetClassDef"></forward>    	               
+		</action>	 
+		
+		<action path="/ReportPortfolioHistoryAction"
+		        type="com.pas.slomfin.action.ReportPortfolioHistoryAction"
+				name="reportPortfolioHistoryForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportPortfolioHistoryDef"></forward>    	               
+		</action>	 
+		
+		<action path="/ReportPortfolioSummaryAction"
+		        type="com.pas.slomfin.action.ReportPortfolioSummaryAction"
+				name="reportPortfolioSummaryForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportPortfolioSummaryDef"></forward>    	               
+		</action>	 
+		
+		<action path="/ReportTransactionsAction"
+		        type="com.pas.slomfin.action.ReportTransactionsAction"
+				name="reportTransactionsForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportTransactionsDef"></forward>    	               
+		</action>	 
+		
+		<action path="/ReportTransactionsByInvestmentAction"
+		        type="com.pas.slomfin.action.ReportTransactionsByInvestmentAction"
+				name="reportTransactionsForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportTransactionsDef"></forward>    	               
+		</action>
+		
+		<action path="/ReportUnitsOwnedAction"
+		        type="com.pas.slomfin.action.ReportUnitsOwnedAction"
+				name="reportUnitsOwnedForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportUnitsOwnedDef"></forward>    	               
+		</action>	
+		
+		<action path="/ReportWDCategoriesAction"
+		        type="com.pas.slomfin.action.ReportWDCategoriesAction"
+				name="reportWDCategoriesForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportWDCategoriesDef"></forward>    	               
+		</action>	 
+		
+		<action path="/TaxTableCloneAction"
+		       	type="com.pas.slomfin.action.TaxTableCloneAction"		       	
+		       	scope="request"
+				validate="false"
+				parameter="operation">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/TaxTableListAction.do?operation=inquire"></forward>		     		                
+		</action>
+		
+		<action path="/TaxTableListAction"
+		       	type="com.pas.slomfin.action.TaxTableListAction"
+		       	name="taxTableListForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="TaxTableListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="TaxTableListDef"></forward>
+		    <forward name="failure" path="TaxTableListDef"></forward>        		                
+		</action>
+		
+		<action path="/TaxTableShowUpdateFormAction"
+		       	type="com.pas.slomfin.action.TaxTableShowUpdateFormAction"
+		       	name="taxTableUpdateForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="TaxTableListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="TaxTableUpdateDef"></forward>    		                
+		</action>
+		
+		<action path="/TaxTableUpdateAction"
+		       	type="com.pas.slomfin.action.TaxTableUpdateAction"
+		       	name="taxTableUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="TaxTableUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/TaxTableListAction.do?operation=inquire"></forward>		     		                
+		</action>
+		
+		<action path="/TaxGroupListAction"
+		       	type="com.pas.slomfin.action.TaxGroupListAction"
+		       	name="taxGroupListForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="TaxGroupListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="TaxGroupListDef"></forward>
+		    <forward name="failure" path="TaxGroupListDef"></forward>        		                
+		</action>
+		
+		<action path="/TaxGroupShowUpdateFormAction"
+		       	type="com.pas.slomfin.action.TaxGroupShowUpdateFormAction"
+		       	name="taxGroupUpdateForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="TaxGroupListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="TaxGroupUpdateDef"></forward>    		                
+		</action>
+		
+		<action path="/TaxGroupUpdateAction"
+		       	type="com.pas.slomfin.action.TaxGroupUpdateAction"
+		       	name="taxGroupUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="TaxGroupUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/TaxGroupListAction.do?operation=inquire"></forward>		     		                
+		</action>
+		
+		<action path="/TaxGroupYearListAction"
+		       	type="com.pas.slomfin.action.TaxGroupYearListAction"
+		       	name="taxGroupYearListForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="TaxGroupYearListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="TaxGroupYearListDef"></forward>
+		    <forward name="failure" path="TaxGroupYearListDef"></forward>        		                
+		</action>
+		
+		<action path="/TaxGroupYearShowUpdateFormAction"
+		       	type="com.pas.slomfin.action.TaxGroupYearShowUpdateFormAction"
+		       	name="taxGroupYearUpdateForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="TaxGroupYearListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="TaxGroupYearUpdateDef"></forward>    		                
+		</action>
+		
+		<action path="/TaxGroupYearUpdateAction"
+		       	type="com.pas.slomfin.action.TaxGroupYearUpdateAction"
+		       	name="taxGroupYearUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="TaxGroupYearUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/TaxGroupYearListAction.do?operation=inquire"></forward>		     		                
+		</action>
+		
+		<action path="/TaxPaymentListAction"
+		       	type="com.pas.slomfin.action.TaxPaymentListAction"
+		       	name="taxPaymentListForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="TaxPaymentListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="TaxPaymentListDef"></forward>
+		    <forward name="failure" path="TaxPaymentListDef"></forward>        		                
+		</action>
+		
+		<action path="/TaxPaymentShowUpdateFormAction"
+		       	type="com.pas.slomfin.action.TaxPaymentShowUpdateFormAction"
+		       	name="taxPaymentUpdateForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="TaxPaymentListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="TaxPaymentUpdateDef"></forward>    		                
+		</action>
+		
+		<action path="/TaxPaymentUpdateAction"
+		       	type="com.pas.slomfin.action.TaxPaymentUpdateAction"
+		       	name="taxPaymentUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="TaxPaymentUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/TaxPaymentListAction.do?operation=inquire"></forward>		     		                
+		</action>
+		
+		<action path="/TrxListAction"
+		       	type="com.pas.slomfin.action.TrxListAction"
+		       	name="trxListForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="TrxListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="TrxListDef"></forward>
+		    <forward name="failure" path="TrxListDef"></forward>        		                
+		</action>
+		
+		<action path="/TrxShowSearchFormAction"
+		       	type="com.pas.slomfin.action.TrxShowSearchFormAction"
+		       	name="trxSearchForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="TrxSearchDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="TrxSearchDef"></forward>
+		    <forward name="failure" path="TrxSearchDef"></forward>      		    
+		</action>
+		
+		
+		<action path="/TrxShowUpdateFormAction"
+		       	type="com.pas.slomfin.action.TrxShowUpdateFormAction"
+		       	name="trxUpdateForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="TrxListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="TrxUpdateDef"></forward>    		                
+		</action>
+		
+		<action path="/TrxUpdateAction"
+		       	type="com.pas.slomfin.action.TrxUpdateAction"
+		       	name="trxUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="TrxUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/TrxListAction.do?operation=inquire"></forward>	
+		    <forward name="fwdRptTrx" path="/ReportTransactionsAction.do?operation=inquire"></forward>		     		                
+		</action>
+		
+		<action path="/WDCategoryListAction"
+		       	type="com.pas.slomfin.action.WDCategoryListAction"
+		       	name="wdCategoryListForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="WDCategoryListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="WDCategoryListDef"></forward>
+		    <forward name="failure" path="WDCategoryListDef"></forward>        		                
+		</action>
+		
+		<action path="/WDCategoryShowUpdateFormAction"
+		       	type="com.pas.slomfin.action.WDCategoryShowUpdateFormAction"
+		       	name="wdCategoryUpdateForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="WDCategoryListDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="WDCategoryUpdateDef"></forward>    		                
+		</action>
+		
+		<action path="/WDCategoryUpdateAction"
+		       	type="com.pas.slomfin.action.WDCategoryUpdateAction"
+		       	name="wdCategoryUpdateForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="WDCategoryUpdateDef">
+			<set-property property="cancellable" value="true"/>
+		    <forward name="success" path="/WDCategoryListAction.do?operation=inquire"></forward>		     		                
+		</action>
+				
+	</action-mappings>
+
+	<!-- Message Resources -->
+	<message-resources parameter="ApplicationResources" null="false"/>
+
+	<!-- ========== Plug Ins Configuration ================================== -->
+ 
+	<plug-in className="org.apache.struts.tiles.TilesPlugin" >
+	    <set-property property="definitions-config"
+	                   value="/WEB-INF/tiles-def.xml"/>
+	    <set-property property="moduleAware" value="true" />
+	    <set-property property="definitions-parser-validate" value="true" />
+	</plug-in>
+	
+	
+	<plug-in className="net.sf.navigator.menu.MenuPlugIn">
+        <set-property property="menuConfig" value="/WEB-INF/menu-config.xml"/> 
+    </plug-in>
+        
+	<plug-in className="com.pas.struts.InitPlugIn">
+		<set-property property="propertyFiles" value="dao_def.xml|business_def.xml|action_def.xml|entity_def.xml"/>
+	</plug-in>
+	
+	<plug-in className="com.pas.struts.DropDownPlugIn">
+	</plug-in>
+		
+ 	<plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+    	<set-property property="pathnames"
+                     value="/WEB-INF/validator-rules.xml,
+                            /WEB-INF/validation.xml"/>
+  	</plug-in>
+	
+</struts-config>
