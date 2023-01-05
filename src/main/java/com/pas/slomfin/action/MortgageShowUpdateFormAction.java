@@ -34,7 +34,7 @@ public class MortgageShowUpdateFormAction extends SlomFinStandardAction
 			HttpServletRequest req, HttpServletResponse res, int operation) throws PresentationException, BusinessException,
 			DAOException, PASSystemException
 	{
-		log.debug("inside TrxShowUpdateFormAction pre - process");
+		log.debug("in pre - process");
 		
 		ICacheManager cache =  CacheManagerFactory.getCacheManager();
 		Integer mortID = new Integer(0);

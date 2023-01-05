@@ -65,7 +65,8 @@ public class InvestmentsOwnedUpdateForm extends SlomFinBaseActionForm
 			   if (!PASUtil.isValidDecimalForUnits(investment.getMcurrentPrice().toString()))
 			   {
 				   log.info("Invalid price detected on: " + investment.getStickerSymbol() + " with price: " + investment.getMcurrentPrice().toString());
-				  ae.add(ISlomFinMessageConstants.INVOWNEDUPDATEFORM_PRICE_INVALID,
+				 
+				   ae.add(ISlomFinMessageConstants.INVOWNEDUPDATEFORM_PRICE_INVALID,
 					new ActionMessage(ISlomFinMessageConstants.INVOWNEDUPDATEFORM_PRICE_INVALID));
 			   }						 
 		}

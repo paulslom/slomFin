@@ -135,6 +135,12 @@
 	</Action>	
 	
 	<Action>
+		<name>Menu2Action</name>
+		<actionForward>success</actionForward>
+		<businessServiceRef>Menu2Business</businessServiceRef>	   
+	</Action>	
+	
+	<Action>
 		<name>MortgageListAction</name>
 		<actionForward>success</actionForward>
 		<businessServiceRef>MortgageListBusiness</businessServiceRef>	   

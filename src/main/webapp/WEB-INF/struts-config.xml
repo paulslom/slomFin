@@ -9,6 +9,7 @@
 
 	<!-- Form Beans -->
 	<form-beans>
+	    <form-bean name="accountSelectionForm" type="com.pas.slomfin.actionform.AccountSelectionForm"/>
 	 	<form-bean name="accountListForm" type="com.pas.slomfin.actionform.AccountListForm"/>
 	    <form-bean name="accountUpdateForm" type="com.pas.slomfin.actionform.AccountUpdateForm"/>
 	    <form-bean name="assetClassListForm" type="com.pas.slomfin.actionform.AssetClassListForm"/>
@@ -24,6 +25,7 @@
 		<form-bean name="jobUpdateForm" type="com.pas.slomfin.actionform.JobUpdateForm"/>	
 		<form-bean name="loginForm" type="com.pas.slomfin.actionform.LoginForm"/>		
 		<form-bean name="menuForm" type="com.pas.slomfin.actionform.MenuForm"/>	
+		<form-bean name="menu2Form" type="com.pas.slomfin.actionform.Menu2Form"/>	
 		<form-bean name="mortgageListForm" type="com.pas.slomfin.actionform.MortgageListForm"/>	
 		<form-bean name="mortgagePaymentListForm" type="com.pas.slomfin.actionform.MortgagePaymentListForm"/>	
 		<form-bean name="mortgagePaymentUpdateForm" type="com.pas.slomfin.actionform.MortgagePaymentUpdateForm"/>	
@@ -37,8 +39,10 @@
 	    <form-bean name="portfolioUpdateForm" type="com.pas.slomfin.actionform.PortfolioUpdateForm"/>
 	    <form-bean name="reportBudgetForm" type="com.pas.slomfin.actionform.ReportBudgetForm"/>
 	    <form-bean name="reportCapitalGainsForm" type="com.pas.slomfin.actionform.ReportCapitalGainsForm"/>
+	    <form-bean name="reportCapitalGainsSelectionForm" type="com.pas.slomfin.actionform.ReportCapitalGainsSelectionForm"/>
 	    <form-bean name="reportCostBasisForm" type="com.pas.slomfin.actionform.ReportCostBasisForm"/>
 	    <form-bean name="reportDividendsForm" type="com.pas.slomfin.actionform.ReportDividendsForm"/>
+	    <form-bean name="reportDividendsSelectionForm" type="com.pas.slomfin.actionform.ReportDividendsSelectionForm"/>
 	    <form-bean name="reportFederalTaxesForm" type="com.pas.slomfin.actionform.ReportFederalTaxesForm"/>
 	    <form-bean name="reportGoalsForm" type="com.pas.slomfin.actionform.ReportGoalsForm"/>
 	    <form-bean name="reportGoalsSelectionForm" type="com.pas.slomfin.actionform.ReportGoalsSelectionForm"/>
@@ -51,6 +55,7 @@
 	    <form-bean name="reportTransactionsForm" type="com.pas.slomfin.actionform.ReportTransactionsForm"/>
 	    <form-bean name="reportUnitsOwnedForm" type="com.pas.slomfin.actionform.ReportUnitsOwnedForm"/>
 	    <form-bean name="reportWDCategoriesForm" type="com.pas.slomfin.actionform.ReportWDCategoriesForm"/>
+	    <form-bean name="reportWDCategoriesSelectionForm" type="com.pas.slomfin.actionform.ReportWDCategoriesSelectionForm"/>
 	    <form-bean name="taxTableListForm" type="com.pas.slomfin.actionform.TaxTableListForm"/>
 		<form-bean name="taxTableUpdateForm" type="com.pas.slomfin.actionform.TaxTableUpdateForm"/>	
 		<form-bean name="taxGroupListForm" type="com.pas.slomfin.actionform.TaxGroupListForm"/>
@@ -59,6 +64,7 @@
 		<form-bean name="taxGroupYearUpdateForm" type="com.pas.slomfin.actionform.TaxGroupYearUpdateForm"/>	
 		<form-bean name="taxPaymentListForm" type="com.pas.slomfin.actionform.TaxPaymentListForm"/>
 		<form-bean name="taxPaymentUpdateForm" type="com.pas.slomfin.actionform.TaxPaymentUpdateForm"/>	
+		<form-bean name="trxAddSelectionForm" type="com.pas.slomfin.actionform.TrxAddSelectionForm"/>
 	    <form-bean name="trxListForm" type="com.pas.slomfin.actionform.TrxListForm"/>
 	    <form-bean name="trxSearchForm" type="com.pas.slomfin.actionform.TrxSearchForm"/>	    
 		<form-bean name="trxUpdateForm" type="com.pas.slomfin.actionform.TrxUpdateForm"/>	
@@ -85,6 +91,18 @@
 	 			forward="LoginDef">
 	 	</action>
 	 	
+	 	<action path="/AccountSelectionShowFormAction"
+		       	type="com.pas.slomfin.action.AccountSelectionShowFormAction"
+		       	name="accountSelectionForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="AccountSelectionDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="AccountSelectionDef"></forward>
+		    <forward name="failure" path="AccountSelectiontDef"></forward>        		                
+		</action>
+		
 	 	<action path="/AccountListAction"
 		       	type="com.pas.slomfin.action.AccountListAction"
 		       	name="accountListForm"
@@ -265,7 +283,7 @@
 				scope="request"
 				validate="false"
 				parameter="operation"
-				input="/MenuAction">
+				input="/Menu2Action">
 		    <set-property property="cancellable" value="true"/> 
 		    <forward name="success" path="/InvestorChosenAction2.do?operation=inquire"></forward>       		                
 		</action>
@@ -276,9 +294,9 @@
 				scope="request"
 				validate="false"
 				parameter="operation"
-				input="/MenuAction">
+				input="/Menu2Action">
 		    <set-property property="cancellable" value="true"/> 
-		    <forward name="success" path="/MenuAction.do?operation=inquire"></forward>       		                
+		    <forward name="success" path="/Menu2Action.do?operation=inquire"></forward>       		                
 		</action>
 				
 		<action path="/JobListAction"
@@ -342,6 +360,17 @@
 		<action path="/MenuAction"
 		       	type="com.pas.slomfin.action.MenuAction"
 		       	name="menuForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation"
+				input="InvestorListPageDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="InvestorDef"></forward>    		                
+		</action>	
+		
+		<action path="/Menu2Action"
+		       	type="com.pas.slomfin.action.Menu2Action"
+		       	name="menu2Form"
 		       	scope="request"
 				validate="false"
 				parameter="operation"
@@ -610,6 +639,16 @@
 		    <set-property property="cancellable" value="true"/>    
 		    <forward name="success" path="ReportCapitalGainsDef"></forward>    	               
 		</action>	 
+		
+		<action path="/ReportCapitalGainsSelectionAction"
+		        type="com.pas.slomfin.action.ReportCapitalGainsSelectionAction"
+				name="reportCapitalGainsSelectionForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportCapitalGainsSelectionDef"></forward>    	               
+		</action>	
 			
 		<action path="/ReportCostBasisAction"
 		        type="com.pas.slomfin.action.ReportCostBasisAction"
@@ -619,7 +658,7 @@
 				parameter="operation">
 		    <set-property property="cancellable" value="true"/>    
 		    <forward name="success" path="ReportCostBasisDef"></forward>    	               
-		</action>	 
+		</action>		
 		
 		<action path="/ReportDividendsAction"
 		        type="com.pas.slomfin.action.ReportDividendsAction"
@@ -629,7 +668,17 @@
 				parameter="operation">
 		    <set-property property="cancellable" value="true"/>    
 		    <forward name="success" path="ReportDividendsDef"></forward>    	               
-		</action>	
+		</action>
+		
+		<action path="/ReportDividendsSelectionAction"
+		        type="com.pas.slomfin.action.ReportDividendsSelectionAction"
+				name="reportDividendsSelectionForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportDividendsSelectionDef"></forward>    	               
+		</action>		
 		
 		<action path="/ReportFederalTaxesAction"
 		        type="com.pas.slomfin.action.ReportFederalTaxesAction"
@@ -770,6 +819,16 @@
 				parameter="operation">
 		    <set-property property="cancellable" value="true"/>    
 		    <forward name="success" path="ReportWDCategoriesDef"></forward>    	               
+		</action>	
+		
+		<action path="/ReportWDCategoriesSelectionAction"
+		        type="com.pas.slomfin.action.ReportWDCategoriesSelectionAction"
+				name="reportWDCategoriesSelectionForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportWDCategoriesSelectionDef"></forward>    	               
 		</action>	 
 		
 		<action path="/TaxTableCloneAction"
@@ -917,6 +976,18 @@
 		    <forward name="success" path="/TaxPaymentListAction.do?operation=inquire"></forward>		     		                
 		</action>
 		
+		<action path="/TrxAddSelectionAction"
+		       	type="com.pas.slomfin.action.TrxAddSelectionAction"
+		       	name="trxAddSelectionForm"
+		       	scope="request"
+				validate="true"
+				parameter="operation"
+				input="TrxAddSelectionDef">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="TrxAddSelectionDef"></forward>
+		    <forward name="failure" path="TrxAddSelectionDef"></forward>        		                
+		</action>
+		
 		<action path="/TrxListAction"
 		       	type="com.pas.slomfin.action.TrxListAction"
 		       	name="trxListForm"
@@ -1012,12 +1083,7 @@
 	    <set-property property="moduleAware" value="true" />
 	    <set-property property="definitions-parser-validate" value="true" />
 	</plug-in>
-	
-	
-	<plug-in className="net.sf.navigator.menu.MenuPlugIn">
-        <set-property property="menuConfig" value="/WEB-INF/menu-config.xml"/> 
-    </plug-in>
-        
+	        
 	<plug-in className="com.pas.struts.InitPlugIn">
 		<set-property property="propertyFiles" value="dao_def.xml|business_def.xml|action_def.xml|entity_def.xml"/>
 	</plug-in>

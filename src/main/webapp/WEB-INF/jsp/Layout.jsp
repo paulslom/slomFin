@@ -47,6 +47,14 @@
                  </TD>
                </TR>     
              </logic:present>	
+             
+             <logic:present name="menu2">
+               <TR>
+                 <TD valign="top">
+                   <tiles:insert attribute="menu2"/>
+                 </TD>
+               </TR>     
+             </logic:present>	
    
 		     <TR>
 		       <TD valign="top" align="center">

@@ -139,6 +139,12 @@
 			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
 			<DAORef>MenuDAO</DAORef>
 		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>Menu2Business</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>Menu2DAO</DAORef>
+		</BusinessSetting>
 				
 		<BusinessSetting>
 			<name>MortgageListBusiness</name>

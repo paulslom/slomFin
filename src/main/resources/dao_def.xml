@@ -90,6 +90,10 @@
 		</DAO>
 		
 		<DAO>
+			<DAOname>Menu2DAO</DAOname>
+		</DAO>
+		
+		<DAO>
 			<DAOname>MiscDAO</DAOname>
 		</DAO>
 		

@@ -1,6 +1,7 @@
 package com.pas.struts;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import com.pas.business.BusinessComposite;
 import com.pas.slomfin.business.ISlomFinBusiness;
 import com.pas.slomfin.business.SlomFinBusinessFactory;
 import com.pas.slomfin.constants.ISlomFinAppConstants;
+import com.pas.slomfin.valueObject.Menu;
 import com.pas.valueObject.DropDownBean;
 import com.pas.valueObject.IValueObject;
 
@@ -108,15 +110,30 @@ public class DropDownPlugIn implements PlugIn
         			{
         				DropDownBean ddBean = new DropDownBean();
         				ddBean = iterDD.next();
-        	               if (ddBean.getDescription().equalsIgnoreCase(ISlomFinAppConstants.INVESTMENT_CASH))
-        	               {	
-        	                  servletContext.setAttribute(ISlomFinAppConstants.CASHINVESTMENTID, ddBean.getId());
-        	                  break;
-        	               }
+    	                if (ddBean.getDescription().equalsIgnoreCase(ISlomFinAppConstants.INVESTMENT_CASH))
+    	                {	
+    	                  servletContext.setAttribute(ISlomFinAppConstants.CASHINVESTMENTID, ddBean.getId());
+    	                  break;
+    	                }
         			}	
         		}
         	}
-			        	
+        	
+        	//dropdown for the last 5 years
+    		Calendar now = Calendar.getInstance();
+    		int nowYear = now.get(Calendar.YEAR);
+    		List<DropDownBean> last5YearsList = new ArrayList<DropDownBean>(); 
+    		
+    		for (int i=nowYear; i>nowYear-5; i--)
+    		{			  
+    			DropDownBean ddBean = new DropDownBean();    	
+    			ddBean.setId(String.valueOf(i));
+    			ddBean.setDescription(String.valueOf(i));
+    			last5YearsList.add(ddBean);
+    		} 
+    		
+    		servletContext.setAttribute(ISlomFinAppConstants.DROPDOWN_LAST5YEARS, last5YearsList);
+    		log.debug("loaded dropdown " + ISlomFinAppConstants.DROPDOWN_LAST5YEARS);
         }
         catch (Exception e)
         {

@@ -75,5 +75,8 @@ public interface ISlomFinMessageConstants
 	public static String TRXFORM_WDCATEGORY_FIELD_MISSING = "trxform.wdcategory.field.missing";
 	public static String TRXFORM_XFERACCOUNT_FIELD_MISSING = "trxform.xferaccount.field.missing";
 	
+	//AccountSelectionForm fields
+	public static String ACCSELFORM_ACCOUNT_FIELD_MISSING = "accselform.account.field.missing";
+	
 
 }

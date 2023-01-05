@@ -4,7 +4,7 @@ import com.pas.valueObject.IValueObject;
 
 public class DividendSelection  implements IValueObject
 {
-	private String taxableOnly;
+	private boolean taxableOnly;
 	private Integer dividendYear;
 	private Integer taxGroupID;
 			
@@ -34,15 +34,13 @@ public class DividendSelection  implements IValueObject
 		this.taxGroupID = taxGroupID;
 	}
 
-	public String getTaxableOnly() {
+	public boolean isTaxableOnly() {
 		return taxableOnly;
 	}
 
-	public void setTaxableOnly(String taxableOnly) {
+	public void setTaxableOnly(boolean taxableOnly) {
 		this.taxableOnly = taxableOnly;
 	}
-
-	
 
 	
 }

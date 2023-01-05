@@ -53,6 +53,7 @@ public interface ISlomFinAppConstants
 	public static final String JOB_DAO = "JobDAO";
 	public static final String LOGIN_DAO = "LoginDAO";
 	public static final String MENU_DAO = "MenuDAO";
+	public static final String MENU2_DAO = "Menu2DAO";
 	public static final String MISC_DAO = "MiscDAO";
 	public static final String MORTGAGE_DAO = "MortgageDAO";
 	public static final String MORTGAGEPAYMENT_DAO = "MortgagePaymentDAO";
@@ -104,6 +105,7 @@ public interface ISlomFinAppConstants
 	public static final String DROPDOWN_JOBS_BYINVESTOR = "JOB_INVS";
 	public static final String DROPDOWN_PORTFOLIOS_BYINVESTOR = "PORT_INVS";	
 	public static final String DROPDOWN_WDCATEGORIES_BYINVESTOR = "WDCAT_INVS";
+	public static final String DROPDOWN_LAST5YEARS = "LAST5YEARS";
 		
 	//Dropdown names of session vars	
 	public static final String SESSION_DD_ACCOUNTS = "Accounts";
@@ -143,7 +145,9 @@ public interface ISlomFinAppConstants
     public static final String OPTIONTYPE_CALL = "Call";
 	
 	//Menu constants
-	public static final String SF_MENUREPOSITORY="SFMenuRepository";
+	public static final String REPORTS_MENU_LIST="ReportsMenuList";
+	public static final String WORK_MENU_LIST="WorkMenuList";
+	public static final String MISC_MENU_LIST="MiscMenuList";
 	
 	//Misc Constants       
     public static final Integer DROPDOWN_NOT_SELECTED = 0;

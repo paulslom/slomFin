@@ -14,6 +14,7 @@ import org.apache.struts.action.ActionMapping;
 import com.pas.action.ActionComposite;
 import com.pas.constants.IAppConstants;
 import com.pas.dbobjects.Tblaccount;
+import com.pas.dbobjects.Tblinvestmenttype;
 import com.pas.dbobjects.Tbltransaction;
 import com.pas.dbobjects.Tbltransactiontype;
 import com.pas.exception.BusinessException;
@@ -26,6 +27,7 @@ import com.pas.slomfin.cache.CacheManagerFactory;
 import com.pas.slomfin.cache.ICacheManager;
 import com.pas.slomfin.constants.ISlomFinAppConstants;
 import com.pas.slomfin.dao.AccountDAO;
+import com.pas.slomfin.dao.InvestmentTypeDAO;
 import com.pas.slomfin.dao.MiscDAO;
 import com.pas.slomfin.dao.SlomFinDAOFactory;
 import com.pas.slomfin.dao.TransactionTypeDAO;
@@ -92,6 +94,7 @@ public class TrxShowUpdateFormAction extends SlomFinStandardAction
 		String trxTypeDesc = "";
 		String invTypeDesc = "";		
 		String invTypeID = "";
+		String trxTypeID = "";
 		
 		String trxShowAmount = "false";
 		String trxShowCashDepositType = "false";
@@ -121,23 +124,20 @@ public class TrxShowUpdateFormAction extends SlomFinStandardAction
 			trxDate.initAppDateToToday();
 			trxForm.setTransactionDate(trxDate);			
 				
-			trxForm.setPortfolioName(req.getParameter("portName"));
-			trxForm.setAccountName(req.getParameter("acctName"));
-			trxForm.setTrxTypeDesc(req.getParameter("ttDesc"));
-			trxForm.setInvTypeDesc(req.getParameter("itDesc"));
 			trxForm.setAccountID(new Integer(req.getParameter("acctID")));
 			
 			invTypeID = req.getParameter("itID");
-			trxTypeDesc = trxForm.getTrxTypeDesc();
-			invTypeDesc = trxForm.getInvTypeDesc();
+			trxTypeID = req.getParameter("ttID");
 						
 			AccountDAO acctDAOReference;
 			
 			try
 			{
 				acctDAOReference = (AccountDAO)SlomFinDAOFactory.getDAOInstance(ISlomFinAppConstants.ACCOUNT_DAO);
-				List<Tblaccount> acctList = acctDAOReference.inquire(new Integer(req.getParameter("acctID")));
+				List<Tblaccount> acctList = acctDAOReference.inquire(new Integer(trxForm.getAccountID()));
 				trx.setTblaccount(acctList.get(0));	
+				trxForm.setPortfolioName(trx.getTblaccount().getTblportfolio().getSportfolioName());
+				trxForm.setAccountName(trx.getTblaccount().getSaccountName());			
 			}
 			catch (SystemException e1)
 			{
@@ -169,9 +169,28 @@ public class TrxShowUpdateFormAction extends SlomFinStandardAction
 			try
 			{
 				trxTypeDAOReference = (TransactionTypeDAO)SlomFinDAOFactory.getDAOInstance(ISlomFinAppConstants.TRANSACTIONTYPE_DAO);
-				List<Tbltransactiontype> trxTypeList = trxTypeDAOReference.inquire(new Integer(req.getParameter("ttID")));
+				List<Tbltransactiontype> trxTypeList = trxTypeDAOReference.inquire(new Integer(trxTypeID));
 				trx.setTbltransactiontype(trxTypeList.get(0));
 				trx.setiTransactionTypeID(trx.getTbltransactiontype().getItransactionTypeId());
+				trxForm.setTrxTypeDesc(trx.getTbltransactiontype().getSdescription());
+				trxTypeDesc = trxForm.getTrxTypeDesc();
+			}
+			catch (SystemException e1)
+			{
+				log.error("SystemException encountered: " + e1.getMessage());
+				e1.printStackTrace();
+				throw new PASSystemException(e1);
+			}
+			
+			InvestmentTypeDAO invTypeDAOReference;
+			
+			try
+			{
+				invTypeDAOReference = (InvestmentTypeDAO)SlomFinDAOFactory.getDAOInstance(ISlomFinAppConstants.INVESTMENTTYPE_DAO);
+				List<Tblinvestmenttype> invTypeList = invTypeDAOReference.inquire(new Integer(invTypeID));
+				Tblinvestmenttype tblinvestmenttype = invTypeList.get(0);
+				trxForm.setInvTypeDesc(tblinvestmenttype.getSdescription());
+				invTypeDesc = trxForm.getInvTypeDesc();
 			}
 			catch (SystemException e1)
 			{
@@ -598,7 +617,7 @@ public class TrxShowUpdateFormAction extends SlomFinStandardAction
 					   }   
 				   }
 				   else //reqParmOwned something other than null
-					  if (reqParmOwned.equalsIgnoreCase("yes"))					  
+					  if (reqParmOwned.equalsIgnoreCase("true"))					  
 					  {	  
 						  try
 						  {
@@ -611,7 +630,7 @@ public class TrxShowUpdateFormAction extends SlomFinStandardAction
 							  throw new PASSystemException(e);
 						  }
 					  } 
-					  else //parm was not null, but was not owned="yes", either
+					  else //parm was not null, but was not owned="true", either
 					  {	  
 						  investmentsListName = ISlomFinAppConstants.DROPDOWN_INVESTMENTS_BYINVTYP +  invTypeID;
 						  invs = (List) req.getSession().getServletContext().getAttribute(investmentsListName);

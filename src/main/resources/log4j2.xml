@@ -43,7 +43,13 @@
     <Logger name="org.displaytag" level="error" additivity="false">
       <AppenderRef ref="console-log"/>
       <AppenderRef ref="file-log"/>
-    </Logger>   
+    </Logger>  
+    
+    <!-- netty stuff -->
+    <Logger name="io.netty" level="error" additivity="false">
+      <AppenderRef ref="console-log"/>
+      <AppenderRef ref="file-log"/>
+    </Logger>  
      
     <Root level="error"> 
       <AppenderRef ref="console-log"/>

@@ -37,7 +37,7 @@ public class ReportWDCategoriesAction extends SlomFinStandardAction
 		BudgetSelection budgetSelection = new BudgetSelection();
 		Investor investor = cache.getInvestor(req.getSession());
 		budgetSelection.setBudgetInvestorID(new Integer(investor.getInvestorID()));
-		budgetSelection.setBudgetYear(Integer.parseInt(req.getParameter("Year")));
+		budgetSelection.setBudgetYear(Integer.parseInt(req.getParameter("year")));
 		cache.setObject("RequestObject", budgetSelection, req.getSession());
 		cache.setGoToDBInd(req.getSession(), true);
 				

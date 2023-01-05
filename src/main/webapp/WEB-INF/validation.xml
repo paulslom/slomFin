@@ -57,7 +57,7 @@
         </field>  
         
     </form>    
-        
+    	    
     <form name="cashSpentForm">
 
 		<field  property="transactionDate.appmonth" depends="required,integer">

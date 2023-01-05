@@ -60,14 +60,9 @@ public class DividendsDAO extends BaseDBDAO
 		DividendSelection dividendSelection = (DividendSelection)info;		
 		
 		Integer requestedYear = dividendSelection.getDividendYear();	
-		boolean taxableOnly = false;
-		if (dividendSelection.getTaxableOnly() != null && dividendSelection.getTaxableOnly().equalsIgnoreCase("Yes"))
-		{
-			taxableOnly = true;
-		}
-		
+				
 		FinancialUtilities finUtil = new FinancialUtilities();
-		String queryToRun = finUtil.dividendsQuery(requestedYear, taxableOnly, dividendSelection.getTaxGroupID());	
+		String queryToRun = finUtil.dividendsQuery(requestedYear, dividendSelection.isTaxableOnly(), dividendSelection.getTaxGroupID());	
 		log.debug("about to run query: " + queryToRun);
 		
 		this.getJdbcTemplate().query(queryToRun, new ResultSetExtractor<List>() 

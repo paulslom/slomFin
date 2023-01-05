@@ -64,7 +64,7 @@ public class InvestmentChoiceShowFormAction extends SlomFinStandardAction
 		}
 		catch (SystemException e)
 		{
-		   log.error("TrxShowUpdateFormAction SystemException" + e.getMessage());
+		   log.error("SystemException" + e.getMessage());
 		   e.printStackTrace();
 		   throw new PASSystemException(e);
 		}

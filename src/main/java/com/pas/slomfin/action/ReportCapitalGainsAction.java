@@ -36,7 +36,7 @@ public class ReportCapitalGainsAction extends SlomFinStandardAction
 		TaxesSelection federalTaxesSelection = new TaxesSelection();
 		Investor investor = cache.getInvestor(req.getSession());
 		federalTaxesSelection.setTaxGroupID(new Integer(investor.getTaxGroupID()));
-		federalTaxesSelection.setTaxYear(Integer.parseInt(req.getParameter("Year")));
+		federalTaxesSelection.setTaxYear(Integer.parseInt(req.getParameter("year")));
 		
 		String taxableInd = req.getParameter("taxable");
 		

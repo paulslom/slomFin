@@ -44,7 +44,7 @@ public class TrxListAction extends SlomFinStandardAction
 		{
 			case ISlomFinAppConstants.TRXLIST_ORIGIN_MENU:
 				log.debug("trxList Origin was a menu selection");
-				String accountIDParm = req.getParameter("AccountID");
+				String accountIDParm = req.getParameter("accountID");
 				trxSel.setAccountID(Integer.parseInt(accountIDParm));
 				break;
 			case ISlomFinAppConstants.TRXLIST_ORIGIN_CASHSPENT:

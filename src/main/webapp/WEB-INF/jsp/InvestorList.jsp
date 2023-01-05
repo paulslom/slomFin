@@ -11,7 +11,7 @@
 
 <BODY>
 
-<html:form action="MenuAction">
+<html:form action="MenuAction2">
 
   <TABLE align="center" CLASS="myBox" WIDTH="100%" CELLSPACING=0 CELLPADDING=4 BORDER=0>
 	 
