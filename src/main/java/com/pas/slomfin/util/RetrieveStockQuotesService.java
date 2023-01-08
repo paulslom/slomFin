@@ -101,8 +101,7 @@ public class RetrieveStockQuotesService
 	    }
 	    catch (Exception e)
 	    {
-	    	log.error("UN-successful Polygon quote API call with this URI: " + specificURI); //no data is a fail
-	    	e.printStackTrace();
+	    	log.error("UN-successful Polygon quote API call with this URI: " + specificURI, e); //no data is a fail
 	    }	    
 			
 		return stockPrice;		

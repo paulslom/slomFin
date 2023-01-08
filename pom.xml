@@ -4,11 +4,11 @@
   <modelVersion>4.0.0</modelVersion>
   
   <groupId>com.pas</groupId>
-  <artifactId>portfolio</artifactId>
+  <artifactId>slomfin</artifactId>
   <packaging>war</packaging>
   <version>1.0.0</version>
   
-  <name>portfolio Maven Webapp</name>
+  <name>slomfin Maven Webapp</name>
   <url>http://maven.apache.org</url>
   
   <properties>
@@ -181,7 +181,7 @@
   </dependencies>
   
   <build>
-    <finalName>portfolio</finalName>  
+    <finalName>slomfin</finalName>  
     <plugins>
        <plugin>
           <groupId>org.apache.maven.plugins</groupId>

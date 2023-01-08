@@ -52,7 +52,6 @@ public interface ISlomFinAppConstants
 	public static final String INVESTOR_DAO = "InvestorDAO";
 	public static final String JOB_DAO = "JobDAO";
 	public static final String LOGIN_DAO = "LoginDAO";
-	public static final String MENU_DAO = "MenuDAO";
 	public static final String MENU2_DAO = "Menu2DAO";
 	public static final String MISC_DAO = "MiscDAO";
 	public static final String MORTGAGE_DAO = "MortgageDAO";

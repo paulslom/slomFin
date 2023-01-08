@@ -18,7 +18,7 @@ public class Menu2DAO extends BaseDBDAO
 {
   private Integer investorID;
   
-  private static final String CONTEXT_ROOT = "/portfolio";
+  private static final String CONTEXT_ROOT = "/slomfin";
 
   private static final Menu2DAO currentInstance = new Menu2DAO();
 
@@ -42,7 +42,7 @@ public class Menu2DAO extends BaseDBDAO
 		final String methodName = "inquire::";
 		log.debug(methodName + "in");
 		
-		log.debug("entering MenuDAO inquire");
+		log.debug("entering Menu2DAO inquire");
 		
 		JobDAO jobDAOReference;
 		
@@ -52,7 +52,7 @@ public class Menu2DAO extends BaseDBDAO
 		} 
 		catch (SystemException e) 
 		{
-			log.error("error retrieving portfolios in MenuDAO", e);
+			log.error("error retrieving portfolios in Menu2DAO", e);
 			throw new DAOException(e);
 		}	
 		

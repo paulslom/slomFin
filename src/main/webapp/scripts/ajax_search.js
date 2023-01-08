@@ -44,7 +44,7 @@ function searchSuggest(searchFieldObject)
 	   if (searchReq.readyState == 4 || searchReq.readyState == 0)
 	   {
 		  var str = escape(searchFieldObject.value);
-		  searchReq.open("GET", '/portfolio/p.search?searchString=' + str, true);
+		  searchReq.open("GET", '/slomfin/p.search?searchString=' + str, true);
 		  searchReq.onreadystatechange = handleSearchSuggest; 
 		  searchReq.send(null);
 	    }

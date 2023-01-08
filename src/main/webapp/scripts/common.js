@@ -8,42 +8,6 @@ function destroySession()
 	}
 }
 
-//function destroySession()
-//{
-	//alert("reached the inside of destroySession");
-
-	// Get the page name
-//    var sPath = window.location.pathname;    
-//    var sPage = sPath.substring(sPath.lastIndexOf('/') + 1);
-       
-//    if (sPage == '')
-//    {
-//      sPage = "displayLoginForm.do";
-//	}
-	
-    // They're in a  popup window, don't kill the session here!
-//    if (window.opener != null)
-//       return;
-
-	// They're logging in so there's no session yet. Don't kill the session here!
-//    if (sPage == 'displayLoginForm.do')
-//       return;
- 
-    // Only want to run the endsession for IE, no way to tell currently if it's not IE and
-    // the window is closing
-    
-//    if(window.event != null)
-//    {
-//       var abssize = document.body.offsetWidth - 30; 
-       
-//       if (window.event.clientY < 0 && event.clientX >= abssize)
-//	   {
-		  //alert("will attempt to do InvalidateSession action");
-//		  window.location = "/Portfolio/InvalidateSessionAction.do";
-		    		
-//	   }
-//	}   
-//}
 
 function IsNumeric(strString)
 //  check for valid numeric strings	

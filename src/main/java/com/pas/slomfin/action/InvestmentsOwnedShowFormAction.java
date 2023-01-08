@@ -22,11 +22,14 @@ import com.pas.exception.PresentationException;
 import com.pas.slomfin.actionform.InvestmentsOwnedUpdateForm;
 import com.pas.slomfin.cache.CacheManagerFactory;
 import com.pas.slomfin.cache.ICacheManager;
+import com.pas.slomfin.util.RetrieveMutualFundskQuotesService;
 import com.pas.slomfin.util.RetrieveStockQuotesService;
 import com.pas.slomfin.valueObject.Investor;
 
 public class InvestmentsOwnedShowFormAction extends SlomFinStandardAction
 {	
+	private int stocksCounter = 0;  
+	
 	public boolean preprocessAction(ActionMapping mapping, ActionForm form,
 			HttpServletRequest req, HttpServletResponse res, int operation) throws PresentationException, BusinessException,
 			DAOException, PASSystemException
@@ -60,7 +63,7 @@ public class InvestmentsOwnedShowFormAction extends SlomFinStandardAction
 		
 		try 
 		{
-			investmentsOwnedListWithUpdatedPrices = assignStockPrices(investmentsOwnedList);
+			investmentsOwnedListWithUpdatedPrices = assignPrices(investmentsOwnedList);
 		} 
 		catch (Exception e) 
 		{			
@@ -78,15 +81,17 @@ public class InvestmentsOwnedShowFormAction extends SlomFinStandardAction
 				
 	}
 	
-	private List<Tblinvestment> assignStockPrices(List<Tblinvestment> inputInvList) throws Exception
+	private List<Tblinvestment> assignPrices(List<Tblinvestment> inputInvList) throws Exception
 	{
 		List<Tblinvestment> returnList = new ArrayList<Tblinvestment>();
 		
 		RetrieveStockQuotesService rqs = new RetrieveStockQuotesService();
 		
-		String marketCloseDate = getMarketCloseDate();
-				
-		int stocksCounter = 0;
+		RetrieveMutualFundskQuotesService rmfs = new RetrieveMutualFundskQuotesService();
+		
+		String marketCloseDate = getMarketCloseDate();				
+		
+		int mutualFundsCounter = 0;
 		
 		for (int i = 0; i < inputInvList.size(); i++) 
 		{
@@ -102,6 +107,19 @@ public class InvestmentsOwnedShowFormAction extends SlomFinStandardAction
 				if (stocksCounter % 5 == 0)
 				{
 					TimeUnit.SECONDS.sleep(70);					
+				}
+			}
+			else if (inv.getTblinvestmenttype().getSdescription().equalsIgnoreCase("Mutual Fund"))
+			{
+				mutualFundsCounter++;
+				log.debug("quoting mutual fund: " + inv.getStickerSymbol() + " - count = " + mutualFundsCounter);
+				BigDecimal price = rmfs.getMutualFundQuote(inv.getStickerSymbol(), marketCloseDate);
+				inv.setMcurrentPrice(price);
+				
+				//can only do 5 mutual funds api calls per day (under their free plan) 
+				if (mutualFundsCounter > 20)
+				{
+					log.error("cannot make any more mutual fund api calls");			
 				}
 			}
 			
@@ -158,6 +176,7 @@ public class InvestmentsOwnedShowFormAction extends SlomFinStandardAction
 		
 			String attemptDateString = sdf.format(calReturnDate);			
 			BigDecimal stockprice = rqs.getStockQuote("AAPL", attemptDateString);
+			stocksCounter++;
 			
 			BigDecimal zero = BigDecimal.ZERO;
 		    if (stockprice.compareTo(zero) > 0)

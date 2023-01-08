@@ -3,7 +3,7 @@
 
   <Properties>
 
-    <Property name="AppName">portfolio</Property>
+    <Property name="AppName">slomfin</Property>
     <Property name="Directory">C:/Paul/JavaWeb/applogs/${AppName}/</Property>
     <Property name="Prefix">${AppName}-</Property>
     <Property name="Suffix">-log.txt</Property> 

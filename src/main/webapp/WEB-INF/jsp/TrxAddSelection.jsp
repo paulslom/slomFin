@@ -19,6 +19,8 @@
 	  var ownedElement = document.getElementById("ownedID");
       var owned = ownedElement.checked;
       
+      //alert('owned checked: ' + owned);
+      
       var accElement = document.getElementById("accountid");
       var accountid = accElement.value;
       
@@ -41,7 +43,12 @@
     	 return;
       }
       
-      if (trxTypeDesc == 'Reinvest' || 'Split' || 'Sell' || 'Cash Dividend' || 'Exercise Option' || 'Expire Option')
+      if (trxTypeDesc == 'Reinvest' 
+      ||  trxTypeDesc == 'Split' 
+      ||  trxTypeDesc == 'Sell' 
+      ||  trxTypeDesc == 'Cash Dividend' 
+      ||  trxTypeDesc == 'Exercise Option' 
+      ||  trxTypeDesc == 'Expire Option')
       {
     	  owned = "true";
       }

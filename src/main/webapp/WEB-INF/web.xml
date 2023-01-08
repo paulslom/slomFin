@@ -9,7 +9,7 @@
        <session-timeout>200</session-timeout>
     </session-config>
 
-    <display-name>portfolio</display-name>
+    <display-name>slomfin</display-name>
   
     <listener>
        <listener-class>com.pas.struts.AppListener</listener-class>

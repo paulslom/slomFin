@@ -84,11 +84,7 @@
 		<DAO>
 			<DAOname>LoginDAO</DAOname>
 		</DAO>
-			
-		<DAO>
-			<DAOname>MenuDAO</DAOname>
-		</DAO>
-		
+				
 		<DAO>
 			<DAOname>Menu2DAO</DAOname>
 		</DAO>
