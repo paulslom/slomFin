@@ -51,7 +51,6 @@ public class AccountDAO extends BaseDBDAO
         return currentInstance;
     }	
         
-    @SuppressWarnings("unchecked")
 	public List<DropDownBean> accountPositions(Integer accountID, String investmentType) throws DAOException
     {
     	final String methodName = "accountPositions::";
@@ -168,8 +167,7 @@ public class AccountDAO extends BaseDBDAO
 
 	}
     
-    @SuppressWarnings("unchecked")
-	public BigDecimal getAccountBalance(Integer accountID) throws DAOException 
+    public BigDecimal getAccountBalance(Integer accountID) throws DAOException 
 	{
 		final String methodName = "inquire::";
 		log.debug(methodName + "in");
@@ -182,14 +180,13 @@ public class AccountDAO extends BaseDBDAO
 			
 		log.debug(methodName + "before inquiring for Account Balance. Key value is = " + accountID.toString());
 	
-		acctBalance = this.getJdbcTemplate().queryForObject(sbuf.toString(), new Object[] {accountID}, BigDecimal.class); 	
+		acctBalance = this.getJdbcTemplate().queryForObject(sbuf.toString(), BigDecimal.class, new Object[] {accountID}); 	
 		
 		log.debug(methodName + "out");
 		
 		return acctBalance;	
 	}
     
-    @SuppressWarnings("unchecked")
     public List<AccountMargin> getAccountsOnMargin(Integer taxGroupID) throws DAOException
     {
     	final String methodName = "getAccountsOnMargin::";
@@ -273,8 +270,7 @@ public class AccountDAO extends BaseDBDAO
 		
     }
     
-    @SuppressWarnings("unchecked")
-	public List<DropDownBean> getAllAccountsByInvestor(Integer investorID) throws DAOException
+   	public List<DropDownBean> getAllAccountsByInvestor(Integer investorID) throws DAOException
     {
     	final String methodName = "getAllAccountsByInvestor::";
 		log.debug(methodName + "in");
@@ -318,8 +314,7 @@ public class AccountDAO extends BaseDBDAO
 		return ddList;	
 		
     }
-    @SuppressWarnings("unchecked")
-	public List<DropDownBean> getXferAccounts(Integer accountID) throws DAOException
+    public List<DropDownBean> getXferAccounts(Integer accountID) throws DAOException
     {
     	final String methodName = "getXferAccounts::";
 		log.debug(methodName + "in");
@@ -388,7 +383,6 @@ public class AccountDAO extends BaseDBDAO
 		return ddList;	
 		
     }
-	@SuppressWarnings("unchecked")
 	public List<Tblaccount> inquire(Object Info) throws DAOException 
 	{
 		final String methodName = "inquire::";

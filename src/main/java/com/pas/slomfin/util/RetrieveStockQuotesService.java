@@ -86,7 +86,7 @@ public class RetrieveStockQuotesService
     				{
     					StockQuote stockQuote = (StockQuote) objectMapper.readValue(jsonResponse, mapType);
     					Double stockPriceTemp = stockQuote.getClose().doubleValue();	
-    					stockPrice = new BigDecimal(stockPriceTemp).setScale(4, RoundingMode.DOWN).stripTrailingZeros();
+    					stockPrice = new BigDecimal(stockPriceTemp).setScale(4, RoundingMode.DOWN);
     				} 
     				catch (IOException e) 
     				{
