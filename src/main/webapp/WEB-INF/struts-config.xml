@@ -37,6 +37,7 @@
 		<form-bean name="paycheckOutflowUpdateForm" type="com.pas.slomfin.actionform.PaycheckOutflowUpdateForm"/>
 	    <form-bean name="portfolioListForm" type="com.pas.slomfin.actionform.PortfolioListForm"/>
 	    <form-bean name="portfolioUpdateForm" type="com.pas.slomfin.actionform.PortfolioUpdateForm"/>
+	    <form-bean name="reportAccountSummaryForm" type="com.pas.slomfin.actionform.ReportAccountSummaryForm"/>
 	    <form-bean name="reportBudgetForm" type="com.pas.slomfin.actionform.ReportBudgetForm"/>
 	    <form-bean name="reportCapitalGainsForm" type="com.pas.slomfin.actionform.ReportCapitalGainsForm"/>
 	    <form-bean name="reportCapitalGainsSelectionForm" type="com.pas.slomfin.actionform.ReportCapitalGainsSelectionForm"/>
@@ -619,6 +620,16 @@
 			<set-property property="cancellable" value="true"/>
 		    <forward name="success" path="/PortfolioListAction.do?operation=inquire"></forward>		     		                
 		</action>
+		
+		<action path="/ReportAccountSummaryAction"
+		        type="com.pas.slomfin.action.ReportAccountSummaryAction"
+				name="reportAccountSummaryForm"
+				scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>    
+		    <forward name="success" path="ReportAccountSummaryDef"></forward>    	               
+		</action>	 
 		
 		<action path="/ReportBudgetAction"
 		        type="com.pas.slomfin.action.ReportBudgetAction"

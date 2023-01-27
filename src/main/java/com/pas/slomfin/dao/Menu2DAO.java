@@ -85,8 +85,8 @@ public class Menu2DAO extends BaseDBDAO
 		Menu menuDetail = new Menu();
 		
 		menuDetail = new Menu();
-		menuDetail.setMenuTitle("Trx By Investment");
-		menuDetail.setMenuLocation(CONTEXT_ROOT + "/InvestmentChoiceShowFormAction.do?operation=inquire");		
+		menuDetail.setMenuTitle("Account Summary");
+		menuDetail.setMenuLocation(CONTEXT_ROOT + "/ReportAccountSummaryAction.do?operation=inquire");		
 		mList.add(menuDetail);	
 		
 		menuDetail = new Menu();
@@ -95,24 +95,14 @@ public class Menu2DAO extends BaseDBDAO
 		mList.add(menuDetail);	
 		
 		menuDetail = new Menu();
-		menuDetail.setMenuTitle("Dividends");
-		menuDetail.setMenuLocation(CONTEXT_ROOT + "/ReportDividendsSelectionAction.do?operation=inquire");		
-		mList.add(menuDetail);	
-		
-		menuDetail = new Menu();
-		menuDetail.setMenuTitle("Withdrawal Categories");
-		menuDetail.setMenuLocation(CONTEXT_ROOT + "/ReportWDCategoriesSelectionAction.do?operation=inquire");		
-		mList.add(menuDetail);	
-		
-		menuDetail = new Menu();
-		menuDetail.setMenuTitle("Portfolio Summary");
-		menuDetail.setMenuLocation(CONTEXT_ROOT + "/ReportPortfolioSummaryAction.do?&operation=inquire&investorID=" + investorID);		
-		mList.add(menuDetail);	
-				
-		menuDetail = new Menu();
 		menuDetail.setMenuTitle("Cost Basis");
 		menuDetail.setMenuLocation(CONTEXT_ROOT + "/ReportCostBasisAction.do?operation=inquire");		
 		mList.add(menuDetail);	
+		
+		menuDetail = new Menu();
+		menuDetail.setMenuTitle("Dividends");
+		menuDetail.setMenuLocation(CONTEXT_ROOT + "/ReportDividendsSelectionAction.do?operation=inquire");		
+		mList.add(menuDetail);			
 				
 		menuDetail = new Menu();
 		menuDetail.setMenuTitle("Goals");
@@ -128,10 +118,25 @@ public class Menu2DAO extends BaseDBDAO
 		menuDetail.setMenuTitle("Portfolio By Asset Class");
 		menuDetail.setMenuLocation(CONTEXT_ROOT + "/ReportPortfolioByAssetClassAction.do?operation=inquire");		
 		mList.add(menuDetail);	
+		
+		menuDetail = new Menu();
+		menuDetail.setMenuTitle("Portfolio Summary");
+		menuDetail.setMenuLocation(CONTEXT_ROOT + "/ReportPortfolioSummaryAction.do?&operation=inquire&investorID=" + investorID);		
+		mList.add(menuDetail);	
+		
+		menuDetail = new Menu();
+		menuDetail.setMenuTitle("Trx By Investment");
+		menuDetail.setMenuLocation(CONTEXT_ROOT + "/InvestmentChoiceShowFormAction.do?operation=inquire");		
+		mList.add(menuDetail);	
 				
 		menuDetail = new Menu();
 		menuDetail.setMenuTitle("Units Owned");
 		menuDetail.setMenuLocation(CONTEXT_ROOT + "/ReportUnitsOwnedAction.do?operation=inquire");		
+		mList.add(menuDetail);	
+		
+		menuDetail = new Menu();
+		menuDetail.setMenuTitle("Withdrawal Categories");
+		menuDetail.setMenuLocation(CONTEXT_ROOT + "/ReportWDCategoriesSelectionAction.do?operation=inquire");		
 		mList.add(menuDetail);	
 		
 		return mList;
@@ -189,7 +194,7 @@ public class Menu2DAO extends BaseDBDAO
 		List<Menu> mList = new ArrayList<Menu>();
 				
 		Menu menuDetail = new Menu();
-		menuDetail.setMenuTitle("Owned by " + investor.getTaxGroupName());
+		menuDetail.setMenuTitle("Update Security Prices");
 		menuDetail.setMenuLocation(CONTEXT_ROOT + "/InvestmentsOwnedShowFormAction.do?operation=inquire&investmentShowParm=inquire&investorID=" + investorID);
 		mList.add(menuDetail);
 		

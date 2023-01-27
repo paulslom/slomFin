@@ -28,8 +28,7 @@
    
    <div  style="OVERFLOW: auto; WIDTH: 100%; HEIGHT:100%">
      
-    <display:table name="sessionScope.MortgagePaymentList" export="true" uid="MortgagePayment"
-        class="totalTable" decorator="org.displaytag.decorator.TotalTableDecorator">        
+    <display:table name="sessionScope.MortgagePaymentList" export="true" uid="MortgagePayment" class="totalTable" decorator="org.displaytag.decorator.TotalTableDecorator" requestURI="">        
        
        <display:column title="View">
           <c:url value="/MortgagePaymentShowUpdateFormAction.do" var="viewURL">

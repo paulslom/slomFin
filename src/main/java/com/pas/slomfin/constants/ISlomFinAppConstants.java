@@ -200,6 +200,7 @@ public interface ISlomFinAppConstants
 	public static final String SESSION_REPORTFTXEXEMPTIONSLIST = "ReportFTXExemptionsList";
 	public static final String SESSION_REPORTFTXW2LIST = "ReportFTXW2List";
 	
+	public static final String SESSION_REPORT_ACCOUNT_SUMMARYLIST = "ReportAccountSummaryList";
 	public static final String SESSION_REPORTGOALSLIST = "ReportGoalsList";
 	public static final String SESSION_REPORTMTGAMORTIZATIONLIST = "ReportMtgAmortizationList";
 	public static final String SESSION_REPORTMTGPAYMENTSLIST = "ReportMtgPaymentsList";

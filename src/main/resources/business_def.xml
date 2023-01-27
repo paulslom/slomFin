@@ -265,6 +265,12 @@
 			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
 			<DAORef>PortfolioDAO</DAORef>
 		</BusinessSetting>
+		
+		<BusinessSetting>
+			<name>ReportAccountSummaryBusiness</name>
+			<class>com.pas.slomfin.business.SlomFinStandardBusiness</class>
+			<DAORef>PortfolioDAO</DAORef>
+		</BusinessSetting>
 			
 		<BusinessSetting>
 			<name>ReportBudgetBusiness</name>

@@ -14,17 +14,17 @@
 
 <BODY>
 
-<html:form action="ReportUnitsOwnedAction">
+<html:form action="ReportAccountSummaryAction">
 
-  <c:if test="${ReportUnitsOwnedList!=null}">
+  <c:if test="${ReportAccountSummaryList!=null}">
    
    <div  style="OVERFLOW: auto; WIDTH: 100%; HEIGHT:100%">
      
-    <display:table name="sessionScope.ReportUnitsOwnedList" defaultsort="1" export="true" cellspacing="0" uid="unitsowned" requestURI="" >        
+    <display:table name="sessionScope.ReportAccountSummaryList" export="true" class="totalTable" cellspacing="0" decorator="org.displaytag.decorator.TotalTableDecorator" uid="PaycheckOutflow" requestURI="">        
        
-       <display:column property="investmentDescription" title="Investment"/>
-	   <display:column property="unitsOwned" title="Units Owned" format="{0,number,######.####}"/>
-	        	   	      	
+       <display:column property="accountName" title="Account" group="2"/>
+   	   <display:column property="currentValue" title="Current Value" format="{0,number,currency}" total="true"/>
+        	   	      	
      </display:table>
 
     </div>

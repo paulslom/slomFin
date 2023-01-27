@@ -11,14 +11,14 @@
 
 <BODY>
 
-<html:form action="MenuAction2">
+<html:form action="Menu2Action">
 
   <TABLE align="center" CLASS="myBox" WIDTH="100%" CELLSPACING=0 CELLPADDING=4 BORDER=0>
 	 
 	<colgroup>
 	   <col width="40%">
 	   <col width="60%">
-	</colgroup>   
+	</colgroup> 
 	
     <c:forEach var="investor" items="${investorList}" varStatus="status">
 	  <c:choose>
@@ -37,7 +37,7 @@
 	             <c:out value="${investor.sfullName}"/>
 	         </html:link>
 	      </TD>
-	   </TR>    			
+	   </TR>   	
 	</c:forEach>	
         
 			

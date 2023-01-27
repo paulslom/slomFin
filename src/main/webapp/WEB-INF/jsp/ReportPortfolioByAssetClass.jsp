@@ -28,8 +28,7 @@
    
    <div  style="OVERFLOW: auto; WIDTH: 100%; HEIGHT:100%">
      
-     <display:table name="sessionScope.ReportPortByAssetClassList" export="true" defaultsort="2" defaultorder="descending" requestURI=""
-        class="totalTable" decorator="org.displaytag.decorator.TotalTableDecorator">      
+     <display:table name="sessionScope.ReportPortByAssetClassList" export="true" defaultsort="2" defaultorder="descending" uid="asscl" requestURI="" class="totalTable" decorator="org.displaytag.decorator.TotalTableDecorator">      
              
        <display:column property="assetClass" title="Asset Class"/>
 	   <display:column property="assetClassPercentage" title="Percent" format="{0,number,##0.00'%'}" total="true"/>

@@ -28,8 +28,7 @@
    
    <div  style="OVERFLOW: auto; WIDTH: 100%; HEIGHT:100%">
      
-    <display:table name="sessionScope.MortgageAmortizationList" export="true"
-        class="totalTable" decorator="org.displaytag.decorator.TotalTableDecorator">        
+    <display:table name="sessionScope.MortgageAmortizationList" export="true" class="totalTable" decorator="org.displaytag.decorator.TotalTableDecorator" uid="mgtamort" requestURI="">        
    
        <display:column property="mortgagePaymentYear" title="Year" group="1" />
 	   <display:column property="mortgagePaymentDate" title="Date" format="{0,date,yyyy-MM-dd}"/>

@@ -66,7 +66,8 @@
      <put name="fullBody" value="/WEB-INF/jsp/InvestmentUpdate.jsp"/>     
   </definition>
   
-  <definition name="InvestorListPageDef" extends="LayoutDef">     
+  <definition name="InvestorListPageDef" extends="LayoutDef">
+     <put name="menu2" value="/WEB-INF/jsp/Menu2.jsp"/>              
      <put name="fullBody" value="/WEB-INF/jsp/InvestorList.jsp"/>     
   </definition>
   
@@ -146,6 +147,11 @@
   <definition name="PortfolioUpdateDef" extends="LayoutDef">      
      <put name="menu2" value="/WEB-INF/jsp/Menu2.jsp"/>          
      <put name="fullBody" value="/WEB-INF/jsp/PortfolioUpdate.jsp"/>     
+  </definition>
+  
+  <definition name="ReportAccountSummaryDef" extends="LayoutDef">         
+     <put name="menu2" value="/WEB-INF/jsp/Menu2.jsp"/>       
+     <put name="fullBody" value="/WEB-INF/jsp/ReportAccountSummary.jsp"/>     
   </definition>
   	    
   <definition name="ReportBudgetDef" extends="LayoutDef">         

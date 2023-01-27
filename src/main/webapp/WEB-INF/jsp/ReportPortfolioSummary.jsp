@@ -20,8 +20,7 @@
    
    <div  style="OVERFLOW: auto; WIDTH: 100%; HEIGHT:100%">
      
-    <display:table name="sessionScope.ReportPortSummaryList" export="true" class="totalTable" 
-                   cellspacing="0" decorator="org.displaytag.decorator.TotalTableDecorator">        
+    <display:table name="sessionScope.ReportPortSummaryList" export="true" class="totalTable" cellspacing="0" decorator="org.displaytag.decorator.TotalTableDecorator" uid="portsumm" requestURI="">        
        
        <display:column property="portfolioName" title="Portfolio" group="1"/>      
        <display:column property="accountName" title="Account" group="2"/>

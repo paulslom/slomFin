@@ -28,8 +28,7 @@
    
     <div  style="OVERFLOW: auto; WIDTH: 100%; HEIGHT:100%">
       
-      <display:table name="sessionScope.ReportGoalsList" export="true" uid="Goals"
-        class="totalTable" decorator="org.displaytag.decorator.TotalTableDecorator">      
+      <display:table name="sessionScope.ReportGoalsList" export="true" uid="Goals" class="totalTable" decorator="org.displaytag.decorator.TotalTableDecorator" requestURI="">      
              
        <display:column property="portfolioName" title="Portfolio" group="1" />
        <display:column property="accountName" title="Account"/>

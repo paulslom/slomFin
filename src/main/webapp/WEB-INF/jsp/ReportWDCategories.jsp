@@ -28,8 +28,7 @@
    
    <div  style="OVERFLOW: auto; WIDTH: 100%; HEIGHT:100%">
      
-      <display:table name="sessionScope.ReportWDCategoriesList" export="true" uid="WDCategories"
-        class="totalTable" decorator="org.displaytag.decorator.TotalTableDecorator">      
+      <display:table name="sessionScope.ReportWDCategoriesList" export="true" uid="WDCategories" class="totalTable" decorator="org.displaytag.decorator.TotalTableDecorator" requestURI="">      
        <display:column property="tblwdcategory.swdcategoryDescription" title="Category" group="1" />
        <display:column property="tblwdcategory.iwdcategoryId" title="Cat Num" group="2" />
        <display:column property="dtransactionDate" title="Date" format="{0,date,yyyy-MM-dd}"/>       

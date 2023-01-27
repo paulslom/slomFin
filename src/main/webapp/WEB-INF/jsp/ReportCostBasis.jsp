@@ -28,8 +28,7 @@
    
    <div  style="OVERFLOW: auto; WIDTH: 100%; HEIGHT:100%">
      
-      <display:table name="sessionScope.ReportCostBasisList" export="true" uid="CostBasis"
-        class="totalTable" decorator="org.displaytag.decorator.TotalTableDecorator">      
+      <display:table name="sessionScope.ReportCostBasisList" export="true" uid="CostBasis" class="totalTable" decorator="org.displaytag.decorator.TotalTableDecorator" requestURI="">      
              
        <display:column property="accountName" title="Account" group="1" />
        <display:column property="investmentDescription" title="Investment"/>
