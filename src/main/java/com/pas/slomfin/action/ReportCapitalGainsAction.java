@@ -40,7 +40,7 @@ public class ReportCapitalGainsAction extends SlomFinStandardAction
 		
 		String taxableInd = req.getParameter("taxable");
 		
-		if (taxableInd != null && taxableInd.equalsIgnoreCase("Y"))
+		if (taxableInd != null && taxableInd.equalsIgnoreCase("on"))
 		{
 			federalTaxesSelection.setTaxableInd(true);
 		}
