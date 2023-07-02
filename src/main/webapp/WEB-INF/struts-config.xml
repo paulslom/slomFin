@@ -9,7 +9,7 @@
 
 	<!-- Form Beans -->
 	<form-beans>
-	    <form-bean name="accountSelectionForm" type="com.pas.slomfin.actionform.AccountSelectionForm"/>
+	    <form-bean name="accountSelectionForm" type="com.pas.slomfin.actionform.AccountSelectionForm"/>    
 	 	<form-bean name="accountListForm" type="com.pas.slomfin.actionform.AccountListForm"/>
 	    <form-bean name="accountUpdateForm" type="com.pas.slomfin.actionform.AccountUpdateForm"/>
 	    <form-bean name="assetClassListForm" type="com.pas.slomfin.actionform.AssetClassListForm"/>
@@ -37,6 +37,7 @@
 		<form-bean name="paycheckOutflowUpdateForm" type="com.pas.slomfin.actionform.PaycheckOutflowUpdateForm"/>
 	    <form-bean name="portfolioListForm" type="com.pas.slomfin.actionform.PortfolioListForm"/>
 	    <form-bean name="portfolioUpdateForm" type="com.pas.slomfin.actionform.PortfolioUpdateForm"/>
+	    <form-bean name="reportAccountPositionsForm" type="com.pas.slomfin.actionform.ReportAccountPositionsForm"/>
 	    <form-bean name="reportAccountSummaryForm" type="com.pas.slomfin.actionform.ReportAccountSummaryForm"/>
 	    <form-bean name="reportBudgetForm" type="com.pas.slomfin.actionform.ReportBudgetForm"/>
 	    <form-bean name="reportCapitalGainsForm" type="com.pas.slomfin.actionform.ReportCapitalGainsForm"/>
@@ -101,9 +102,10 @@
 				input="AccountSelectionDef">
 		    <set-property property="cancellable" value="true"/>
 		    <forward name="success" path="AccountSelectionDef"></forward>
-		    <forward name="failure" path="AccountSelectiontDef"></forward>        		                
+		    <forward name="successPositions" path="AccountPositionsSelectionDef"></forward>
+		    <forward name="failure" path="AccountSelectionDef"></forward>        		                
 		</action>
-		
+				
 	 	<action path="/AccountListAction"
 		       	type="com.pas.slomfin.action.AccountListAction"
 		       	name="accountListForm"
@@ -619,6 +621,17 @@
 				input="PortfolioUpdateDef">
 			<set-property property="cancellable" value="true"/>
 		    <forward name="success" path="/PortfolioListAction.do?operation=inquire"></forward>		     		                
+		</action>
+		
+		<action path="/ReportAccountPositionsAction"
+		       	type="com.pas.slomfin.action.ReportAccountPositionsAction"
+		       	name="reportAccountPositionsForm"
+		       	scope="request"
+				validate="false"
+				parameter="operation">
+		    <set-property property="cancellable" value="true"/>
+		    <forward name="success" path="ReportAccountPositionsDef"></forward>
+		    <forward name="failure" path="AccountSelectionDef"></forward>        		                
 		</action>
 		
 		<action path="/ReportAccountSummaryAction"

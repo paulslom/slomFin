@@ -137,6 +137,10 @@ public class PortfolioDAO extends BaseDBDAO
 			{
 				portfolioSummaryList = portfolioSummaryByAssetClassBuild(idObject.getId());	
 			}
+			else if (idObject.getIdDescriptor().equalsIgnoreCase(ISlomFinAppConstants.ACCTPOSITIONS))
+			{
+				portfolioSummaryList = accountPositionsBuild(idObject.getId());	
+			}
 			else //this is a Portfolio Summary request
 			{
 				portfolioSummaryList = portfolioSummaryBuild(idObject.getId());												
@@ -146,6 +150,184 @@ public class PortfolioDAO extends BaseDBDAO
 		}						
 	}
 		 
+	private List<PortfolioSummary> accountPositionsBuild(String accountID) 
+	{
+		List<PortfolioSummary> portfolioSummaryList = new ArrayList<PortfolioSummary>();
+		 
+		//build the query to determine balances for securities
+		
+		StringBuffer sbuf = new StringBuffer();
+		
+		sbuf.append(" select acc.iportfolioId as portfolioID,");      
+		sbuf.append("  trx.iaccountId as accountID,");                
+		sbuf.append("  portf.sportfolioName as portfolioName,");     
+		sbuf.append("  acc.saccountName as accountName,");		      
+		sbuf.append("  invm.doptionMultiplier as optionMultiplier,"); 
+		sbuf.append("  invm.sdescription as investmentDescription,"); 
+		sbuf.append("  invm.mcurrentPrice as currentPrice,");         
+		sbuf.append("  asscl.sassetClass as assetClass,");            
+		sbuf.append("  acc.mnewMoneyPerYear as newMoney,");           
+		sbuf.append("  acctyp.saccountType as accountType,");         
+		sbuf.append("  SUM(CASE trxtyp.bpositiveInd");
+		sbuf.append("  WHEN 0 THEN -trx.decUnits"); 
+		sbuf.append("  WHEN 1 THEN trx.decUnits");  
+		sbuf.append("  ELSE 0 END) as unitsOwned");                   
+		sbuf.append("  from Tbltransaction trx");
+		sbuf.append("  INNER JOIN tbltransactiontype trxtyp on trx.itransactiontypeid = trxtyp.itransactiontypeid");
+		sbuf.append("  INNER JOIN tblinvestment invm on trx.iinvestmentid = invm.iinvestmentid");
+		sbuf.append("  INNER JOIN tblaccount acc on trx.iAccountID = acc.iAccountID");
+		sbuf.append("  INNER JOIN tblaccounttype acctyp on acc.iaccounttypeid = acctyp.iaccounttypeid");
+		sbuf.append("  INNER JOIN tblPortfolio portf on acc.iportfolioid = portf.iportfolioid");
+		sbuf.append("  INNER JOIN tblInvestor inv on portf.iinvestorid = inv.iinvestorid");
+		sbuf.append("  LEFT JOIN tblassetclass asscl on invm.iassetclassid = asscl.iassetclassid");
+		sbuf.append("  where acc.iaccountId = ");    
+		sbuf.append(accountID);
+		sbuf.append("  and acc.dvestingPercentage > 0");
+		sbuf.append("  group by acc.iportfolioId,");
+		sbuf.append("  acc.iaccountId,");
+		sbuf.append("  portf.sportfolioName,");
+		sbuf.append("  acc.saccountName,");
+		sbuf.append("  invm.doptionMultiplier,");
+		sbuf.append("  invm.sdescription,");	  
+		sbuf.append("  invm.mcurrentPrice,");
+		sbuf.append("  asscl.sassetClass,");
+		sbuf.append("  acc.mnewMoneyPerYear,");
+		sbuf.append("  acctyp.saccountType");
+		sbuf.append("  having SUM(CASE trxtyp.bpositiveInd");
+		sbuf.append("  WHEN 0 THEN -trx.decUnits");    
+		sbuf.append("  WHEN 1 THEN trx.decUnits");    
+		sbuf.append("  ELSE 0 END) <> 0"); 
+		
+		log.debug("about to run query: " + sbuf.toString());
+		
+		this.getJdbcTemplate().query(sbuf.toString(), new ResultSetExtractor<List>() 
+		{	   
+			@Override
+		    public List extractData(ResultSet rs) throws SQLException, DataAccessException 
+		    {
+				List tempList = new ArrayList<>();
+				
+				while (rs.next()) 
+				{
+					PortfolioSummary portfolioSummaryDetail = new PortfolioSummary();			
+		            
+					portfolioSummaryDetail.setPortfolioID(rs.getInt(1));
+					portfolioSummaryDetail.setAccountID(rs.getInt(2));
+					portfolioSummaryDetail.setPortfolioName(rs.getString(3));
+					portfolioSummaryDetail.setAccountName(rs.getString(4));
+
+					log.debug("Account name = " + portfolioSummaryDetail.getAccountName());
+					
+					portfolioSummaryDetail.setInvestmentDescription(rs.getString(6));
+					
+					log.debug("Investment = " + portfolioSummaryDetail.getInvestmentDescription());
+					
+					portfolioSummaryDetail.setCurrentPrice(rs.getBigDecimal(7));
+					
+					log.debug("Current Price = " + portfolioSummaryDetail.getCurrentPrice());
+					
+					portfolioSummaryDetail.setAssetClass(rs.getString(8));
+					portfolioSummaryDetail.setNewMoney(rs.getBigDecimal(9));
+					portfolioSummaryDetail.setAccountType(rs.getString(10));
+					portfolioSummaryDetail.setUnitsOwned(rs.getBigDecimal(11));					
+					
+					log.debug("Units Owned = " + portfolioSummaryDetail.getUnitsOwned());
+					
+					portfolioSummaryDetail.setCurrentValue(portfolioSummaryDetail.getUnitsOwned().multiply(portfolioSummaryDetail.getCurrentPrice()));
+					
+					if (portfolioSummaryDetail.getAssetClass().equalsIgnoreCase("Options"))
+					{
+						BigDecimal optMult = rs.getBigDecimal(5);
+						portfolioSummaryDetail.setCurrentValue(portfolioSummaryDetail.getCurrentValue().multiply(optMult));
+					}
+					log.debug("Current Value = " + portfolioSummaryDetail.getCurrentValue());
+					
+					portfolioSummaryList.add(portfolioSummaryDetail);						        
+				}
+				return tempList;
+		    }
+		});		
+		
+		//now need to build cash balances query
+		sbuf.setLength(0); //this clears the stringbuffer
+		
+		sbuf.append("select acc.iportfolioId as portfolioID,");
+		sbuf.append(" trx.iaccountId as accountID,");   
+		sbuf.append(" portf.sportfolioName as portfolioName,"); 
+		sbuf.append(" acc.saccountName as accountName,");
+		sbuf.append(" acctyp.saccountType as accountType,");
+		sbuf.append(" SUM(trx.meffectiveAmount) as unitsOwned");  
+		sbuf.append(" from Tbltransaction trx");
+		sbuf.append(" INNER JOIN tbltransactiontype trxtyp on trx.itransactiontypeid = trxtyp.itransactiontypeid");
+		sbuf.append(" INNER JOIN tblaccount acc on trx.iaccountid = acc.iaccountid");
+		sbuf.append(" INNER JOIN tblaccounttype acctyp on acc.iaccounttypeid = acctyp.iaccounttypeid");
+		sbuf.append(" INNER JOIN tblPortfolio portf on acc.iportfolioid = portf.iportfolioid");
+		sbuf.append(" INNER JOIN tblInvestor inv on portf.iinvestorid = inv.iinvestorid");
+		sbuf.append("  where acc.iaccountId = ");    
+		sbuf.append(accountID);
+		sbuf.append("  and trxtyp.sdescription <> 'Reinvest'");
+		sbuf.append("  and acctyp.saccountType <> 'Real Estate'");
+		sbuf.append("  group by acc.iportfolioId,");
+		sbuf.append("  acc.iaccountId,");    
+		sbuf.append("  portf.sportfolioName,");    
+		sbuf.append("  acc.saccountName,");
+		sbuf.append("  acctyp.saccountType");
+		sbuf.append("  having SUM(trx.meffectiveAmount) <> 0");
+
+		log.debug("about to run query: " + sbuf.toString());
+		
+		this.getJdbcTemplate().query(sbuf.toString(), new ResultSetExtractor<List>() 
+		{	   
+			@Override
+		    public List extractData(ResultSet rs) throws SQLException, DataAccessException 
+		    {
+				List tempList = new ArrayList<>();
+				
+				while (rs.next()) 
+				{
+					PortfolioSummary portfolioSummaryDetail = new PortfolioSummary();			
+		            
+					portfolioSummaryDetail.setPortfolioID(rs.getInt(1));
+					portfolioSummaryDetail.setAccountID(rs.getInt(2));
+					portfolioSummaryDetail.setPortfolioName(rs.getString(3));
+					portfolioSummaryDetail.setAccountName(rs.getString(4));
+					
+					log.debug("Account name = " + portfolioSummaryDetail.getAccountName());
+					
+					portfolioSummaryDetail.setInvestmentDescription("Cash");
+					portfolioSummaryDetail.setAssetClass("Cash");
+					
+					log.debug("Investment = " + portfolioSummaryDetail.getInvestmentDescription());
+					
+					portfolioSummaryDetail.setCurrentPrice(new BigDecimal(0.0));
+					
+					log.debug("Current Price = " + portfolioSummaryDetail.getCurrentPrice());
+					
+					portfolioSummaryDetail.setAccountType(rs.getString(5));
+					
+					log.debug("Account Type = " + portfolioSummaryDetail.getAccountType());
+					
+					portfolioSummaryDetail.setUnitsOwned(rs.getBigDecimal(6));				
+					
+					log.debug("Units Owned = " + portfolioSummaryDetail.getUnitsOwned());
+					
+					portfolioSummaryDetail.setCurrentValue(portfolioSummaryDetail.getUnitsOwned());
+					
+					log.debug("Current Value = " + portfolioSummaryDetail.getCurrentValue());
+					
+					portfolioSummaryList.add(portfolioSummaryDetail);			        
+				}
+				return tempList;
+		    }
+		});
+		
+		//now sort portfolioSummaryList by portfolioID, AccountName, Amount
+		
+		Collections.sort(portfolioSummaryList, new PortfolioSummaryComparator());
+		
+		return portfolioSummaryList;
+	}
+	
 	private List<PortfolioSummary> portfolioSummaryByAssetClassBuild(String investorID) throws DAOException
 	{
 		log.debug("inside portfolioSummaryByAssetClassBuild");

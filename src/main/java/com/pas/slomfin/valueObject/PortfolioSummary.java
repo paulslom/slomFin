@@ -4,12 +4,6 @@ import java.math.BigDecimal;
 
 import com.pas.valueObject.IValueObject;
 
-/**
- * Title: 		IVRMenuOptionCodeDetail
- * Project: 	Table Maintenance Application
- * Copyright: 	Copyright (c) 2006
- * Company: 	Lincoln Life
- */
 public class PortfolioSummary implements IValueObject
 {
 	private Integer portfolioID;

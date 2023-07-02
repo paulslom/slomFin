@@ -21,6 +21,11 @@
      <put name="fullBody" value="/WEB-INF/jsp/AccountSelection.jsp"/>     
   </definition>
   
+   <definition name="AccountPositionsSelectionDef" extends="LayoutDef">       
+     <put name="menu2" value="/WEB-INF/jsp/Menu2.jsp"/>       
+     <put name="fullBody" value="/WEB-INF/jsp/AccountPositionsSelection.jsp"/>     
+  </definition>
+  
   <definition name="AccountUpdateDef" extends="LayoutDef">      
      <put name="menu2" value="/WEB-INF/jsp/Menu2.jsp"/>          
      <put name="fullBody" value="/WEB-INF/jsp/AccountUpdate.jsp"/>     
@@ -152,6 +157,11 @@
   <definition name="ReportAccountSummaryDef" extends="LayoutDef">         
      <put name="menu2" value="/WEB-INF/jsp/Menu2.jsp"/>       
      <put name="fullBody" value="/WEB-INF/jsp/ReportAccountSummary.jsp"/>     
+  </definition>
+  
+  <definition name="ReportAccountPositionsDef" extends="LayoutDef">         
+     <put name="menu2" value="/WEB-INF/jsp/Menu2.jsp"/>       
+     <put name="fullBody" value="/WEB-INF/jsp/ReportAccountPositions.jsp"/>     
   </definition>
   	    
   <definition name="ReportBudgetDef" extends="LayoutDef">         

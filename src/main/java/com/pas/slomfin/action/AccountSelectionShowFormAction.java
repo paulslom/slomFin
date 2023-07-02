@@ -40,6 +40,7 @@ public class AccountSelectionShowFormAction extends DispatchAction
 		
 		String closedIndParm = request.getParameter("closedInd");
 		String taxableIndParm = request.getParameter("taxableInd");
+		String positionsParm = request.getParameter("positions");
 		
 		int portfolioID = 0;
 		boolean closedInd = false;
@@ -122,7 +123,13 @@ public class AccountSelectionShowFormAction extends DispatchAction
 		request.getSession().setAttribute("showTrxItems", !closedInd);	
 		request.getSession().setAttribute("portfolioID", portfolioID);	
 		
-		return mapping.findForward("success");
+		String action = "success";
+		
+		if (positionsParm != null && positionsParm.equalsIgnoreCase("true"))
+		{
+			action = "successPositions";
+		}
+		return mapping.findForward(action);
 	}
 	
 }

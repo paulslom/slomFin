@@ -1,6 +1,5 @@
 package com.pas.slomfin.action;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,22 +10,15 @@ import org.apache.struts.action.ActionMapping;
 
 import com.pas.action.ActionComposite;
 import com.pas.constants.IAppConstants;
-import com.pas.dbobjects.Tblassetclass;
-import com.pas.dbobjects.Tblinvestment;
-import com.pas.dbobjects.Tblinvestmenttype;
-import com.pas.dbobjects.Tblinvestor;
 import com.pas.exception.BusinessException;
 import com.pas.exception.DAOException;
 import com.pas.exception.PASSystemException;
 import com.pas.exception.PresentationException;
 import com.pas.exception.SystemException;
-import com.pas.slomfin.actionform.InvestmentUpdateForm;
 import com.pas.slomfin.cache.CacheManagerFactory;
 import com.pas.slomfin.cache.ICacheManager;
 import com.pas.slomfin.constants.ISlomFinAppConstants;
 import com.pas.slomfin.dao.AccountDAO;
-import com.pas.slomfin.dao.AssetClassDAO;
-import com.pas.slomfin.dao.InvestmentTypeDAO;
 import com.pas.slomfin.dao.SlomFinDAOFactory;
 import com.pas.slomfin.valueObject.Investor;
 import com.pas.valueObject.DropDownBean;

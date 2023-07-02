@@ -273,6 +273,12 @@
 	</Action>
 	
 	<Action>
+		<name>ReportAccountPositionsAction</name>
+		<actionForward>success</actionForward>
+		<businessServiceRef>ReportAccountPositionsBusiness</businessServiceRef>	   
+	</Action>
+	
+	<Action>
 		<name>ReportAccountSummaryAction</name>
 		<actionForward>success</actionForward>
 		<businessServiceRef>ReportAccountSummaryBusiness</businessServiceRef>	   

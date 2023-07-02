@@ -85,6 +85,11 @@ public class Menu2DAO extends BaseDBDAO
 		Menu menuDetail = new Menu();
 		
 		menuDetail = new Menu();
+		menuDetail.setMenuTitle("Account Positions");
+		menuDetail.setMenuLocation(CONTEXT_ROOT + "/AccountSelectionShowFormAction.do?operation=inquire&positions=true");		
+		mList.add(menuDetail);			
+
+		menuDetail = new Menu();
 		menuDetail.setMenuTitle("Account Summary");
 		menuDetail.setMenuLocation(CONTEXT_ROOT + "/ReportAccountSummaryAction.do?operation=inquire");		
 		mList.add(menuDetail);	

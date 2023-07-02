@@ -156,6 +156,7 @@ public interface ISlomFinAppConstants
     public static final String ROTH_401K = "401k contribution";
     public static final String MATCHING_401K = "Employer Match";
     public static final String STOCK_INVTYPE_ID = "1";
+    public static final String ACCTPOSITIONS = "AcctPositions";
     public static final String PORTFOLIOSUMMARYREQUEST = "PortSumm";
     public static final String PORTFOLIOSUMMARYBYASSETCLASSREQUEST = "PortSummAss";
         
@@ -201,6 +202,7 @@ public interface ISlomFinAppConstants
 	public static final String SESSION_REPORTFTXW2LIST = "ReportFTXW2List";
 	
 	public static final String SESSION_REPORT_ACCOUNT_SUMMARYLIST = "ReportAccountSummaryList";
+	public static final String SESSION_REPORT_ACCOUNT_POSITIONSLIST = "ReportAccountPositionsList";
 	public static final String SESSION_REPORTGOALSLIST = "ReportGoalsList";
 	public static final String SESSION_REPORTMTGAMORTIZATIONLIST = "ReportMtgAmortizationList";
 	public static final String SESSION_REPORTMTGPAYMENTSLIST = "ReportMtgPaymentsList";
