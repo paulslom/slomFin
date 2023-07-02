@@ -101,7 +101,14 @@ public class AccountSelectionShowFormAction extends DispatchAction
 			{
 				if (!acct.isBclosed()) //this means it's an open account
 				{
-					if (taxableInd && acct.isBtaxableInd()) //open, and taxable.
+					if (positionsParm != null && positionsParm.equalsIgnoreCase("true")) //just do all open accounts when doing positions
+					{
+						DropDownBean ddBean = new DropDownBean();
+						ddBean.setId(String.valueOf(acct.getIaccountId()));
+						ddBean.setDescription(acct.getSaccountName());
+						investorAccounts.add(ddBean);
+					}
+					else if (taxableInd && acct.isBtaxableInd()) //open, and taxable.
 					{
 						DropDownBean ddBean = new DropDownBean();
 						ddBean.setId(String.valueOf(acct.getIaccountId()));
