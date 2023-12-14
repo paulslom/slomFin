@@ -6,7 +6,7 @@
   <groupId>com.pas</groupId>
   <artifactId>slomfin</artifactId>
   <packaging>war</packaging>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   
   <name>slomfin Maven Webapp</name>
   <url>http://maven.apache.org</url>
@@ -61,14 +61,14 @@
     </dependency>
     
 	<dependency>
-	    <groupId>standard</groupId>
+	    <groupId>taglibs</groupId>
 	    <artifactId>standard</artifactId>
 	    <version>1.1.2</version>
 	</dependency>
 	
 	<dependency>
-	    <groupId>org.apache.struts</groupId>
-	    <artifactId>struts-core</artifactId>
+	    <groupId>struts</groupId>
+	    <artifactId>struts</artifactId>
 	    <version>1.2.9</version>
 	</dependency>
 	
