@@ -105,6 +105,7 @@ public interface ISlomFinAppConstants
 	public static final String DROPDOWN_PORTFOLIOS_BYINVESTOR = "PORT_INVS";	
 	public static final String DROPDOWN_WDCATEGORIES_BYINVESTOR = "WDCAT_INVS";
 	public static final String DROPDOWN_LAST5YEARS = "LAST5YEARS";
+	public static final String DROPDOWN_LAST10YEARS = "LAST10YEARS";
 		
 	//Dropdown names of session vars	
 	public static final String SESSION_DD_ACCOUNTS = "Accounts";

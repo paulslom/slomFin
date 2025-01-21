@@ -119,20 +119,30 @@ public class DropDownPlugIn implements PlugIn
         		}
         	}
         	
-        	//dropdown for the last 5 years
+        	//dropdown for the last 5 years and 10 years
     		Calendar now = Calendar.getInstance();
     		int nowYear = now.get(Calendar.YEAR);
     		List<DropDownBean> last5YearsList = new ArrayList<DropDownBean>(); 
+    		List<DropDownBean> last10YearsList = new ArrayList<DropDownBean>(); 
     		
-    		for (int i=nowYear; i>nowYear-5; i--)
+    		int counter = 0;
+    		for (int i=nowYear; i>nowYear-10; i--)
     		{			  
     			DropDownBean ddBean = new DropDownBean();    	
     			ddBean.setId(String.valueOf(i));
     			ddBean.setDescription(String.valueOf(i));
-    			last5YearsList.add(ddBean);
+    			last10YearsList.add(ddBean);
+    			
+    			counter++;
+    			if (counter <= 5)
+    			{
+    				last5YearsList.add(ddBean);
+    			}  			
+    			
     		} 
     		
     		servletContext.setAttribute(ISlomFinAppConstants.DROPDOWN_LAST5YEARS, last5YearsList);
+    		servletContext.setAttribute(ISlomFinAppConstants.DROPDOWN_LAST10YEARS, last10YearsList);
     		log.debug("loaded dropdown " + ISlomFinAppConstants.DROPDOWN_LAST5YEARS);
         }
         catch (Exception e)

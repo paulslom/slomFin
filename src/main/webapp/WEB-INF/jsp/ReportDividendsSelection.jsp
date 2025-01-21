@@ -71,7 +71,7 @@
 	   	<td ALIGN="left">	       
 	      <html:select name="reportDividendsSelectionForm" property="year" tabindex="2">
 		    <html:option value="0">-Select-</html:option>		    
-			<html:options collection="LAST5YEARS" property="id" labelProperty="description" />							    	   
+			<html:options collection="LAST10YEARS" property="id" labelProperty="description" />							    	   
 		  </html:select>
 	    </td>
 	      
