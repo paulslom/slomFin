@@ -1,0 +1,183 @@
+<ui:composition 
+    
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+     
+    <f:loadBundle var="bundle" basename="ApplicationProperties" />  
+    
+    <h:form id="menuForm"> 
+        
+        <p:blockUI block="menuForm" widgetVar="blockWidgetVar"> 
+		    <p:graphicImage value="/images/wait.gif"/>  
+		</p:blockUI> 
+			   
+        <table style="table-layout: fixed; width:100%;">
+           	
+        	<tr>
+        	
+        		<td align="center">
+        		     <p:graphicImage id="logoId" value="/images/Paul.jpeg" style="width: 40px; height: 50px;"/>  
+        		     <h:outputText id="siteTitleId" value="#{pc_SlomFinMain.siteTitle}" styleClass="sectionTitle"/> 		  
+		        </td>
+		        		        
+		        <td align="right">
+         		     <p:outputLabel id="signedonuserid" value="Logged in user: #{pc_SlomFinMain.signedOnUserName}"/>&#xA0;&#xA0;
+					 <h:outputLink id="logoutlinkid" value="#{request.contextPath}/logout.xhtml">Sign Out</h:outputLink>			  
+		        </td>
+        	        		
+        	</tr>
+        		               
+            <tr>
+            
+               <td style="font-weight: bold; font-size:14;" colspan="2">
+               
+                    <p:menubar>
+			           							
+						<p:submenu label="Accounts">	
+											
+							<c:forEach items="#{pc_SlomFinMain.openAcccountsList}" var="acct">
+							
+						        <p:submenu label="#{acct.decadeDescription}">
+						        
+						            <c:forEach items="#{pc_SlomFinMain.seasons2000sList}" var="season2000s">
+										<p:menuitem value="#{season2000s.cYear}" 
+														rendered="#{season2000s.intYear ge decade.decadeStart and season2000s.intYear le decade.decadeEnd}"
+														actionListener="#{pc_SlomFinMain.seasonChange}"
+														onclick="PF('blockWidgetVar').show()" 
+						                                oncomplete="PF('blockWidgetVar').hide()"		 
+														update="menuForm">
+										</p:menuitem>
+									</c:forEach>
+									
+									<c:forEach items="#{pc_SlomFinMain.seasons2010sList}" var="season2010s">
+										<p:menuitem value="#{season2010s.cYear}" 
+														rendered="#{season2010s.intYear ge decade.decadeStart and season2010s.intYear le decade.decadeEnd}"
+														actionListener="#{pc_SlomFinMain.seasonChange}" 
+														onclick="PF('blockWidgetVar').show()" 
+						                                oncomplete="PF('blockWidgetVar').hide()"		 
+														update="menuForm">
+										</p:menuitem>
+									</c:forEach>
+									
+									<c:forEach items="#{pc_SlomFinMain.seasons2020sList}" var="season2020s">
+										<p:menuitem value="#{season2020s.cYear}" 
+														rendered="#{season2020s.intYear ge decade.decadeStart and season2020s.intYear le decade.decadeEnd}"
+														actionListener="#{pc_SlomFinMain.seasonChange}"
+														onclick="PF('blockWidgetVar').show()" 
+						                                oncomplete="PF('blockWidgetVar').hide()"		  
+														update="menuForm">
+										</p:menuitem>
+									</c:forEach>
+																		
+						        </p:submenu>
+						        
+						        <p:menuitem value="Open New Account" 
+											actionListener="#{pc_SlomFinMain.openAccount}"
+											onclick="PF('blockWidgetVar').show()" 
+			                                oncomplete="PF('blockWidgetVar').hide()"		  
+											update="menuForm">
+							    </p:menuitem>
+						        
+			    			</c:forEach>
+			    													    				
+						</p:submenu>
+						
+						<p:submenu label="Scores By Week">
+												
+							<c:forEach items="#{pc_SlomFinMain.outerWeeksList}" var="weekOuter">
+							
+						        <p:submenu label="#{weekOuter.outerWeekDescription}" rendered="#{weekOuter.weekNumberStart le 18}">
+						        
+						        	<c:forEach items="#{pc_SlomFinMain.currentWeekFirstHalfList}" var="firsthalfweek">
+										<p:menuitem value="#{firsthalfweek.weekNumber}" 
+														rendered="#{firsthalfweek.weekNumber ge weekOuter.weekNumberStart and firsthalfweek.weekNumber le weekOuter.weekNumberEnd}"
+														onclick="PF('blockWidgetVar').show()" 
+						                                oncomplete="PF('blockWidgetVar').hide()"		 
+														actionListener="#{pc_SlomFinMain.selectGameScoresWeek}">
+										</p:menuitem>
+									</c:forEach>
+									
+									<c:forEach items="#{pc_SlomFinMain.currentWeekSecondHalfList}" var="secondhalfweek">
+										<p:menuitem value="#{secondhalfweek.weekNumber}" 
+														rendered="#{secondhalfweek.weekNumber ge weekOuter.weekNumberStart and secondhalfweek.weekNumber le weekOuter.weekNumberEnd}"
+														onclick="PF('blockWidgetVar').show()" 
+						                                oncomplete="PF('blockWidgetVar').hide()"		 
+														actionListener="#{pc_SlomFinMain.selectGameScoresWeek}">
+										</p:menuitem>
+									</c:forEach>
+									
+						        </p:submenu>
+						        
+						        <p:menuitem value="#{weekOuter.outerWeekDescription}" 
+									rendered="#{weekOuter.weekNumberStart ge 19}"
+									onclick="PF('blockWidgetVar').show()" 
+						            oncomplete="PF('blockWidgetVar').hide()"		 
+									actionListener="#{pc_SlomFinMain.selectGameScoresWeek}">
+								</p:menuitem>
+						        
+			    			</c:forEach>
+			    						    				
+						</p:submenu>
+						
+						<p:submenu label="Scores By Team">
+						
+							<c:forEach items="#{pc_SlomFinMain.divisionsList}" var="division">
+							
+						        <p:submenu label="#{division}">    
+						        	
+						        	<c:forEach items="#{pc_SlomFinMain.teamsListCurrentSeason}" var="team">
+										<p:menuitem value="#{team.fullTeamName}"
+											rendered="#{team.vDivisionName eq division}"
+											onclick="PF('blockWidgetVar').show()" 
+						                    oncomplete="PF('blockWidgetVar').hide()"		 
+											actionListener="#{pc_SlomFinMain.selectGameScoresTeam}">
+											   <f:param name="teamid" value="#{team.iTeamID}"/>
+										</p:menuitem>
+									</c:forEach>
+									
+						        </p:submenu>
+						        						        
+			    			</c:forEach>
+			    			
+						</p:submenu>
+						
+						<p:submenu label="Reports">
+							<p:menuitem value="Standings" actionListener="#{pc_StandingsLogic.standingsReport}" onclick="PF('blockWidgetVar').show()" oncomplete="PF('blockWidgetVar').hide()"/>	
+							<p:menuitem value="Draft" actionListener="#{pc_DraftLogic.draftReport}"  onclick="PF('blockWidgetVar').show()" oncomplete="PF('blockWidgetVar').hide()"/>
+							<p:menuitem value="Schedule" actionListener="#{pc_ScheduleLogic.scheduleReport}" onclick="PF('blockWidgetVar').show()" oncomplete="PF('blockWidgetVar').hide()"/>
+							<p:menuitem value="Common Games" actionListener="#{pc_CommonGamesLogic.commonGamesSelection}" onclick="PF('blockWidgetVar').show()" oncomplete="PF('blockWidgetVar').hide()"/>
+						</p:submenu>
+						
+						<p:submenu label="Games">
+							<p:menuitem value="View-Chg-Del" url="#{request.contextPath}/gamesList.xhtml" onclick="PF('blockWidgetVar').show()" oncomplete="PF('blockWidgetVar').hide()"/>	
+							<p:menuitem value="Add" actionListener="#{pc_NflGame.selectGameforAcid}">
+								<f:param name="operation" value="Add" />
+							</p:menuitem>
+						</p:submenu>
+						
+						<p:submenu label="Playoffs">
+						    <p:menuitem value="Brackets" actionListener="#{pc_PlayoffsLogic.showBrackets}" onclick="PF('blockWidgetVar').show()" oncomplete="PF('blockWidgetVar').hide()"/>	
+							<p:menuitem value="Add Setup" actionListener="#{pc_PlayoffsLogic.playoffBracketsSetup}" onclick="PF('blockWidgetVar').show()" oncomplete="PF('blockWidgetVar').hide()"/>	
+						</p:submenu>
+						
+						<p:submenu label="Miscellaneous">
+							<p:menuitem value="Tie Breaker Rules" url="https://www.nfl.com/standings/tie-breaking-procedures"/>
+							<p:menuitem value="Draft Order Rules" url="#{request.contextPath}/draftOrderRules.xhtml"/>	
+							<p:menuitem value="Create next season" url="#{request.contextPath}/createNextSeason.xhtml"/>	
+						</p:submenu>
+												
+					</p:menubar> 
+        		    
+               </td>
+        		
+        	</tr>
+  		
+        </table>
+        
+      </h:form>       
+        
+</ui:composition>
