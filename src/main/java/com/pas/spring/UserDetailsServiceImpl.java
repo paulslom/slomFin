@@ -24,14 +24,14 @@ public class UserDetailsServiceImpl implements UserDetailsService
 		  logger.info("User " + username + " attempting to log in");
 		  
 		  DynamoClients dynamoClients;
-		  AppSecurity nflsecurity2 = null;
+		  AppSecurity appSecurity = null;
 		  
 		  try 
 		  {
 			  dynamoClients = DynamoUtil.getDynamoClients();
-			  SlomFinSecurityDAO nflsecurityDao = new SlomFinSecurityDAO(dynamoClients, null);
-		      nflsecurityDao.readAllUsersFromDB();
-		      nflsecurity2 = nflsecurityDao.getNflSecurity(username);
+			  SlomFinSecurityDAO slomFinSecurityDao = new SlomFinSecurityDAO(dynamoClients, null);
+			  slomFinSecurityDao.readAllUsersFromDB();
+		      appSecurity = slomFinSecurityDao.getNflSecurity(username);
 		  } 
 		  catch (Exception e) 
 		  {
@@ -41,16 +41,16 @@ public class UserDetailsServiceImpl implements UserDetailsService
 
 	      UserBuilder builder = null;
 	   
-	     if (nflsecurity2 != null && nflsecurity2.getUserName() != null && nflsecurity2.getUserName().trim().length() > 0) 
+	     if (appSecurity != null && appSecurity.getUserName() != null && !appSecurity.getUserName().trim().isEmpty())
 	     {
 	         builder = org.springframework.security.core.userdetails.User.withUsername(username);
-	         builder.password(nflsecurity2.getPassword());
+	         builder.password(appSecurity.getPassword());
 	         
-	         logger.info("User " + username + " successfully found on database as " + nflsecurity2.getUserName());
+	         logger.info("User " + username + " successfully found on database as " + appSecurity.getUserName());
 	     } 
 	     else 
 	     {
-	    	 logger.info("User " + username + " not found on database.");
+             logger.info("User {} not found on database.", username);
 	         throw new UsernameNotFoundException("User not found.");
 	     }
 

@@ -1,5 +1,6 @@
 package com.pas.beans;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -12,12 +13,13 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 @DynamoDbBean
 public class Investment implements Serializable
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	//private static Logger logger = LogManager.getLogger(Investment.class);	
 	
-	private Integer iInvestmentID;
-	private Integer iInvestmentTypeID;
+	private Integer investmentID;
+	private Integer investmentTypeID;
 	private String  tickerSymbol;
 	private String description;
 	private BigDecimal currentPrice; 
@@ -31,20 +33,20 @@ public class Investment implements Serializable
 	}
 
     @DynamoDbPartitionKey
-	public Integer getiInvestmentID() {
-		return iInvestmentID;
+	public Integer getInvestmentID() {
+		return investmentID;
 	}
 
-	public void setiInvestmentID(Integer iInvestmentID) {
-		this.iInvestmentID = iInvestmentID;
+	public void setInvestmentID(Integer iInvestmentID) {
+		this.investmentID = iInvestmentID;
 	}
 
-	public Integer getiInvestmentTypeID() {
-		return iInvestmentTypeID;
+	public Integer getInvestmentTypeID() {
+		return investmentTypeID;
 	}
 
-	public void setiInvestmentTypeID(Integer iInvestmentTypeID) {
-		this.iInvestmentTypeID = iInvestmentTypeID;
+	public void setInvestmentTypeID(Integer iInvestmentTypeID) {
+		this.investmentTypeID = iInvestmentTypeID;
 	}
 
 	public String getTickerSymbol() {
@@ -83,7 +85,8 @@ public class Investment implements Serializable
 		return investmentTypeDescription;
 	}
 
-	public void setInvestmentTypeDescription(String investmentTypeDescription) {
+	public void setInvestmentTypeDescription(String investmentTypeDescription)
+	{
 		this.investmentTypeDescription = investmentTypeDescription;
 	}
 

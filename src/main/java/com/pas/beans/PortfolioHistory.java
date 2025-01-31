@@ -1,5 +1,6 @@
 package com.pas.beans;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -13,11 +14,12 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortK
 @DynamoDbBean
 public class PortfolioHistory implements Serializable
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	//private static Logger logger = LogManager.getLogger(PortfolioHistory.class);	
 	
-	private Integer iPortfolioHistoryID;
+	private Integer portfolioHistoryID;
     private String accountName;
     private Integer accountID;
     private String historyDate; 
@@ -29,12 +31,12 @@ public class PortfolioHistory implements Serializable
     }
 
     @DynamoDbPartitionKey	
-	public Integer getiPortfolioHistoryID() {
-		return iPortfolioHistoryID;
+	public Integer getPortfolioHistoryID() {
+		return portfolioHistoryID;
 	}
 
-	public void setiPortfolioHistoryID(Integer iPortfolioHistoryID) {
-		this.iPortfolioHistoryID = iPortfolioHistoryID;
+	public void setPortfolioHistoryID(Integer iPortfolioHistoryID) {
+		this.portfolioHistoryID = iPortfolioHistoryID;
 	}
 
 	public String getAccountName() {

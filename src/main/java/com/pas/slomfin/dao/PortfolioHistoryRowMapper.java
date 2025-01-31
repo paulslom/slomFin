@@ -17,7 +17,7 @@ public class PortfolioHistoryRowMapper implements RowMapper<PortfolioHistory>, S
     {
 		PortfolioHistory portfolioHistory = new PortfolioHistory();
 			    
-		portfolioHistory.setiPortfolioHistoryID(rs.getInt("iPortfolioHistoryID"));
+		portfolioHistory.setPortfolioHistoryID(rs.getInt("iPortfolioHistoryID"));
 		portfolioHistory.setAccountID(rs.getInt("iAccountID"));
 		portfolioHistory.setAccountName(rs.getString("sAccountName"));
 		portfolioHistory.setHistoryDate(rs.getTimestamp("dHistoryDate").toString());

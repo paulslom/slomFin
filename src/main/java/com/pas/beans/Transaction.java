@@ -1,15 +1,11 @@
 package com.pas.beans;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Serializable;
+import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.StringTokenizer;
 
+import com.pas.spring.SpringBean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,61 +21,42 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.ActionEvent;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@Named("pc_NflGame")
+@Named("pc_Transaction")
 @SessionScoped
 public class Transaction implements Serializable
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = LogManager.getLogger(Transaction.class);	
+	private static final Logger logger = LogManager.getLogger(Transaction.class);	
 	
-	private DynamoTransaction selectedGame;
+	private DynamoTransaction selectedTransaction;
         
     @Inject SlomFinMain slomFinMain;
-    
+
+	@Autowired SpringBean springBean;
+
     public String toString()
     {
-    	return "seasonid: " + this.getSelectedGame().getiSeasonId() + " game date: " + selectedGame.getDgameDateTime() + " " + this.getSelectedGame().getCawayteamCityAbbr() + " @ " + this.getSelectedGame().getChometeamCityAbbr();
+    	return "transactionid: " + this.getSelectedTransaction().getTransactionID() + 
+				" trxdate: " + selectedTransaction.getTransactionPostedDate() + 
+				" account: " + selectedTransaction.getAccountName() +
+				" cost/Proceeds: " + selectedTransaction.getCostProceeds();
     }
    
     @PostConstruct
     public void init()
     {
-    	logger.info("entering postconstruct init method of NflGame");		
+    	logger.info("entering postconstruct init method of Transaction");		
     }
     
-    public String changeGameScores()
-    {
-    	logger.info("entering changeGameScores");
-		
-		try
-		{
-			List<DynamoTransaction> newList = new ArrayList<>(slomFinMain.getGameScoresList());	
-			for (int i = 0; i < newList.size(); i++) 
-			{
-				DynamoTransaction game = newList.get(i);
-				Utils.updateScoreStyles(game);
-				slomFinMain.getNflGameDAO().updateNflGame(game);
-				logger.info("update game score count: " + i);
-			}
-			
-		}
-		catch (Exception e)
-		{
-			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,e.getMessage(),null);
-	        FacesContext.getCurrentInstance().addMessage(null, msg); 
-	        logger.error("changeGameScores exception: " + e.getMessage(), e);
-			return "";
-		}
-	    return "gamesList.xhtml";
-    }
-    
-    public String addChangeDelGame() 
+    public String addChangeDelTransaction() 
 	{	 
-		logger.info("entering addChangeDelGame.  Action will be: " + slomFinMain.getGameAcidSetting());
+		logger.info("entering addChangeDelTransaction.  Action will be: " + slomFinMain.getTransactionAcidSetting());
 		
-		if (!validateGameEntry()) //will be true if all good.  If false, we leave
+		if (!validateTransactionEntry()) //will be true if all good.  If false, we leave
 		{
 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,"Please enter all required fields",null);
 	        FacesContext.getCurrentInstance().addMessage(null, msg);    
@@ -88,19 +65,19 @@ public class Transaction implements Serializable
 		
 		try
 		{
-			if (slomFinMain.getGameAcidSetting().equalsIgnoreCase("Add"))
+			if (slomFinMain.getTransactionAcidSetting().equalsIgnoreCase("Add"))
 			{			
 				setAddUpdateFields();			   
-				slomFinMain.getNflGameDAO().addNflGame(this.getSelectedGame());
+				slomFinMain.getTransactionDAO().addTransaction(this.getSelectedTransaction());
 			}
-			else if (slomFinMain.getGameAcidSetting().equalsIgnoreCase("Update"))
+			else if (slomFinMain.getTransactionAcidSetting().equalsIgnoreCase("Update"))
 			{
 				setAddUpdateFields();		
-				slomFinMain.getNflGameDAO().updateNflGame(this.getSelectedGame());
+				slomFinMain.getTransactionDAO().updateTransaction(this.getSelectedTransaction());
 			}
-			else if (slomFinMain.getGameAcidSetting().equalsIgnoreCase("Delete"))
+			else if (slomFinMain.getTransactionAcidSetting().equalsIgnoreCase("Delete"))
 			{
-				slomFinMain.getNflGameDAO().deleteNflGame(this.getSelectedGame());
+				slomFinMain.getTransactionDAO().deleteTransaction(this.getSelectedTransaction());
 			}
 		}
 		catch (Exception e)
@@ -113,66 +90,10 @@ public class Transaction implements Serializable
 	}
   	private void setAddUpdateFields() 
     {
-    	/* already set on page or in schedule import:
-		iweeknumber
-		igametypeid
-		iawayteamid
-		ihometeamid
-		iawayteamscore
-		ihometeamscore
-		gameDateTimeDisplay in the format of example Sun 2025-01-05 04:25 PM
-		*/
     	
-		this.getSelectedGame().setiSeasonId(slomFinMain.getCurrentSelectedSeason().getiSeasonID());
-		this.getSelectedGame().setcYear(slomFinMain.getCurrentSelectedSeason().getcYear());
-		
-		Utils.updateScoreStyles(this.getSelectedGame());
-		        
-		this.getSelectedGame().setGameDayOfWeek(this.getSelectedGame().getGameDateTimeDisplay().substring(0, 3));
-		this.getSelectedGame().setGameDateOnly(this.getSelectedGame().getGameDateTimeDisplay().substring(4, 14));
-		this.getSelectedGame().setGameTimeOnly(this.getSelectedGame().getGameDateTimeDisplay().substring(15));
-		
-		this.getSelectedGame().setDgameDateTime(DateToStringConverter.convertDateToDynamoStringFormat(this.getSelectedGame().getGameDateTimeDisplay()));
-		
-		Account homeTeam = slomFinMain.getTeamByTeamID(this.getSelectedGame().getIhomeTeamID());
-		Account awayTeam = slomFinMain.getTeamByTeamID(this.getSelectedGame().getIawayTeamID());
-		
-		this.getSelectedGame().setCawayteamCityAbbr(awayTeam.getcTeamCityAbbr());
-		this.getSelectedGame().setAwayteamName(awayTeam.getFullTeamName());
-		this.getSelectedGame().setChometeamCityAbbr(homeTeam.getcTeamCityAbbr());
-		this.getSelectedGame().setHometeamName(homeTeam.getFullTeamName());
-					   
-		this.getSelectedGame().setSgameTypeDesc(slomFinMain.getGameTypeDescriptionByGameTypeId(this.getSelectedGame().getIgameTypeId()));
-		this.getSelectedGame().setSweekDescription(slomFinMain.getGameTypeDescriptionByGameTypeId(this.getSelectedGame().getIgameTypeId()));
-		
-		if (this.getSelectedGame().getIweekId() != null && this.getSelectedGame().getIweekId() == 0) //only need this if week id not already assigned
-		{
-			this.getSelectedGame().setIweekId(slomFinMain.getAddedWeekId(this.getSelectedGame().getSgameTypeDesc()));
-		}
-		
-		if (this.getSelectedGame().getSgameTypeDesc().equalsIgnoreCase("Regular Season"))
-		{
-			this.getSelectedGame().setIplayoffRound(0);
-		}
-		else if (this.getSelectedGame().getSgameTypeDesc().equalsIgnoreCase(Utils.WILD_CARD))
-		{
-			this.getSelectedGame().setIplayoffRound(1);
-		}
-		else if (this.getSelectedGame().getSgameTypeDesc().equalsIgnoreCase(Utils.DIVISIONALS))
-		{
-			this.getSelectedGame().setIplayoffRound(2);
-		}
-		else if (this.getSelectedGame().getSgameTypeDesc().equalsIgnoreCase(Utils.CONFCHAMPIONSHIPS))
-		{
-			this.getSelectedGame().setIplayoffRound(3);
-		}
-		else if (this.getSelectedGame().getSgameTypeDesc().equalsIgnoreCase(Utils.SUPERBOWL))
-		{
-			this.getSelectedGame().setIplayoffRound(4);
-		}
 	}
 
-	public void selectGameforAcid(ActionEvent event) 
+	public void selectTransactionforAcid(ActionEvent event) 
 	{
 		logger.info("game selected for add-change-inquire-delete");
 		
@@ -181,176 +102,61 @@ public class Transaction implements Serializable
 			ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
 		    String acid = ec.getRequestParameterMap().get("operation");
 		    String gameId = ec.getRequestParameterMap().get("gameId");
-		    slomFinMain.setGameAcidSetting(acid);
+		    slomFinMain.setTransactionAcidSetting(acid);
 		    logger.info("game id selected: " + gameId);
 		    
-		    if (slomFinMain.getGameAcidSetting().equalsIgnoreCase("add"))
+		    if (slomFinMain.getTransactionAcidSetting().equalsIgnoreCase("add"))
 		    {
-		    	this.setSelectedGame(new DynamoTransaction()); 
+		    	this.setSelectedTransaction(new DynamoTransaction()); 
 		    }
 		    else //go get the existing game
 		    {
-		    	this.setSelectedGame(slomFinMain.getGameByGameID(Integer.parseInt(gameId)));
+		    	this.setSelectedTransaction(slomFinMain.getTransactionByTransactionID(Integer.parseInt(gameId)));
 		    }
 		    
-		    slomFinMain.setRenderGameViewAddUpdateDelete(); 
-		    
-		    String targetURL = Utils.getContextRoot() + "/gameAddUpdate.xhtml";
+		    slomFinMain.setRenderTransactionViewAddUpdateDelete();
+
+			String targetURL = springBean.getContextRoot() + "/gameAddUpdate.xhtml";
 		    ec.redirect(targetURL);
             logger.info("successfully redirected to: " + targetURL + " with operation: " + acid);
         } 
         catch (Exception e) 
         {
-            logger.error("selectGameforAcid exception: " + e.getMessage(), e);
+            logger.error("selectTransactionforAcid exception: " + e.getMessage(), e);
         }
 	}
     
-	public String importScheduleData()
-	{
-		try
-		{
-			String nextYear = slomFinMain.getNflSeasonDAO().getMaxSeason().getcYear();			
-			
-			slomFinMain.seasonChange(nextYear);
-			
-			InputStream is = getClass().getClassLoader().getResourceAsStream("data/NFLScheduleData" + nextYear + ".csv"); 
-
-		    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		    String line;
-		    
-		    int linecount = 0;
-		    
-		    while ((line = reader.readLine()) != null) 
-		    {
-		    	linecount++;
-		    	
-		        logger.info(linecount + ". line - " + line);
-		        
-		        if (linecount == 1)
-		        {
-		        	continue;
-		        }
-		       
-		        StringTokenizer st = new StringTokenizer(line, ",");
-		        DynamoTransaction dynamoNflGame = new DynamoTransaction();
-		       
-		       //example, should look like this:
-		       //Gameno, weekidNumber, weekNumber, gamedate, gametime,awayid,homeid,gametype
-		       //1,511,1,'Thu 2025-09-04','08:20 PM',5,14,2
-		       
-		       int tokenCount = 0;
-		       String gameDateTime = "";
-		       
-		       while (st.hasMoreTokens()) 
-			   {	 			
-		 			String token = st.nextToken();
-		 			tokenCount++;
-		 			
-		 			switch (tokenCount)
-					{
-		 				case 1:
-		 					gameDateTime = "";
-		 					break;
-		 					
-						case 2:
-							dynamoNflGame.setIweekId(Integer.parseInt(token));
-							break;
-						
-						case 3:
-							dynamoNflGame.setIweekNumber(Integer.parseInt(token));
-							break;
-							
-						case 4:
-							gameDateTime = token.replaceAll("'", "");
-							break;
-							
-						case 5:
-							gameDateTime = gameDateTime + " " + token.replaceAll("'", "");;
-							dynamoNflGame.setGameDateTimeDisplay(gameDateTime);
-							break;							
-						
-						case 6:
-							dynamoNflGame.setIawayTeamID(Integer.parseInt(token));
-							break;							
-							
-						case 7:
-							dynamoNflGame.setIhomeTeamID(Integer.parseInt(token));
-							break;
-												
-						case 8:
-							dynamoNflGame.setIgameTypeId(Integer.parseInt(token));
-							break;
-					}
-		 			
-			   }
-		     	
-			   this.setSelectedGame(dynamoNflGame);
-					       
-		       setAddUpdateFields();
-		       
-		       slomFinMain.getNflGameDAO().addNflGame(this.getSelectedGame());
-		    }
-		    
-		    reader.close();		
-		    
-			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,"Games successfully imported",null);
-			FacesContext.getCurrentInstance().addMessage(null, msg); 
-		}
-		catch (Exception e)
-		{
-			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,e.getMessage(),null);
-			FacesContext.getCurrentInstance().addMessage(null, msg); 
-			logger.error("importScheduleData exception: " + e.getMessage(), e);
-		}
-		
-		return "";
-		
-	}
-	
-	private boolean validateGameEntry() 
+	private boolean validateTransactionEntry()
     {
 		boolean fieldsValidated = true; //assume true, if anything wrong make it false and get out
 		
-		if (this.getSelectedGame().getIweekNumber() == null)
+		if (this.getSelectedTransaction().getTransactionPostedDate() == null || this.getSelectedTransaction().getTransactionPostedDate().trim().length() == 0)
 		{
 			fieldsValidated = false;
 		}
-		if (this.getSelectedGame().getIawayTeamID() == null)
-		{
-			fieldsValidated = false;
-		}
-		if (this.getSelectedGame().getIhomeTeamID() == null)
-		{
-			fieldsValidated = false;
-		}
-		
-		if (this.getSelectedGame().getGameDateTimeDisplay() == null || this.getSelectedGame().getGameDateTimeDisplay().trim().length() == 0)
-		{
-			fieldsValidated = false;
-		}
-		else //something in the gamedatetime - make sure it parses in our format
+		else //something in the date - make sure it parses in our format
 		{
 			SimpleDateFormat sdf = new SimpleDateFormat("E yyyy-MM-dd HH:mm a");
 	        try 
 	        {
-	            Date parsedDate = sdf.parse(this.getSelectedGame().getGameDateTimeDisplay());
+	            Date parsedDate = sdf.parse(this.getSelectedTransaction().getTransactionPostedDate());
 	            logger.debug("parsed date = " + parsedDate);
 	        }
 	        catch (Exception e) 
 	        {
-	        	logger.error("Error parsing date: " + this.getSelectedGame().getGameDateTimeDisplay());
+	        	logger.error("Error parsing date: " + this.getSelectedTransaction().getTransactionPostedDate());
 	        	fieldsValidated = false;
 	        }
 		}
 		return fieldsValidated;
 	}
 
-	public DynamoTransaction getSelectedGame() {
-		return selectedGame;
+	public DynamoTransaction getSelectedTransaction() {
+		return selectedTransaction;
 	}
 
-	public void setSelectedGame(DynamoTransaction selectedGame) {
-		this.selectedGame = selectedGame;
+	public void setSelectedTransaction(DynamoTransaction selectedTransaction) {
+		this.selectedTransaction = selectedTransaction;
 	}
 	
 }
