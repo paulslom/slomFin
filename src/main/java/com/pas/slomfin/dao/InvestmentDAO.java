@@ -23,7 +23,7 @@ public class InvestmentDAO implements Serializable
     private List<Investment> fullInvestmentsList = new ArrayList<>();
 
     private static DynamoDbTable<Investment> investmentsTable;
-    private static final String AWS_TABLE_NAME = "SlomFinInvestments";
+    private static final String AWS_TABLE_NAME = "slomFinInvestments";
 
     public InvestmentDAO(DynamoClients dynamoClients2)
     {
@@ -41,7 +41,7 @@ public class InvestmentDAO implements Serializable
     {
         Investment investment2 = dynamoUpsert(investment);
 
-        investment.setInvestmentID(investment2.getInvestmentID());
+        investment.setiInvestmentID(investment2.getiInvestmentID());
 
         logger.info("LoggedDBOperation: function-add; table:investment; rows:1");
 
@@ -49,26 +49,26 @@ public class InvestmentDAO implements Serializable
 
         logger.info("addInvestment complete");
 
-        return investment2.getInvestmentID(); //this is the key that was just added
+        return investment2.getiInvestmentID(); //this is the key that was just added
     }
 
     private Investment dynamoUpsert(Investment investment) throws Exception
     {
         Investment dynamoInvestment = new Investment();
 
-        if (investment.getInvestmentID() == null)
+        if (investment.getiInvestmentID() == null)
         {
             Integer currentMaxInvestmentID = 0;
             for (int i = 0; i < this.getFullInvestmentsList().size(); i++)
             {
                 Investment investment2 = this.getFullInvestmentsList().get(i);
-                currentMaxInvestmentID = investment2.getInvestmentID();
+                currentMaxInvestmentID = investment2.getiInvestmentID();
             }
-            dynamoInvestment.setInvestmentID(currentMaxInvestmentID + 1);
+            dynamoInvestment.setiInvestmentID(currentMaxInvestmentID + 1);
         }
         else
         {
-            dynamoInvestment.setInvestmentID(investment.getInvestmentID());
+            dynamoInvestment.setiInvestmentID(investment.getiInvestmentID());
         }
 
         PutItemEnhancedRequest<Investment> putItemEnhancedRequest = PutItemEnhancedRequest.builder(Investment.class).item(dynamoInvestment).build();
@@ -90,14 +90,23 @@ public class InvestmentDAO implements Serializable
 
     public void readInvestmentsFromDB()
     {
-        for (Investment investment : investmentsTable.scan().items())
+    	Iterator<Investment> results = investmentsTable.scan().items().iterator();
+    	
+    	while (results.hasNext()) 
         {
-            this.getFullInvestmentsList().add(investment);
-        }
+			Investment investment = results.next();
+			this.getFullInvestmentsList().add(investment); 
+        }     
 
         logger.info("LoggedDBOperation: function-inquiry; table:investment; rows:{}", this.getFullInvestmentsList().size());
 
-        this.setFullInvestmentsMap(this.getFullInvestmentsList().stream().collect(Collectors.toMap(Investment::getInvestmentID, ply -> ply)));
+        for (int i = 0; i < this.getFullInvestmentsList().size(); i++)
+        {
+			Investment investment = this.getFullInvestmentsList().get(i);
+			//logger.info("About to store investment ID in map: " + investment.getiInvestmentID() + " which is: " + investment.getDescription());
+			this.getFullInvestmentsMap().put(investment.getiInvestmentID(), investment);
+		}
+        this.setFullInvestmentsMap(this.getFullInvestmentsList().stream().collect(Collectors.toMap(Investment::getiInvestmentID, ply -> ply)));
 
         this.getFullInvestmentsList().sort(new Comparator<Investment>() {
             public int compare(Investment o1, Investment o2) {
@@ -110,16 +119,16 @@ public class InvestmentDAO implements Serializable
     {
         if (function.equalsIgnoreCase("delete"))
         {
-            this.getFullInvestmentsMap().remove(investment.getInvestmentID());
+            this.getFullInvestmentsMap().remove(investment.getiInvestmentID());
         }
         else if (function.equalsIgnoreCase("add"))
         {
-            this.getFullInvestmentsMap().put(investment.getInvestmentID(), investment);
+            this.getFullInvestmentsMap().put(investment.getiInvestmentID(), investment);
         }
         else if (function.equalsIgnoreCase("update"))
         {
-            this.getFullInvestmentsMap().remove(investment.getInvestmentID());
-            this.getFullInvestmentsMap().put(investment.getInvestmentID(), investment);
+            this.getFullInvestmentsMap().remove(investment.getiInvestmentID());
+            this.getFullInvestmentsMap().put(investment.getiInvestmentID(), investment);
         }
 
         this.getFullInvestmentsList().clear();
@@ -128,7 +137,7 @@ public class InvestmentDAO implements Serializable
 
         this.getFullInvestmentsList().sort(new Comparator<Investment>() {
             public int compare(Investment o1, Investment o2) {
-                return o1.getInvestmentID().compareTo(o2.getInvestmentID());
+                return o1.getiInvestmentID().compareTo(o2.getiInvestmentID());
             }
         });
 

@@ -2,14 +2,21 @@ package com.pas.slomfin.dao;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import com.pas.util.TransactionComparator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.pas.dynamodb.DynamoClients;
 import com.pas.dynamodb.DynamoTransaction;
+import com.pas.util.TransactionComparator;
 import com.pas.util.Utils;
 
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -29,7 +36,7 @@ public class TransactionDAO implements Serializable
 	
 	private Map<Integer,DynamoTransaction> fullTransactionsMap = new HashMap<>();
 	private List<DynamoTransaction> fullTransactionsList = new ArrayList<>();
-
+	private List<DynamoTransaction> twoYearsTransactionsList = new ArrayList<>();
 
     private static DynamoDbTable<DynamoTransaction> transactionsTable;
 	private static final String AWS_TABLE_NAME = "slomFinTransactions";
@@ -117,7 +124,24 @@ public class TransactionDAO implements Serializable
 		
 		logger.info("delete transaction complete");	
 	}
-	
+
+	public void readAllTransactionsFromDB()
+	{
+		for (DynamoTransaction dynamoTransaction : transactionsTable.scan().items())
+		{
+			this.getFullTransactionsList().add(dynamoTransaction);
+			this.getFullTransactionsMap().put(dynamoTransaction.getTransactionID(), dynamoTransaction);
+		}
+
+		logger.info("LoggedDBOperation: function-inquiry; table:transactions; rows:{}", this.getFullTransactionsList().size());
+
+		this.getFullTransactionsList().sort(new Comparator<DynamoTransaction>() {
+			public int compare(DynamoTransaction o1, DynamoTransaction o2) {
+				return o1.getTransactionPostedDate().compareTo(o2.getTransactionPostedDate());
+			}
+		});
+	}
+
 	public void readTransactionsWithin2YearsFromDB() throws Exception 
     {
 		logger.info("entering readTransactionsWithin2YearsFromDB");
@@ -138,28 +162,28 @@ public class TransactionDAO implements Serializable
 		
 		Iterator<DynamoTransaction> results = transactionsTable.scan(request).items().iterator();
 	  	
-		int trxCount = 0;
+		//int trxCount = 0;
 		while (results.hasNext()) 
         {
-			trxCount++;
-			logger.info("iterating transaction " + trxCount);
+			//trxCount++;
+			//logger.info("iterating transaction " + trxCount);
 			DynamoTransaction dynamoTransaction = results.next();
 
-            this.getFullTransactionsList().add(dynamoTransaction);
+            this.getTwoYearsTransactionsList().add(dynamoTransaction);
         }
 		
-		this.getFullTransactionsList().sort(new Comparator<DynamoTransaction>() {
+		this.getTwoYearsTransactionsList().sort(new Comparator<DynamoTransaction>() {
             public int compare(DynamoTransaction o1, DynamoTransaction o2) {
                 return o1.getTransactionPostedDate().compareTo(o2.getTransactionPostedDate());
             }
         });
 		
-		logger.info("LoggedDBOperation: function-inquiry; table:transaction; rows:" + this.getFullTransactionsList().size());
+		logger.info("LoggedDBOperation: function-inquiry; table:transaction (two years only); rows:" + this.getTwoYearsTransactionsList().size());
 	}
 
 	private void refreshListsAndMaps(String function, DynamoTransaction dynamoTransaction)
 	{
-		Integer transactionID = dynamoTransaction.getTransactionID();
+		//Integer transactionID = dynamoTransaction.getTransactionID();
 		
 		if (function.equalsIgnoreCase("delete"))
 		{
@@ -197,5 +221,13 @@ public class TransactionDAO implements Serializable
 
     public void setFullTransactionsList(List<DynamoTransaction> fullTransactionsList) {
         this.fullTransactionsList = fullTransactionsList;
+    }
+
+    public List<DynamoTransaction> getTwoYearsTransactionsList() {
+        return twoYearsTransactionsList;
+    }
+
+    public void setTwoYearsTransactionsList(List<DynamoTransaction> twoYearsTransactionsList) {
+        this.twoYearsTransactionsList = twoYearsTransactionsList;
     }
 }

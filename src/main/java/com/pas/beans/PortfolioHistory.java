@@ -19,7 +19,7 @@ public class PortfolioHistory implements Serializable
 
 	//private static Logger logger = LogManager.getLogger(PortfolioHistory.class);	
 	
-	private Integer portfolioHistoryID;
+	private Integer iPortfolioHistoryID;
     private String accountName;
     private Integer accountID;
     private String historyDate; 
@@ -31,12 +31,12 @@ public class PortfolioHistory implements Serializable
     }
 
     @DynamoDbPartitionKey	
-	public Integer getPortfolioHistoryID() {
-		return portfolioHistoryID;
+    public Integer getiPortfolioHistoryID() {
+		return iPortfolioHistoryID;
 	}
 
-	public void setPortfolioHistoryID(Integer iPortfolioHistoryID) {
-		this.portfolioHistoryID = iPortfolioHistoryID;
+	public void setiPortfolioHistoryID(Integer iPortfolioHistoryID) {
+		this.iPortfolioHistoryID = iPortfolioHistoryID;
 	}
 
 	public String getAccountName() {
@@ -71,6 +71,6 @@ public class PortfolioHistory implements Serializable
 	public void setValue(BigDecimal value) {
 		this.value = value;
 	}
-    
+ 
     
 }

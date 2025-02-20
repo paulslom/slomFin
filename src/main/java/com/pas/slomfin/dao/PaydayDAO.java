@@ -24,7 +24,7 @@ public class PaydayDAO implements Serializable
     private List<Payday> fullPaydaysList = new ArrayList<>();
 
     private static DynamoDbTable<Payday> paydaysTable;
-    private static final String AWS_TABLE_NAME = "SlomFinPayday";
+    private static final String AWS_TABLE_NAME = "slomFinPayday";
 
     public PaydayDAO(DynamoClients dynamoClients2)
     {

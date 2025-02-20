@@ -1,17 +1,16 @@
 package com.pas.beans;
 
-import java.io.*;
+import java.io.Serial;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.StringTokenizer;
 
-import com.pas.spring.SpringBean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.pas.dynamodb.DateToStringConverter;
 import com.pas.dynamodb.DynamoTransaction;
-import com.pas.util.Utils;
+import com.pas.spring.SpringBean;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
@@ -21,7 +20,6 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.ActionEvent;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Named("pc_Transaction")
 @SessionScoped

@@ -33,7 +33,7 @@ public class AccountDAO implements Serializable
 	
 	private static DynamoClients dynamoClients;
 	private static DynamoDbTable<Account> accountsTable;
-	private static final String AWS_TABLE_NAME = "SlomFinAccounts";
+	private static final String AWS_TABLE_NAME = "slomFinAccounts";
 		
 	public AccountDAO(DynamoClients dynamoClients2) 
 	{

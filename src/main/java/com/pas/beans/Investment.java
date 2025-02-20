@@ -18,8 +18,8 @@ public class Investment implements Serializable
 
 	//private static Logger logger = LogManager.getLogger(Investment.class);	
 	
-	private Integer investmentID;
-	private Integer investmentTypeID;
+	private Integer iInvestmentID;
+	private Integer iInvestmentTypeID;
 	private String  tickerSymbol;
 	private String description;
 	private BigDecimal currentPrice; 
@@ -30,23 +30,6 @@ public class Investment implements Serializable
     public String toString()
 	{
 		return description;
-	}
-
-    @DynamoDbPartitionKey
-	public Integer getInvestmentID() {
-		return investmentID;
-	}
-
-	public void setInvestmentID(Integer iInvestmentID) {
-		this.investmentID = iInvestmentID;
-	}
-
-	public Integer getInvestmentTypeID() {
-		return investmentTypeID;
-	}
-
-	public void setInvestmentTypeID(Integer iInvestmentTypeID) {
-		this.investmentTypeID = iInvestmentTypeID;
 	}
 
 	public String getTickerSymbol() {
@@ -96,6 +79,23 @@ public class Investment implements Serializable
 
 	public void setAssetClass(String assetClass) {
 		this.assetClass = assetClass;
+	}
+
+	@DynamoDbPartitionKey
+	public Integer getiInvestmentID() {
+		return iInvestmentID;
+	}
+
+	public void setiInvestmentID(Integer iInvestmentID) {
+		this.iInvestmentID = iInvestmentID;
+	}
+
+	public Integer getiInvestmentTypeID() {
+		return iInvestmentTypeID;
+	}
+
+	public void setiInvestmentTypeID(Integer iInvestmentTypeID) {
+		this.iInvestmentTypeID = iInvestmentTypeID;
 	}
 	
 	

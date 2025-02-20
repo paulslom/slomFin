@@ -23,7 +23,7 @@ public class PortfolioHistoryDAO implements Serializable
     private List<PortfolioHistory> fullPortfolioHistoryList = new ArrayList<>();
 
     private static DynamoDbTable<PortfolioHistory> portfolioHistoryTable;
-    private static final String AWS_TABLE_NAME = "SlomFinPortfolioHistory";
+    private static final String AWS_TABLE_NAME = "slomFinPortfolioHistory";
 
     public PortfolioHistoryDAO(DynamoClients dynamoClients2)
     {
@@ -41,7 +41,7 @@ public class PortfolioHistoryDAO implements Serializable
     {
         PortfolioHistory portfolioHistory2 = dynamoUpsert(portfolioHistory);
 
-        portfolioHistory.setPortfolioHistoryID(portfolioHistory2.getPortfolioHistoryID());
+        portfolioHistory.setiPortfolioHistoryID(portfolioHistory2.getiPortfolioHistoryID());
 
         logger.info("LoggedDBOperation: function-add; table:portfolioHistory; rows:1");
 
@@ -49,26 +49,26 @@ public class PortfolioHistoryDAO implements Serializable
 
         logger.info("addPortfolioHistory complete");
 
-        return portfolioHistory2.getPortfolioHistoryID(); //this is the key that was just added
+        return portfolioHistory2.getiPortfolioHistoryID(); //this is the key that was just added
     }
 
     private PortfolioHistory dynamoUpsert(PortfolioHistory portfolioHistory) throws Exception
     {
         PortfolioHistory dynamoPortfolioHistory = new PortfolioHistory();
 
-        if (portfolioHistory.getPortfolioHistoryID() == null)
+        if (portfolioHistory.getiPortfolioHistoryID() == null)
         {
             Integer currentMaxPortfolioHistoryID = 0;
             for (int i = 0; i < this.getFullPortfolioHistoryList().size(); i++)
             {
                 PortfolioHistory portfolioHistory2 = this.getFullPortfolioHistoryList().get(i);
-                currentMaxPortfolioHistoryID = portfolioHistory2.getPortfolioHistoryID();
+                currentMaxPortfolioHistoryID = portfolioHistory2.getiPortfolioHistoryID();
             }
-            dynamoPortfolioHistory.setPortfolioHistoryID(currentMaxPortfolioHistoryID + 1);
+            dynamoPortfolioHistory.setiPortfolioHistoryID(currentMaxPortfolioHistoryID + 1);
         }
         else
         {
-            dynamoPortfolioHistory.setPortfolioHistoryID(portfolioHistory.getPortfolioHistoryID());
+            dynamoPortfolioHistory.setiPortfolioHistoryID(portfolioHistory.getiPortfolioHistoryID());
         }
 
         PutItemEnhancedRequest<PortfolioHistory> putItemEnhancedRequest = PutItemEnhancedRequest.builder(PortfolioHistory.class).item(dynamoPortfolioHistory).build();
@@ -97,7 +97,7 @@ public class PortfolioHistoryDAO implements Serializable
 
         logger.info("LoggedDBOperation: function-inquiry; table:portfolioHistory; rows:{}", this.getFullPortfolioHistoryList().size());
 
-        this.setFullPortfolioHistoryMap(this.getFullPortfolioHistoryList().stream().collect(Collectors.toMap(PortfolioHistory::getPortfolioHistoryID, ply -> ply)));
+        this.setFullPortfolioHistoryMap(this.getFullPortfolioHistoryList().stream().collect(Collectors.toMap(PortfolioHistory::getiPortfolioHistoryID, ply -> ply)));
 
         this.getFullPortfolioHistoryList().sort(new Comparator<PortfolioHistory>() {
             public int compare(PortfolioHistory o1, PortfolioHistory o2) {
@@ -110,16 +110,16 @@ public class PortfolioHistoryDAO implements Serializable
     {
         if (function.equalsIgnoreCase("delete"))
         {
-            this.getFullPortfolioHistoryMap().remove(portfolioHistory.getPortfolioHistoryID());
+            this.getFullPortfolioHistoryMap().remove(portfolioHistory.getiPortfolioHistoryID());
         }
         else if (function.equalsIgnoreCase("add"))
         {
-            this.getFullPortfolioHistoryMap().put(portfolioHistory.getPortfolioHistoryID(), portfolioHistory);
+            this.getFullPortfolioHistoryMap().put(portfolioHistory.getiPortfolioHistoryID(), portfolioHistory);
         }
         else if (function.equalsIgnoreCase("update"))
         {
-            this.getFullPortfolioHistoryMap().remove(portfolioHistory.getPortfolioHistoryID());
-            this.getFullPortfolioHistoryMap().put(portfolioHistory.getPortfolioHistoryID(), portfolioHistory);
+            this.getFullPortfolioHistoryMap().remove(portfolioHistory.getiPortfolioHistoryID());
+            this.getFullPortfolioHistoryMap().put(portfolioHistory.getiPortfolioHistoryID(), portfolioHistory);
         }
 
         this.getFullPortfolioHistoryList().clear();
@@ -128,7 +128,7 @@ public class PortfolioHistoryDAO implements Serializable
 
         this.getFullPortfolioHistoryList().sort(new Comparator<PortfolioHistory>() {
             public int compare(PortfolioHistory o1, PortfolioHistory o2) {
-                return o1.getPortfolioHistoryID().compareTo(o2.getPortfolioHistoryID());
+                return o1.getiPortfolioHistoryID().compareTo(o2.getiPortfolioHistoryID());
             }
         });
 

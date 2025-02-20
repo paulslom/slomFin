@@ -2,25 +2,26 @@ package com.pas.beans;
 
 import java.io.Serializable;
 
-import com.pas.dynamodb.DynamoTransaction;
-import com.pas.slomfin.dao.InvestmentDAO;
-import com.pas.slomfin.dao.PortfolioHistoryDAO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.pas.dynamodb.DynamoClients;
+import com.pas.dynamodb.DynamoTransaction;
 import com.pas.dynamodb.DynamoUtil;
-import com.pas.slomfin.dao.TransactionDAO;
 import com.pas.slomfin.dao.AccountDAO;
+import com.pas.slomfin.dao.InvestmentDAO;
+import com.pas.slomfin.dao.PortfolioHistoryDAO;
+import com.pas.slomfin.dao.TransactionDAO;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.Initialized;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Named;
 
 @Named("pc_SlomFinMain")
-@SessionScoped
+@ApplicationScoped
 public class SlomFinMain implements Serializable
 {
 	private static final long serialVersionUID = 1L;
@@ -44,10 +45,9 @@ public class SlomFinMain implements Serializable
 	private AccountDAO accountDAO;
 	private PortfolioHistoryDAO portfolioHistoryDAO;
 	
-	@PostConstruct
-	public void init() 
+	public void onStart(@Observes @Initialized(ApplicationScoped.class) Object pointless) 
 	{
-		logger.info("Entering SlomFinMain init method.  Should only be here ONE time");
+		logger.info("Entering SlomFinMain onStart method.  Should only be here ONE time");
 		logger.info("SlomFinMain id is: " + this.getId());
 		this.setSiteTitle("Slomkowski Financial");
 		
@@ -74,6 +74,7 @@ public class SlomFinMain implements Serializable
 	{
 		logger.info("entering loadTransactions");
 		transactionDAO = new TransactionDAO(dynamoClients);
+		transactionDAO.readAllTransactionsFromDB();
 		transactionDAO.readTransactionsWithin2YearsFromDB();
 		logger.info("Transactions read in. List size = " + transactionDAO.getFullTransactionsList().size());
 	}
@@ -94,8 +95,12 @@ public class SlomFinMain implements Serializable
 		logger.info("Accounts read in. List size = " + accountDAO.getFullAccountsList().size());
 	}
 
-	private void loadPortfolioHistory(DynamoClients dynamoClients) throws Exception {
-
+	private void loadPortfolioHistory(DynamoClients dynamoClients) throws Exception 
+	{
+		logger.info("entering loadPortfolioHistory");
+		portfolioHistoryDAO = new PortfolioHistoryDAO(dynamoClients);
+		portfolioHistoryDAO.readPortfolioHistoryFromDB();
+		logger.info("Portfolio History read in. List size = " + portfolioHistoryDAO.getFullPortfolioHistoryList().size());
 	}
 	
 	public String getSignedOnUserName()

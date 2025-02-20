@@ -28,7 +28,7 @@ public class SlomFinSecurityDAO implements Serializable
 
 	private static DynamoClients dynamoClients;
 	private static DynamoDbTable<AppSecurity> usersTable;
-	private static final String AWS_TABLE_NAME = "nflsecurity";
+	private static final String AWS_TABLE_NAME = "slomFinSecurity";
 	
 	public SlomFinSecurityDAO(DynamoClients dynamoClients2, SlomFinMain nflmain) 
 	{

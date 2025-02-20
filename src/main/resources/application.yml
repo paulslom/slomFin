@@ -2,7 +2,7 @@
 
 server:
   servlet:
-    context-path: /nfl
+    context-path: /slomfin
     register-default-servlet: true
   tomcat:
     relaxed-query-chars: "|,{,},[,]"

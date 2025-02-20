@@ -17,8 +17,8 @@ public class InvestmentsRowMapper implements RowMapper<Investment>, Serializable
     {
 		Investment investment = new Investment();
 				
-		investment.setInvestmentID(rs.getInt("iInvestmentID"));
-		investment.setInvestmentTypeID(rs.getInt("iInvestmentTypeID"));
+		investment.setiInvestmentID(rs.getInt("iInvestmentID"));
+		investment.setiInvestmentTypeID(rs.getInt("iInvestmentTypeID"));
 		investment.setTickerSymbol(rs.getString("sTickerSymbol"));
 		investment.setDescription(rs.getString("sDescription"));
 		investment.setCurrentPrice(rs.getBigDecimal("mCurrentPrice"));

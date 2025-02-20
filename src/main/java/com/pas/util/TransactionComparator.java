@@ -3,7 +3,6 @@ package com.pas.util;
 import java.util.Comparator;
 
 import com.pas.dynamodb.DynamoTransaction;
-import jakarta.faces.model.SelectItem;
 
 public class TransactionComparator implements Comparator<DynamoTransaction>
 {
