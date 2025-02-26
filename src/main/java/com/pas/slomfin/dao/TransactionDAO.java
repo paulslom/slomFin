@@ -2,31 +2,36 @@ package com.pas.slomfin.dao;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.Date;
+//import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
+//import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.pas.dynamodb.DateToStringConverter;
 import com.pas.dynamodb.DynamoClients;
 import com.pas.dynamodb.DynamoTransaction;
-import com.pas.util.TransactionComparator;
+import com.pas.util.TransactionComparatorAscDate;
+import com.pas.util.TransactionComparatorDescDate;
 import com.pas.util.Utils;
 
+import jakarta.faces.model.SelectItem;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.Expression;
+//import software.amazon.awssdk.enhanced.dynamodb.Expression;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.enhanced.dynamodb.model.DeleteItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
-import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+//import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
+//import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 public class TransactionDAO implements Serializable 
 {
@@ -36,8 +41,13 @@ public class TransactionDAO implements Serializable
 	
 	private Map<Integer,DynamoTransaction> fullTransactionsMap = new HashMap<>();
 	private List<DynamoTransaction> fullTransactionsList = new ArrayList<>();
-	private List<DynamoTransaction> twoYearsTransactionsList = new ArrayList<>();
-
+	
+	private Map<Integer,List<DynamoTransaction>> last2YearsTransactionsMapByAccountID = new HashMap<>();
+	private Map<Integer,List<DynamoTransaction>> fullTransactionsMapByAccountID = new HashMap<>();
+	
+	private Map<Integer,String> wdCategoryMap = new HashMap<>();
+	private List<SelectItem> wdCategoryDropdownList = new ArrayList<>();
+	
     private static DynamoDbTable<DynamoTransaction> transactionsTable;
 	private static final String AWS_TABLE_NAME = "slomFinTransactions";
 	
@@ -58,17 +68,17 @@ public class TransactionDAO implements Serializable
 	
 	public Integer addTransaction(DynamoTransaction dynamoTransaction) throws Exception
 	{
-		DynamoTransaction nflGame2 = dynamoUpsert(dynamoTransaction);		
+		DynamoTransaction d2 = dynamoUpsert(dynamoTransaction);		
 		 
-		dynamoTransaction.setTransactionID(nflGame2.getTransactionID());
+		dynamoTransaction.setTransactionID(d2.getTransactionID());
 		
 		logger.info("LoggedDBOperation: function-add; table:transaction; rows:1");
 	
 		refreshListsAndMaps("add", dynamoTransaction);	
 					
-		logger.info("addTransaction complete. added transactionID: " + nflGame2.getTransactionID());		
+		logger.info("addTransaction complete. added transactionID: " + d2.getTransactionID());		
 		
-		return nflGame2.getTransactionID(); //this is the key that was just added
+		return d2.getTransactionID(); //this is the key that was just added
 	}
 	
 	public DynamoTransaction getTransactionByTransactionID(Integer transactionId)
@@ -80,8 +90,8 @@ public class TransactionDAO implements Serializable
 	{
 		if (dynamoTransaction.getTransactionID() == null)
 		{
-			Integer nextGameID = determineNextTransactionId();
-			dynamoTransaction.setTransactionID(nextGameID);
+			Integer nextTrxID = determineNextTransactionId();
+			dynamoTransaction.setTransactionID(nextTrxID);
 		}
 						
 		PutItemEnhancedRequest<DynamoTransaction> putItemEnhancedRequest = PutItemEnhancedRequest.builder(DynamoTransaction.class).item(dynamoTransaction).build();
@@ -114,7 +124,7 @@ public class TransactionDAO implements Serializable
 	
 	public void deleteTransaction(DynamoTransaction dynamoTransaction) throws Exception 
 	{
-		Key key = Key.builder().partitionValue(dynamoTransaction.getTransactionID()).build();
+		Key key = Key.builder().partitionValue(dynamoTransaction.getTransactionID()).sortValue(dynamoTransaction.getTransactionPostedDate()).build();
 		DeleteItemEnhancedRequest deleteItemEnhancedRequest = DeleteItemEnhancedRequest.builder().key(key).build();
 		transactionsTable.deleteItem(deleteItemEnhancedRequest);
 		
@@ -129,19 +139,93 @@ public class TransactionDAO implements Serializable
 	{
 		for (DynamoTransaction dynamoTransaction : transactionsTable.scan().items())
 		{
+			dynamoTransaction.setPostedDateJava(DateToStringConverter.unconvert(dynamoTransaction.getTransactionPostedDate()));
+			dynamoTransaction.setEntryDateJava(DateToStringConverter.unconvert(dynamoTransaction.getTransactionEntryDate()));
 			this.getFullTransactionsList().add(dynamoTransaction);
 			this.getFullTransactionsMap().put(dynamoTransaction.getTransactionID(), dynamoTransaction);
 		}
 
 		logger.info("LoggedDBOperation: function-inquiry; table:transactions; rows:{}", this.getFullTransactionsList().size());
 
-		this.getFullTransactionsList().sort(new Comparator<DynamoTransaction>() {
-			public int compare(DynamoTransaction o1, DynamoTransaction o2) {
-				return o1.getTransactionPostedDate().compareTo(o2.getTransactionPostedDate());
+		Collections.sort(this.getFullTransactionsList(), new TransactionComparatorAscDate());
+		
+		//establish account trx map
+		for (int i = 0; i < this.getFullTransactionsList().size(); i++) 
+		{
+			DynamoTransaction trx = this.getFullTransactionsList().get(i);
+			
+			logger.debug("looping transaction: " + i);
+			
+			if (this.getFullTransactionsMapByAccountID().containsKey(trx.getAccountID()))
+			{
+				List<DynamoTransaction> tempList = this.getFullTransactionsMapByAccountID().get(trx.getAccountID());
+				tempList.add(trx);
+				this.getFullTransactionsMapByAccountID().replace(trx.getAccountID(), tempList);
 			}
-		});
+			else
+			{
+				List<DynamoTransaction> tempList = new ArrayList<>();
+				tempList.add(trx);
+				this.getFullTransactionsMapByAccountID().put(trx.getAccountID(), tempList);	
+			}
+			
+			if (trx.getWdCategoryID() != null && trx.getWdCategoryID() != 0)
+			{
+				if (!this.getWdCategoryMap().containsKey(trx.getWdCategoryID()))
+				{
+					this.getWdCategoryMap().put(trx.getWdCategoryID(), trx.getWdCategoryDescription());					
+				}
+			}			
+			
+		}
+		
+		this.setWdCategoryMap(Utils.sortHashMapByValues(this.getWdCategoryMap()));
+		
+		for (Integer key : this.getWdCategoryMap().keySet()) 
+		{
+            String value = this.getWdCategoryMap().get(key);
+            SelectItem si = new SelectItem();
+			si.setValue(key);
+			si.setLabel(value);
+			this.getWdCategoryDropdownList().add(si);
+        }
+		
+		//establish the individual account maps		
+		for (Integer accountID : this.getFullTransactionsMapByAccountID().keySet()) 
+		{
+			logger.debug("working on transactions for: " + accountID);
+			List<DynamoTransaction> newList = resetAccount2YearMap(accountID);
+            logger.debug("total transactions for " + accountID + " = " + newList.size());            
+            this.getLast2YearsTransactionsMapByAccountID().put(accountID, newList);
+        }
 	}
 
+	private List<DynamoTransaction> resetAccount2YearMap(Integer accountID) 
+	{
+		Date twoYearsAgo = Utils.getTwoYearsAgoDate();
+		
+		List<DynamoTransaction> tempList = this.getFullTransactionsMapByAccountID().get(accountID);
+        Collections.sort(tempList, new TransactionComparatorAscDate());
+        List<DynamoTransaction> currentBalanceList = Utils.setAccountBalances(tempList, new BigDecimal(0.0));
+        List<DynamoTransaction> newList = new ArrayList<>(currentBalanceList);
+        List<DynamoTransaction> found = new ArrayList<>();
+        for (int i = 0; i < newList.size(); i++) 
+        {
+        	DynamoTransaction trx = newList.get(i);
+        	if (trx.getPostedDateJava().before(twoYearsAgo))
+        	{
+        		found.add(trx);
+        	}
+		}
+        
+        newList.removeAll(found);
+        
+        Collections.sort(newList, new TransactionComparatorDescDate());
+        
+		return newList;
+	}
+
+	/*
 	public void readTransactionsWithin2YearsFromDB() throws Exception 
     {
 		logger.info("entering readTransactionsWithin2YearsFromDB");
@@ -168,7 +252,7 @@ public class TransactionDAO implements Serializable
 			//trxCount++;
 			//logger.info("iterating transaction " + trxCount);
 			DynamoTransaction dynamoTransaction = results.next();
-
+			dynamoTransaction.setPostedDateJava(DateToStringConverter.unconvert(dynamoTransaction.getTransactionPostedDate()));
             this.getTwoYearsTransactionsList().add(dynamoTransaction);
         }
 		
@@ -180,29 +264,76 @@ public class TransactionDAO implements Serializable
 		
 		logger.info("LoggedDBOperation: function-inquiry; table:transaction (two years only); rows:" + this.getTwoYearsTransactionsList().size());
 	}
-
+    */
+	
 	private void refreshListsAndMaps(String function, DynamoTransaction dynamoTransaction)
 	{
-		//Integer transactionID = dynamoTransaction.getTransactionID();
-		
 		if (function.equalsIgnoreCase("delete"))
 		{
 			this.getFullTransactionsMap().remove(dynamoTransaction.getTransactionID());
+			
+			List<DynamoTransaction> found = new ArrayList<>();
+			List<DynamoTransaction> accountTrxList = this.getFullTransactionsMapByAccountID().get(dynamoTransaction.getAccountID());
+			List<DynamoTransaction> newList = this.getFullTransactionsMapByAccountID().get(dynamoTransaction.getAccountID());
+			for (int i = 0; i < accountTrxList.size(); i++) 
+			{
+				DynamoTransaction trx = accountTrxList.get(i);
+				if (trx.getTransactionID() == dynamoTransaction.getTransactionID())
+				{
+					found.add(trx);
+					break;
+				}
+			}
+			newList.removeAll(found);
+			this.getFullTransactionsMapByAccountID().replace(dynamoTransaction.getAccountID(), newList);	
+			
+			List<DynamoTransaction> newList2 = resetAccount2YearMap(dynamoTransaction.getAccountID());
+			this.getLast2YearsTransactionsMapByAccountID().replace(dynamoTransaction.getAccountID(), newList2);		
 		}
 		else if (function.equalsIgnoreCase("add"))
 		{
 			this.getFullTransactionsMap().put(dynamoTransaction.getTransactionID(), dynamoTransaction);
+			
+			if (!this.getFullTransactionsMapByAccountID().containsKey(dynamoTransaction.getAccountID()))
+			{
+				this.getFullTransactionsMapByAccountID().put(dynamoTransaction.getAccountID(), new ArrayList<DynamoTransaction>());
+			}
+			ArrayList<DynamoTransaction> newList = new ArrayList<>(this.getFullTransactionsMapByAccountID().get(dynamoTransaction.getAccountID()));
+			newList.add(dynamoTransaction);
+			this.getFullTransactionsMapByAccountID().replace(dynamoTransaction.getAccountID(), newList);			
+			
+			List<DynamoTransaction> newList2 = resetAccount2YearMap(dynamoTransaction.getAccountID());
+			this.getLast2YearsTransactionsMapByAccountID().replace(dynamoTransaction.getAccountID(), newList2);	
 		}
 		else if (function.equalsIgnoreCase("update"))
 		{
 			this.getFullTransactionsMap().remove(dynamoTransaction.getTransactionID());
 			this.getFullTransactionsMap().put(dynamoTransaction.getTransactionID(), dynamoTransaction);
+			
+			List<DynamoTransaction> found = new ArrayList<>();
+			List<DynamoTransaction> accountTrxList = this.getFullTransactionsMapByAccountID().get(dynamoTransaction.getAccountID());
+			List<DynamoTransaction> newList = this.getFullTransactionsMapByAccountID().get(dynamoTransaction.getAccountID());
+			for (int i = 0; i < accountTrxList.size(); i++) 
+			{
+				DynamoTransaction trx = accountTrxList.get(i);
+				if (trx.getTransactionID() == dynamoTransaction.getTransactionID())
+				{
+					found.add(trx);
+					break;
+				}
+			}
+			newList.removeAll(found);
+			newList.add(dynamoTransaction);
+			this.getFullTransactionsMapByAccountID().replace(dynamoTransaction.getAccountID(), newList);
+			
+			List<DynamoTransaction> newList2 = resetAccount2YearMap(dynamoTransaction.getAccountID());
+			this.getLast2YearsTransactionsMapByAccountID().replace(dynamoTransaction.getAccountID(), newList2);		
 		}
-		
+				
 		this.getFullTransactionsList().clear();
 		Collection<DynamoTransaction> values = this.getFullTransactionsMap().values();
 		this.setFullTransactionsList(new ArrayList<>(values));
-		this.getFullTransactionsList().sort(new TransactionComparator());
+		this.getFullTransactionsList().sort(new TransactionComparatorAscDate());
 
 	}
 
@@ -223,11 +354,38 @@ public class TransactionDAO implements Serializable
         this.fullTransactionsList = fullTransactionsList;
     }
 
-    public List<DynamoTransaction> getTwoYearsTransactionsList() {
-        return twoYearsTransactionsList;
-    }
+	public Map<Integer, String> getWdCategoryMap() {
+		return wdCategoryMap;
+	}
 
-    public void setTwoYearsTransactionsList(List<DynamoTransaction> twoYearsTransactionsList) {
-        this.twoYearsTransactionsList = twoYearsTransactionsList;
-    }
+	public void setWdCategoryMap(Map<Integer, String> wdCategoryMap) {
+		this.wdCategoryMap = wdCategoryMap;
+	}
+
+	public List<SelectItem> getWdCategoryDropdownList() {
+		return wdCategoryDropdownList;
+	}
+
+	public void setWdCategoryDropdownList(List<SelectItem> wdCategoryDropdownList) {
+		this.wdCategoryDropdownList = wdCategoryDropdownList;
+	}
+
+	public Map<Integer, List<DynamoTransaction>> getLast2YearsTransactionsMapByAccountID() 
+	{
+		return last2YearsTransactionsMapByAccountID;
+	}
+
+	public void setLast2YearsTransactionsMapByAccountID(Map<Integer, List<DynamoTransaction>> last2YearsTransactionsMapByAccountID) 
+	{
+		this.last2YearsTransactionsMapByAccountID = last2YearsTransactionsMapByAccountID;
+	}
+
+	public Map<Integer, List<DynamoTransaction>> getFullTransactionsMapByAccountID() {
+		return fullTransactionsMapByAccountID;
+	}
+
+	public void setFullTransactionsMapByAccountID(Map<Integer, List<DynamoTransaction>> fullTransactionsMapByAccountID) {
+		this.fullTransactionsMapByAccountID = fullTransactionsMapByAccountID;
+	}
+
 }

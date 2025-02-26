@@ -22,6 +22,8 @@ public class InvestmentDAO implements Serializable
     private Map<Integer, Investment> fullInvestmentsMap = new HashMap<>();
     private List<Investment> fullInvestmentsList = new ArrayList<>();
 
+    private Integer cashInvestmentId;
+    
     private static DynamoDbTable<Investment> investmentsTable;
     private static final String AWS_TABLE_NAME = "slomFinInvestments";
 
@@ -105,6 +107,11 @@ public class InvestmentDAO implements Serializable
 			Investment investment = this.getFullInvestmentsList().get(i);
 			//logger.info("About to store investment ID in map: " + investment.getiInvestmentID() + " which is: " + investment.getDescription());
 			this.getFullInvestmentsMap().put(investment.getiInvestmentID(), investment);
+			
+			if (investment.getTickerSymbol() != null && investment.getTickerSymbol().equalsIgnoreCase("CASH"))
+			{
+				this.setCashInvestmentId(investment.getiInvestmentID());
+			}
 		}
         this.setFullInvestmentsMap(this.getFullInvestmentsList().stream().collect(Collectors.toMap(Investment::getiInvestmentID, ply -> ply)));
 
@@ -165,4 +172,12 @@ public class InvestmentDAO implements Serializable
     {
         return this.getFullInvestmentsMap().get(investmentId);
     }
+
+	public Integer getCashInvestmentId() {
+		return cashInvestmentId;
+	}
+
+	public void setCashInvestmentId(Integer cashInvestmentId) {
+		this.cashInvestmentId = cashInvestmentId;
+	}
 }

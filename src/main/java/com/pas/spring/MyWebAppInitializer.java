@@ -49,6 +49,7 @@ public class MyWebAppInitializer implements ServletContextInitializer
             sc.setInitParameter("jakarta.faces.ENABLE_CDI_RESOLVER_CHAIN","true");
             sc.setInitParameter("jakarta.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE", "true");
             sc.setInitParameter("primefaces.UPLOADER", "commons");
+            sc.setInitParameter("session-timeout", "30");
             
             ServletRegistration.Dynamic elResolverInitializer = sc.addServlet("elResolverInit", new ELResolverInitializerServlet());
             elResolverInitializer.setLoadOnStartup(2);

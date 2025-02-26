@@ -2,11 +2,13 @@ package com.pas.dynamodb;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 //import org.apache.logging.log4j.LogManager;
 //import org.apache.logging.log4j.Logger;
 
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbIgnore;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
@@ -18,32 +20,42 @@ public class DynamoTransaction implements Serializable
 
 	//private static Logger logger = LogManager.getLogger(DynamoTransaction.class);	
 	
-	private Integer transactionID;
+	
 	private Integer accountID;
-	private Integer investmentID;
-	private Integer transactionTypeID;
-	private String transactionDate;
-	private BigDecimal units;
-	private BigDecimal price;
+	private String accountName;
+	private Integer cashDepositTypeID;
+	private String cashDepositTypeDescription;
+	private Integer checkNo;
 	private BigDecimal costProceeds;
+	private Integer dividendTaxableYear;
+	private BigDecimal effectiveAmount;
+	private String expirationDate;
+	private Boolean finalTrxOfBillingCycle;
+	private Integer investmentID;
+	private String investmentDescription;
+	private Boolean openingTrxInd;
+	private Integer optionTypeID;
+	private BigDecimal price;
+	private BigDecimal strikePrice;
+	private String transactionDescription;
+	private Integer transactionID;
+	private Integer transactionTypeID;
+	private String transactionTypeDescription;
+	private String transactionDate;
 	private String transactionEntryDate;	
     private String transactionPostedDate;
     private String transactionChangeDate;
-    private Integer dividendTaxableYear;
-    private BigDecimal effectiveAmount;
-    private Integer optionTypeID;
-    private BigDecimal strikePrice;
-    private String expirationDate;
-    private Boolean openingTrxInd;
-    private Integer checkNo;
-    private String transactionDescription;
+    private Boolean trxTypPositiveInd;
+    private BigDecimal units;
     private Integer wdCategoryID;
-    private Integer cashDepositTypeID;
-    private Boolean finalTrxOfBillingCycle;
-    private String accountName;
-    private String investmentDescription;
     private String wdCategoryDescription;
-    private String cashDepositTypeDescription;
+    
+    //dynamodbignore fields
+    private Date entryDateJava;
+    private Date postedDateJava;
+    private BigDecimal currentBalance;
+    private String trxStyleClass;
+    private String balanceStyleClass;
         
     public String toString()
     {
@@ -259,6 +271,72 @@ public class DynamoTransaction implements Serializable
 
 	public void setCashDepositTypeDescription(String cashDepositTypeDescription) {
 		this.cashDepositTypeDescription = cashDepositTypeDescription;
+	}
+
+	@DynamoDbIgnore
+	public Date getPostedDateJava() {
+		return postedDateJava;
+	}
+
+	@DynamoDbIgnore
+	public void setPostedDateJava(Date postedDateJava) {
+		this.postedDateJava = postedDateJava;
+	}
+
+	@DynamoDbIgnore
+	public BigDecimal getCurrentBalance() {
+		return currentBalance;
+	}
+
+	@DynamoDbIgnore
+	public void setCurrentBalance(BigDecimal currentBalance) {
+		this.currentBalance = currentBalance;
+	}
+
+	public String getTransactionTypeDescription() {
+		return transactionTypeDescription;
+	}
+
+	public void setTransactionTypeDescription(String transactionTypeDescription) {
+		this.transactionTypeDescription = transactionTypeDescription;
+	}
+
+	@DynamoDbIgnore
+	public String getTrxStyleClass() {
+		return trxStyleClass;
+	}
+
+	@DynamoDbIgnore
+	public void setTrxStyleClass(String trxStyleClass) {
+		this.trxStyleClass = trxStyleClass;
+	}
+
+	public Boolean getTrxTypPositiveInd() {
+		return trxTypPositiveInd;
+	}
+
+	public void setTrxTypPositiveInd(Boolean trxTypPositiveInd) {
+		this.trxTypPositiveInd = trxTypPositiveInd;
+	}
+
+	@DynamoDbIgnore
+	public String getBalanceStyleClass() {
+		return balanceStyleClass;
+	}
+
+	@DynamoDbIgnore
+	public void setBalanceStyleClass(String balanceStyleClass) {
+		this.balanceStyleClass = balanceStyleClass;
+	}
+
+	@DynamoDbIgnore
+	public Date getEntryDateJava() {
+		return entryDateJava;
+	}
+
+	@DynamoDbIgnore
+	public void setEntryDateJava(Date entryDateJava) {
+		this.entryDateJava = entryDateJava;
 	}
   
 

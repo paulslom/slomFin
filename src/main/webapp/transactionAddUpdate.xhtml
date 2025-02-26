@@ -1,0 +1,232 @@
+<ui:composition template="template.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+     
+    <ui:define name="content">
+    
+         <h:form id="transactionAddUpdateForm">                      
+     
+             <p:messages id="facesMessagesID" showDetail="false"/>
+            
+            <table>
+            
+           	   <colgroup>
+           	       <col width="50%"/>
+           	       <col width="50%"/>
+           	   </colgroup>
+           	   
+               <p:blockUI block="transactionAddUpdateForm" widgetVar="blockWidgetVar"> 
+			       <p:graphicImage value="/images/wait.gif"/>  
+			   </p:blockUI> 
+				
+			   <tr>
+			   
+			      <td colspan="2" align="center">
+			   		  <h:outputText value="#{pc_SlomFinMain.transactionAcidSetting} Transaction" styleClass="pageSectionTitle"/>
+			   	  </td>
+			   	  
+			   </tr>
+			   
+			   <tr>
+			   
+			      <td colspan="2" align="center">
+			      
+			   		  <p:commandButton id="UpdateId1" 				   
+						    value="Add" 	
+						    rendered="#{pc_SlomFinMain.transactionAcidSetting eq 'Add'}"
+						    action="#{pc_SlomFinMain.addChangeDelTransaction}"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"
+						    update="transactionAddUpdateForm">
+					  </p:commandButton>
+					  
+					  <p:commandButton id="UpdateId2" 				   
+						    value="Update" 	
+						    rendered="#{pc_SlomFinMain.transactionAcidSetting eq 'Update'}"
+						    action="#{pc_SlomFinMain.addChangeDelTransaction}"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"		
+						    update="transactionAddUpdateForm">
+					  </p:commandButton>
+					  
+					  <p:commandButton id="UpdateId3" 				   
+						    value="Delete" 	
+						    rendered="#{pc_SlomFinMain.transactionAcidSetting eq 'Delete'}"
+						    action="#{pc_SlomFinMain.addChangeDelTransaction}"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"		
+						    update="transactionAddUpdateForm">
+						    <p:confirm header="Confirmation" message="Really completely delete this transaction??" icon="pi pi-exclamation-triangle" />
+					  </p:commandButton>
+							   
+					  <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+					        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+					        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+					  </p:confirmDialog>  
+					  
+					  <p:commandButton id="backId4" 				   
+						    value="Return to trx list"						    
+						    action="#{pc_SlomFinMain.returnToTrxList}"
+						    immediate="true"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"		
+						    update="transactionAddUpdateForm">						    
+					  </p:commandButton>
+					  
+			   	  </td>
+			   	  
+			   </tr>
+			   
+		       <tr>
+	          
+	              <td align="right">
+         		     <p:outputLabel id="transactionidlabelId" value="Transaction Id" rendered="#{pc_SlomFinMain.renderTransactionId}"/> &#xA0;&#xA0;
+		          </td>
+		          
+	              <td align="left">	              
+        		     <h:outputText id="transactionIdId" value="#{pc_SlomFinMain.selectedTransaction.transactionID}" rendered="#{pc_SlomFinMain.renderTransactionId}"/>
+		          </td>
+        	        		
+        	   </tr>
+        	   
+        	   <tr>
+	          
+	              <td align="right">
+         		     <p:outputLabel id="acctlabelId" value="Account Id"/> &#xA0;&#xA0;
+		          </td>
+		          
+	              <td align="left">	              
+        		     <h:outputText id="accountIdId" value="#{pc_SlomFinMain.selectedTransaction.accountID}"/>
+		          </td>
+        	        		
+        	   </tr>
+        	   
+        	   <tr>
+	          
+	              <td align="right">
+         		     <p:outputLabel id="acctNameId" value="Account Name"/> &#xA0;&#xA0;
+		          </td>
+		          
+	              <td align="left">	              
+        		     <h:outputText id="accountNameId" value="#{pc_SlomFinMain.selectedTransaction.accountName}"/>
+		          </td>
+        	        		
+        	   </tr>
+		       
+		       <tr>
+	  		
+		 			<td align="right">
+					    <p:outputLabel for="trxDateID" value="Trx Entered Date"/>
+				    </td>	
+				 
+		            <td align="left">	        
+		               <p:calendar id="trxDateID" 
+			       	        size="23"
+			       	        required="true"
+			       	        rendered="#{pc_SlomFinMain.renderTransactionUpdateFields}"
+			       	        readonlyInput="false" 
+			       	        value="#{pc_SlomFinMain.selectedTransaction.entryDateJava}"
+			       			mode="popup" showOn="both" pattern="MM-dd-yyyy HH:mm:ss" yearRange="c-50:c">						        									            			
+			       	    </p:calendar>
+			       	    <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.entryDateJava}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields}"/>
+		            </td>
+		            
+		       </tr> 
+		       
+		       <tr>
+	  		
+		 			<td align="right">	        
+					    <p:outputLabel for="trxPostedDateID" value="Posted Date"/>
+				    </td>	
+				 
+		            <td align="left">	        
+		               <p:calendar id="trxPostedDateID" 
+			       	        size="23"
+			       	        required="true"
+			       	        rendered="#{pc_SlomFinMain.renderTransactionUpdateFields}"
+			       	        readonlyInput="false" 
+			       	        value="#{pc_SlomFinMain.selectedTransaction.postedDateJava}"
+			       			mode="popup" showOn="both" pattern="MM-dd-yyyy HH:mm:ss" yearRange="c-50:c">						        									            			
+			       	    </p:calendar>
+			       	    <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.postedDateJava}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields}"/>
+		            </td>
+		            
+		       </tr> 
+		       
+		       <tr>
+		            <td align="right">	        
+		               <p:outputLabel for="trxTypeListID" value="Trx Type"/>
+		            </td>
+		            
+		            <td align="left">	        
+					
+					    <p:selectOneMenu id="trxTypeListID" value="#{pc_SlomFinMain.selectedTransaction.transactionTypeID}" required="true"  hideNoSelectionOption="true" 
+					                       rendered="#{pc_SlomFinMain.renderTransactionUpdateFields}">
+					        <f:selectItems value="#{pc_SlomFinMain.trxTypeList}"/>	
+					        <p:ajax event="valueChange" listener="#{pc_SlomFinMain.valueChgTrxType}" update="transactionAddUpdateForm" />				
+						</p:selectOneMenu>
+						
+						<p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.transactionTypeDescription}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields}"/>
+						
+					</td>
+			   </tr>
+			   
+			   <tr>
+	  		
+	 			   <td align="right">	        
+		              <p:outputLabel for="amtID" value="Amount" rendered="#{pc_SlomFinMain.renderTrxAmount}"/>
+		           </td>
+				 
+		           <td align="left">
+		               <p:inputText id="amtID" size="8" value="#{pc_SlomFinMain.selectedTransaction.costProceeds}" required="true" 
+		                            rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxAmount}"/>
+		               <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.costProceeds}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxAmount}"/>		
+		            </td>
+		            
+		       </tr>
+         
+			   <tr>
+		            <td align="right">	        
+		               <p:outputLabel for="wdCatListID" value="Withdrawal Category" rendered="#{pc_SlomFinMain.renderTrxWDCategoriesList}"/>
+		            </td>
+		            
+		            <td align="left">	        
+					
+					    <p:selectOneMenu id="wdCatListID" value="#{pc_SlomFinMain.selectedTransaction.wdCategoryID}" required="true" hideNoSelectionOption="true" 
+					                       rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxWDCategoriesList}">
+					        <f:selectItems value="#{pc_SlomFinMain.wdCategoriesList}"/>		
+						</p:selectOneMenu>
+						
+						<p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.wdCategoryDescription}" 
+							rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields  and pc_SlomFinMain.renderTrxWDCategoriesList}}"/>
+						
+					</td>
+			   </tr>
+	       	   
+        	   <tr>
+	  		
+	 			   <td align="right">	        
+		              <p:outputLabel for="trxDescID" value="Description" rendered="#{pc_SlomFinMain.renderTrxCashDescription}"/>
+		           </td>
+				 
+		           <td align="left">
+		               <p:inputText id="trxDescID" size="50" value="#{pc_SlomFinMain.selectedTransaction.transactionDescription}" required="true" 
+		                            rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxCashDescription}"/>
+		               <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.transactionDescription}" 
+		                    rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxCashDescription}"/>		
+		            </td>
+		            
+		       </tr>         
+        	           		     
+		    </table>
+	                
+	   </h:form>
+   
+    </ui:define>
+
+</ui:composition>
+  

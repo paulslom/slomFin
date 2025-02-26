@@ -1,0 +1,110 @@
+<ui:composition template="template.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+     
+    <ui:define name="content">
+    
+         <h:form id="transactionListForm">                      
+     
+            <p:messages id="facesMessagesID" showDetail="false"/>
+            
+            <table>
+         		
+			   <tr>
+			      <td align="center">
+			   		  <h:outputText value="#{pc_SlomFinMain.trxListTitle}" styleClass="pageSectionTitle"/>
+			   	  </td>
+			   </tr>
+		    
+	          <tr>
+	          
+	              <td>
+	                    
+			  		 <p:dataTable id="trxTableID" value="#{pc_SlomFinMain.trxList}" rowIndexVar="rowIndex"
+				          var="trx" scrollable="true" scrollHeight="950" styleClass="dataTableStyle">						
+						   
+						  <p:column style="width:3%" headerText="Num">												
+							  <h:outputText value="#{rowIndex + 1}"/>															
+						  </p:column>
+						  
+						  <p:column style="width:3%" headerText="View">			
+						   		<p:commandLink actionListener="#{pc_SlomFinMain.selectTransactionAcid}" value="View">
+    								<f:param name="operation" value="View" />
+    								<f:param name="accountId" value="#{trx.accountID}" />
+    								<f:param name="transactionId" value="#{trx.transactionID}" />
+                                </p:commandLink>
+                          </p:column>
+                          
+                          <p:column style="width:3%" headerText="Chg">			
+						   		<p:commandLink actionListener="#{pc_SlomFinMain.selectTransactionAcid}" value="Chg">
+    								<f:param name="operation" value="Update" />
+    								<f:param name="accountId" value="#{trx.accountID}" />
+    								<f:param name="transactionId" value="#{trx.transactionID}" />
+                                </p:commandLink>
+                          </p:column>
+                          
+                          <p:column style="width:3%" headerText="Del">			
+						   		<p:commandLink actionListener="#{pc_SlomFinMain.selectTransactionAcid}" value="Del">
+    								<f:param name="operation" value="Delete" />
+    								<f:param name="accountId" value="#{trx.accountID}" />
+    								<f:param name="transactionId" value="#{trx.transactionID}" />
+                                </p:commandLink>
+                          </p:column>
+                          
+                          <p:column style="width:4%" headerText="Trx ID" sortBy="#{trx.transactionID}">												
+							  <h:outputText value="#{trx.transactionID}"/>															
+						  </p:column>
+						   						   
+						  <p:column style="width:10%" headerText="Actual Date" sortBy="#{trx.entryDateJava}">                          							
+							  <h:outputText value="#{trx.entryDateJava}">
+							      <f:convertDateTime type="date" pattern="EEE yyyy-MM-dd"/>					
+							  </h:outputText>														
+						  </p:column>
+						  
+                          <p:column style="width:10%" headerText="Posted Date" sortBy="#{trx.postedDateJava}">                          							
+							  <h:outputText value="#{trx.postedDateJava}">
+							      <f:convertDateTime type="date" pattern="yyyy-MM-dd"/>					
+							  </h:outputText>														
+						  </p:column>
+						       	 				       				  
+						  <p:column style="width:15%" headerText="Investment" sortBy="#{trx.investmentDescription}">												
+							  <h:outputText value="#{trx.investmentDescription}"/>															
+						  </p:column>
+						  
+						  <p:column style="width:10%" headerText="Trx Type" sortBy="#{trx.transactionTypeDescription}">												
+							  <h:outputText value="#{trx.transactionTypeDescription}" styleClass="#{trx.trxStyleClass}"/>															
+						  </p:column>
+						  
+						  <p:column style="width:10%" headerText="Amount" sortBy="#{trx.costProceeds}">												
+							   <h:outputText value="#{trx.costProceeds}" styleClass="#{trx.trxStyleClass}">
+							      <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+							  </h:outputText>   														
+						  </p:column>
+						  
+						  <p:column style="width:20%" headerText="Description" sortBy="#{trx.transactionDescription}">												
+							  <h:outputText value="#{trx.transactionDescription}"/>															
+						  </p:column>	
+						  
+						  <p:column style="width:9%" headerText="Balance" sortBy="#{trx.currentBalance}">												
+							  <h:outputText value="#{trx.currentBalance}" styleClass="#{trx.balanceStyleClass}">
+							      <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+							  </h:outputText>   												
+						  </p:column>							 
+										  
+				     </p:dataTable>
+				     
+				  </td>
+		     </tr>
+		     
+		    </table>
+	                
+	   </h:form>
+   
+    </ui:define>
+
+</ui:composition>
+  

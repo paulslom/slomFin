@@ -39,8 +39,16 @@
     
 body.custom-background 
 { 
-	background-color: #6495ed;
+	background-color: #1e8449;
 }
+
+.ui-menubar	{
+	font: bold 17px "Verdana";
+	vertical-align: top;
+	text-align: left;
+	background: #fdf2e9;
+}
+
 .sectionTitle {
 	font: bold 32px "Verdana";
 	vertical-align: top;
@@ -105,10 +113,5 @@ body.custom-background
 	align-items: center;
 }
 
-.ui-menubar	{
-	font: bold 17px "Verdana";
-	vertical-align: top;
-	text-align: left;
-	background: #fcc200;
-}
+
 

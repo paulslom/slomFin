@@ -1,6 +1,6 @@
 package com.pas.slomfin.constants;
 
-public interface INFLMessageConstants
+public interface IMessageConstants
 {
     //all these keys need to exist in the ApplicationResources file
 	public static String LOGIN_USERLOGIN_FAILED = "login.userlogin.failed";

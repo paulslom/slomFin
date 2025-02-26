@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
+import com.pas.dynamodb.DateToStringConverter;
 import com.pas.dynamodb.DynamoTransaction;
 
 public class TransactionsRowMapper implements RowMapper<DynamoTransaction>, Serializable 
@@ -24,15 +25,11 @@ public class TransactionsRowMapper implements RowMapper<DynamoTransaction>, Seri
 	    dynamoTransaction.setTransactionDate(rs.getString("dTransactionDate"));
 	    dynamoTransaction.setUnits(rs.getBigDecimal("decUnits"));
 	    dynamoTransaction.setPrice(rs.getBigDecimal("mPrice"));
-	    dynamoTransaction.setCostProceeds(rs.getBigDecimal("mCostProceeds"));		
-	    dynamoTransaction.setTransactionEntryDate(rs.getString("dTranEntryDate"));    
-	    dynamoTransaction.setTransactionPostedDate(rs.getString("dTranPostedDate"));
-	    dynamoTransaction.setTransactionChangeDate(rs.getString("dTranChangeDate"));
+	    dynamoTransaction.setCostProceeds(rs.getBigDecimal("mCostProceeds"));	    
 	    dynamoTransaction.setDividendTaxableYear(rs.getInt("iDividendTaxableYear"));
 	    dynamoTransaction.setEffectiveAmount(rs.getBigDecimal("mEffectiveAmount"));
 	    dynamoTransaction.setOptionTypeID(rs.getInt("iOptionTypeID"));
-	    dynamoTransaction.setStrikePrice(rs.getBigDecimal("mStrikePrice"));
-	    dynamoTransaction.setExpirationDate(rs.getString("dExpirationDate"));
+	    dynamoTransaction.setStrikePrice(rs.getBigDecimal("mStrikePrice"));	   
 	    dynamoTransaction.setOpeningTrxInd(rs.getBoolean("bOpeningTrxInd"));
 	    dynamoTransaction.setCheckNo(rs.getInt("iCheckNo"));
 	    dynamoTransaction.setTransactionDescription(rs.getString("trxDescription"));
@@ -43,7 +40,14 @@ public class TransactionsRowMapper implements RowMapper<DynamoTransaction>, Seri
 	    dynamoTransaction.setInvestmentDescription(rs.getString("invDescription"));
 	    dynamoTransaction.setWdCategoryDescription(rs.getString("sWDCategoryDescription"));
 	    dynamoTransaction.setCashDepositTypeDescription(rs.getString("sCashDepositTypeDesc"));
-					
+	    dynamoTransaction.setTransactionTypeDescription(rs.getString("trxTypDescription"));
+	    dynamoTransaction.setTrxTypPositiveInd(rs.getBoolean("trxTypPositiveInd"));
+	    
+	    dynamoTransaction.setTransactionEntryDate(DateToStringConverter.convertMySqlDateTimeToDynamoStringFormat(rs.getString("dTranEntryDate")));    
+	    dynamoTransaction.setTransactionPostedDate(DateToStringConverter.convertMySqlDateTimeToDynamoStringFormat(rs.getString("dTranPostedDate")));
+	    dynamoTransaction.setTransactionChangeDate(DateToStringConverter.convertMySqlDateTimeToDynamoStringFormat(rs.getString("dTranChangeDate")));
+	    dynamoTransaction.setExpirationDate(DateToStringConverter.convertMySqlDateTimeToDynamoStringFormat(rs.getString("dExpirationDate")));
+	    
  		return dynamoTransaction; 	    	
     }
 }

@@ -1,6 +1,6 @@
 package com.pas.slomfin.constants;
 
-public interface INFLAppConstants
+public interface IAppConstants
 {
 	//Misc Constants       
     public static final Integer DROPDOWN_NOT_SELECTED = 0;
