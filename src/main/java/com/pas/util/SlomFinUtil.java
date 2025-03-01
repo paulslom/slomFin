@@ -1,20 +1,41 @@
 package com.pas.util;
 
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.pas.dynamodb.DynamoTransaction;
+import com.pas.slomfin.constants.IAppConstants;
+
+import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 public class SlomFinUtil
 {
 	static Logger log = LogManager.getLogger(SlomFinUtil.class);
 
+	public static String MY_TIME_ZONE = "America/New_York";
+	public static String GREEN_STYLECLASS = "resultGreen";
+	public static String RED_STYLECLASS = "resultRed";
+	public static String YELLOW_STYLECLASS = "resultYellow";
+	
 	public static Map<Integer, List<Integer>> invTypeTrxTypeMap = new HashMap<>();
 	public static Map<Integer, List<Integer>> acctTypeInvTypeMap = new HashMap<>();
 	public static Map<Integer, List<Integer>> acctTypeTrxTypeMap = new HashMap<>();
@@ -24,6 +45,8 @@ public class SlomFinUtil
 	public static Map<Integer, String> invTypesMap = new HashMap<>();
 	
 	public static Map<Integer, List<SelectItem>> acctTypeTrxTypeDropdownsMap = new HashMap<>();
+	
+	private static Logger logger = LogManager.getLogger(SlomFinUtil.class);	
 	
 	//Investment Types
 	public static int STOCK = 1;
@@ -198,6 +221,11 @@ public class SlomFinUtil
 		
 		List<Integer> validTrxTypes = acctTypeTrxTypeMap.get(accountType);
 		
+		SelectItem si1 = new SelectItem();
+		si1.setValue(-1);
+		si1.setLabel("--Select--");
+		returnList.add(si1);
+		
 		for (int i = 0; i < validTrxTypes.size(); i++)
 		{
 			SelectItem si = new SelectItem();
@@ -208,5 +236,242 @@ public class SlomFinUtil
 		
 		return returnList;
 	}
+	
+	public static List<SelectItem> getValidInvTypesForAccountTypes(Integer accountType)
+	{
+		List<SelectItem> returnList = new ArrayList<>();
+		
+		List<Integer> validInvTypes = acctTypeInvTypeMap.get(accountType);
+		
+		SelectItem si1 = new SelectItem();
+		si1.setValue(-1);
+		si1.setLabel("--Select--");
+		returnList.add(si1);
+		
+		for (int i = 0; i < validInvTypes.size(); i++)
+		{
+			SelectItem si = new SelectItem();
+			si.setValue(validInvTypes.get(i));
+			si.setLabel(invTypesMap.get(si.getValue()));
+			returnList.add(si);
+		}
+		
+		return returnList;
+	}
+	
+	public static String getLastYearsLastDayDate() 
+	{
+	    Calendar prevYear = Calendar.getInstance();
+	    prevYear.add(Calendar.YEAR, -1);
+	    String returnDate = prevYear.get(Calendar.YEAR) + "-12-31";
+	    return returnDate;
+	}
+	
+	public static String getOneMonthAgoDate() 
+	{
+	    Calendar calOneMonthAgo = Calendar.getInstance();
+	    calOneMonthAgo.add(Calendar.MONTH, -1);
+	    Date dateOneMonthAgo = calOneMonthAgo.getTime();
+	    Locale locale = Locale.getDefault();
+	    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", locale);
+	    String returnDate = formatter.format(dateOneMonthAgo);
+	    return returnDate;
+	}
+	
+	public static Date getTwoDaysFromNowDate() 
+	{
+	    Calendar calTwoDaysAway = Calendar.getInstance();
+	    calTwoDaysAway.add(Calendar.DATE, 2);
+	    Date returnDate = calTwoDaysAway.getTime();
+	    return returnDate;
+	}
+	
+	public static Date getTwoYearsAgoDate() 
+	{
+	    Calendar cal = Calendar.getInstance();
+	    cal.add(Calendar.YEAR, -2);
+	    Date date = cal.getTime();
+	    return date;
+	}
+		
+	public static String getLoggedInUserName()
+	{		
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(true);
+		String currentUser = (String) session.getAttribute("currentUser");
+		
+		currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+		
+		logger.info("current logged in user is: " + currentUser);
+		
+	    return currentUser == null ? null : currentUser.toLowerCase().trim();
+	}	
+
+	public static String getDayofWeekString(Date date) 
+	{
+		Locale locale = Locale.getDefault();
+	    DateFormat formatter = new SimpleDateFormat("EEEE", locale);
+	    return formatter.format(date);
+	}
+		
+	public static String getEncryptedPassword(String unencryptedPassword)
+	{
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		String encryptedPW = passwordEncoder.encode(unencryptedPassword);
+		return encryptedPW;
+	}
+	
+	public static String getContextRoot()
+	{
+		String contextRoot = "";
+		try
+		{
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+	    	HttpSession httpSession = request.getSession();	
+	        contextRoot = (String) httpSession.getAttribute(IAppConstants.CONTEXT_ROOT);
+		}
+		catch (Exception e)
+		{			
+		}
+		
+		return contextRoot;
+	}
+	
+	public static Map<Integer, String> sortHashMapByValues(Map<Integer, String> hm) 
+	{
+	    HashMap<Integer, String> temp = hm.entrySet().stream().sorted((i1, i2)-> 
+	            i1.getValue().compareTo(i2.getValue())).collect(
+	            Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue,
+	            (e1, e2) -> e1, LinkedHashMap::new));
+	    
+	    return temp;
+	}
+
+	//Assumes input parameter tempList is already sorted.
+	public static List<DynamoTransaction> setAccountBalances(List<DynamoTransaction> tempList, BigDecimal startingBalance) 
+	{
+		//establish balance
+	    BigDecimal currentBalance = startingBalance;
+	    
+	    for (int i = 0; i < tempList.size(); i++)
+	    {
+	    	DynamoTransaction trx = tempList.get(i);
+	    	
+	    	if (trx.getCostProceeds() != null)
+	    	{
+	    		currentBalance = transactAnAmount(trx, currentBalance, "amount");	    		
+	    	}
+	    	
+	    	trx.setCurrentBalance(currentBalance);
+	    	
+	    	if (currentBalance.compareTo(BigDecimal.ZERO) > 0)
+	    	{
+	            trx.setBalanceStyleClass(GREEN_STYLECLASS);
+	        }
+	    	else if (currentBalance.compareTo(BigDecimal.ZERO) < 0)
+	    	{
+	            trx.setBalanceStyleClass(RED_STYLECLASS);
+	        }
+	    	
+		}
+	    	    
+		return tempList;
+	}
+	
+	//Assumes input parameter tempList is already sorted.
+	public static Map<Integer, BigDecimal> getUnitsOwnedForAccount(List<DynamoTransaction> accountTransactionsList) 
+	{
+		Map<Integer, BigDecimal> returnMap = new HashMap<>();
+		
+		for (int i = 0; i < accountTransactionsList.size(); i++)
+	    {
+	    	DynamoTransaction trx = accountTransactionsList.get(i);
+	    	
+	    	if (trx.getUnits() != null
+	    	&&  trx.getUnits().compareTo(BigDecimal.ZERO) != 0)
+	    	{
+	    		if (returnMap.containsKey(trx.getInvestmentID()))
+				{
+	    			BigDecimal currentTotal = returnMap.get(trx.getInvestmentID());
+					BigDecimal newAmount = transactAnAmount(trx, currentTotal, "units");
+					returnMap.replace(trx.getInvestmentID(), newAmount);
+				}
+				else
+				{
+					BigDecimal newAmount = transactAnAmount(trx, new BigDecimal(0.0), "units");
+					returnMap.put(trx.getInvestmentID(), newAmount);
+				}
+	    		
+	    	}
+	    		    	
+		}
+	    	    
+		return returnMap;
+	}
+	
+	public static BigDecimal transactAnAmount(DynamoTransaction trx, BigDecimal inputAmount, String amountOrUnits)
+	{
+		BigDecimal returnAmount = null;
+		
+		if (trx.getTransactionTypeDescription().equalsIgnoreCase("Buy"))
+		{	
+			if (amountOrUnits.equalsIgnoreCase("amount"))
+    		{
+				returnAmount = inputAmount.subtract(trx.getCostProceeds());
+    		}
+			else
+			{
+				returnAmount = inputAmount.add(trx.getUnits());
+			}
+		}
+		else if (trx.getTransactionTypeDescription().equalsIgnoreCase("Sell"))
+		{
+			if (amountOrUnits.equalsIgnoreCase("amount"))
+    		{
+				returnAmount = inputAmount.add(trx.getCostProceeds());
+    		}
+			else
+			{
+				returnAmount = inputAmount.subtract(trx.getUnits());
+			}
+		}
+		else if (trx.getTransactionTypeDescription().equalsIgnoreCase("Reinvest"))
+		{
+			if (amountOrUnits.equalsIgnoreCase("amount"))
+    		{
+				returnAmount = inputAmount.add(new BigDecimal(0.0));
+			}
+			else
+			{
+				returnAmount = inputAmount.add(trx.getUnits());
+			}
+		}
+		else if (trx.getTrxTypPositiveInd())
+    	{		    				
+			if (amountOrUnits.equalsIgnoreCase("amount"))
+    		{
+				returnAmount = inputAmount.add(trx.getCostProceeds());
+    		}
+			else
+			{
+				returnAmount = inputAmount.add(trx.getUnits());
+			}
+    	}
+    	else
+    	{		    		
+    		if (amountOrUnits.equalsIgnoreCase("amount"))
+    		{
+				returnAmount = inputAmount.subtract(trx.getCostProceeds());
+    		}
+			else
+			{
+				returnAmount = inputAmount.subtract(trx.getUnits());
+			}
+    	}
+		
+		return returnAmount;
+		
+	}
+	
 	
 }

@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 import com.pas.beans.AppSecurity;
 import com.pas.dynamodb.DynamoClients;
 import com.pas.dynamodb.DynamoUtil;
-import com.pas.util.Utils;
+import com.pas.util.SlomFinUtil;
 
 import software.amazon.awssdk.core.internal.waiters.ResponseOrException;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
@@ -65,7 +65,7 @@ public class Create_Security_Dynamo_Table
        	AppSecurity slomFinSecurity = new AppSecurity();
        	slomFinSecurity.setUserName("paulslom");       	
        	String encodedPW = "";	
-		encodedPW = Utils.getEncryptedPassword(slomFinSecurity.getUserName());
+		encodedPW = SlomFinUtil.getEncryptedPassword(slomFinSecurity.getUserName());
        	slomFinSecurity.setPassword(encodedPW);
 		slomFinSecurityTable.putItem(slomFinSecurity); 
 		

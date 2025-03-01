@@ -21,7 +21,7 @@ import com.pas.dynamodb.DynamoClients;
 import com.pas.dynamodb.DynamoTransaction;
 import com.pas.util.TransactionComparatorAscDate;
 import com.pas.util.TransactionComparatorDescDate;
-import com.pas.util.Utils;
+import com.pas.util.SlomFinUtil;
 
 import jakarta.faces.model.SelectItem;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -179,7 +179,12 @@ public class TransactionDAO implements Serializable
 			
 		}
 		
-		this.setWdCategoryMap(Utils.sortHashMapByValues(this.getWdCategoryMap()));
+		this.setWdCategoryMap(SlomFinUtil.sortHashMapByValues(this.getWdCategoryMap()));
+		
+		SelectItem si1 = new SelectItem();
+		si1.setValue(-1);
+		si1.setLabel("--Select--");
+		this.getWdCategoryDropdownList().add(si1);
 		
 		for (Integer key : this.getWdCategoryMap().keySet()) 
 		{
@@ -202,11 +207,11 @@ public class TransactionDAO implements Serializable
 
 	private List<DynamoTransaction> resetAccount2YearMap(Integer accountID) 
 	{
-		Date twoYearsAgo = Utils.getTwoYearsAgoDate();
+		Date twoYearsAgo = SlomFinUtil.getTwoYearsAgoDate();
 		
 		List<DynamoTransaction> tempList = this.getFullTransactionsMapByAccountID().get(accountID);
         Collections.sort(tempList, new TransactionComparatorAscDate());
-        List<DynamoTransaction> currentBalanceList = Utils.setAccountBalances(tempList, new BigDecimal(0.0));
+        List<DynamoTransaction> currentBalanceList = SlomFinUtil.setAccountBalances(tempList, new BigDecimal(0.0));
         List<DynamoTransaction> newList = new ArrayList<>(currentBalanceList);
         List<DynamoTransaction> found = new ArrayList<>();
         for (int i = 0; i < newList.size(); i++) 

@@ -1,0 +1,81 @@
+<ui:composition template="template.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+     
+    <ui:define name="content">
+    
+         <h:form id="InvestmentListForm">                      
+     
+            <p:messages id="facesMessagesID" showDetail="false"/>
+            
+            <table>
+         		
+			   <tr>
+			      <td align="center">
+			   		  <h:outputText value="#{pc_SlomFinMain.investmentsListTitle}" styleClass="pageSectionTitle"/>
+			   	  </td>
+			   </tr>
+		    
+	          <tr>
+	          
+	              <td>
+	                    
+			  		 <p:dataTable id="invTableID" value="#{pc_SlomFinMain.investmentsList}" rowIndexVar="rowIndex"
+				          var="inv" scrollable="true" scrollHeight="950" styleClass="dataTableStyle">						
+						   
+						  <p:column style="width:3%" headerText="Num">												
+							  <h:outputText value="#{rowIndex + 1}"/>															
+						  </p:column>
+						  
+						  <p:column style="width:3%" headerText="View">			
+						   		<p:commandLink actionListener="#{pc_SlomFinMain.selectInvestmentAcid}" value="View">
+    								<f:param name="operation" value="View" />
+    								<f:param name="InvestmentId" value="#{inv.InvestmentID}" />
+                                </p:commandLink>
+                          </p:column>
+                          
+                          <p:column style="width:3%" headerText="Chg">			
+						   		<p:commandLink actionListener="#{pc_SlomFinMain.selectInvestmentAcid}" value="Chg">
+    								<f:param name="operation" value="Update" />
+    								<f:param name="InvestmentId" value="#{inv.InvestmentID}" />
+                                </p:commandLink>
+                          </p:column>
+                          
+                          <p:column style="width:3%" headerText="Del">			
+						   		<p:commandLink actionListener="#{pc_SlomFinMain.selectInvestmentAcid}" value="Del">
+    								<f:param name="operation" value="Delete" />
+    								<f:param name="InvestmentId" value="#{inv.InvestmentID}" />
+                                </p:commandLink>
+                          </p:column>
+                          
+                          <p:column style="width:4%" headerText="Investment ID" sortBy="#{inv.InvestmentID}">												
+							  <h:outputText value="#{inv.InvestmentID}"/>															
+						  </p:column>
+								  
+						  <p:column style="width:10%" headerText="Current Price" sortBy="#{inv.currentPrice}">												
+							   <h:outputText value="#{inv.currentPrice}">
+							      <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+							  </h:outputText>   														
+						  </p:column>
+						  
+						  <p:column style="width:20%" headerText="Description" sortBy="#{inv.InvestmentDescription}">												
+							  <h:outputText value="#{inv.InvestmentDescription}"/>															
+						  </p:column>							 				 
+										  
+				     </p:dataTable>
+				     
+				  </td>
+		     </tr>
+		     
+		    </table>
+	                
+	   </h:form>
+   
+    </ui:define>
+
+</ui:composition>
+  

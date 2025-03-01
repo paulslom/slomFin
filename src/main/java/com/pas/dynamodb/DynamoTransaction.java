@@ -56,6 +56,9 @@ public class DynamoTransaction implements Serializable
     private BigDecimal currentBalance;
     private String trxStyleClass;
     private String balanceStyleClass;
+    private Integer investmentTypeID;
+    private String investmentTypeDescription;
+    private Integer transferAccountID;
         
     public String toString()
     {
@@ -337,6 +340,36 @@ public class DynamoTransaction implements Serializable
 	@DynamoDbIgnore
 	public void setEntryDateJava(Date entryDateJava) {
 		this.entryDateJava = entryDateJava;
+	}
+
+	@DynamoDbIgnore
+	public Integer getInvestmentTypeID() {
+		return investmentTypeID;
+	}
+
+	@DynamoDbIgnore
+	public void setInvestmentTypeID(Integer investmentTypeID) {
+		this.investmentTypeID = investmentTypeID;
+	}
+
+	@DynamoDbIgnore
+	public String getInvestmentTypeDescription() {
+		return investmentTypeDescription;
+	}
+
+	@DynamoDbIgnore
+	public void setInvestmentTypeDescription(String investmentTypeDescription) {
+		this.investmentTypeDescription = investmentTypeDescription;
+	}
+
+	@DynamoDbIgnore
+	public Integer getTransferAccountID() {
+		return transferAccountID;
+	}
+
+	@DynamoDbIgnore
+	public void setTransferAccountID(Integer transferAccountID) {
+		this.transferAccountID = transferAccountID;
 	}
   
 

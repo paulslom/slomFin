@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import com.pas.beans.SlomFinMain;
 import com.pas.beans.AppSecurity;
 import com.pas.dynamodb.DynamoClients;
-import com.pas.util.Utils;
+import com.pas.util.SlomFinUtil;
 
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
@@ -103,11 +103,11 @@ public class SlomFinSecurityDAO implements Serializable
 		
 		if (pw == null || pw.trim().length() == 0)
 		{	
-			encodedPW = Utils.getEncryptedPassword(gu.getUserName());
+			encodedPW = SlomFinUtil.getEncryptedPassword(gu.getUserName());
 		}
 		else
 		{
-			encodedPW = Utils.getEncryptedPassword(pw);
+			encodedPW = SlomFinUtil.getEncryptedPassword(pw);
 			
 		}
 		
