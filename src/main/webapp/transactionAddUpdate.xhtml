@@ -9,10 +9,10 @@
     <ui:define name="content">
     
          <h:form id="transactionAddUpdateForm">                      
-     
+          
              <p:messages id="facesMessagesID" showDetail="false"/>
             
-            <table>
+             <table>
             
            	   <colgroup>
            	       <col width="50%"/>
@@ -115,48 +115,8 @@
         		     <h:outputText id="accountNameId" value="#{pc_SlomFinMain.selectedTransaction.accountName}"/>
 		          </td>
         	        		
-        	   </tr>
-		       
-		       <tr>
-	  		
-		 			<td align="right">
-					    <p:outputLabel for="trxDateID" value="Trx Entered Date"/>
-				    </td>	
-				 
-		            <td align="left">	        
-		               <p:calendar id="trxDateID" 
-			       	        size="23"
-			       	        required="true"
-			       	        rendered="#{pc_SlomFinMain.renderTransactionUpdateFields}"
-			       	        readonlyInput="false" 
-			       	        value="#{pc_SlomFinMain.selectedTransaction.entryDateJava}"
-			       			showOn="trxDateID" pattern="MM-dd-yyyy HH:mm:ss" yearRange="c-50:c">						        									            			
-			       	    </p:calendar>
-			       	    <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.entryDateJava}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields}"/>
-		            </td>
-		            
-		       </tr> 
-		       
-		       <tr>
-	  		
-		 			<td align="right">	        
-					    <p:outputLabel for="trxPostedDateID" value="Posted Date"/>
-				    </td>	
-				 
-		            <td align="left">	        
-		               <p:calendar id="trxPostedDateID" 
-			       	        size="23"
-			       	        required="true"
-			       	        rendered="#{pc_SlomFinMain.renderTransactionUpdateFields}"
-			       	        readonlyInput="false" 
-			       	        value="#{pc_SlomFinMain.selectedTransaction.postedDateJava}"
-			       			showOn="trxPostedDateID" pattern="MM-dd-yyyy HH:mm:ss" yearRange="c-50:c">						        									            			
-			       	    </p:calendar>
-			       	    <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.postedDateJava}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields}"/>
-		            </td>
-		            
-		       </tr> 	      
-			   
+        	   </tr>		       
+		     	   
 			   <tr>
 		            <td align="right">	        
 		               <p:outputLabel for="trxTypeListID" value="Trx Type"/>
@@ -166,15 +126,15 @@
 					
 					    <p:selectOneMenu id="trxTypeListID" value="#{pc_SlomFinMain.selectedTransaction.transactionTypeID}" required="true" hideNoSelectionOption="false" 
 					                       rendered="#{pc_SlomFinMain.renderTransactionUpdateFields}" autofocus="true">
-					        <f:selectItems value="#{pc_SlomFinMain.trxTypeList}"/>	
-					        <p:ajax event="valueChange" listener="#{pc_SlomFinMain.valueChgTrxType}" update="transactionAddUpdateForm" />				
+					        <f:selectItems value="#{pc_SlomFinMain.trxTypeDropdownList}"/>	
+					        <p:ajax event="valueChange" listener="#{pc_SlomFinMain.valueChgTrxType}" update="transactionAddUpdateForm" />
 						</p:selectOneMenu>
 						
 						<p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.transactionTypeDescription}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields}"/>
 						
 					</td>
-			   </tr>
-			   
+			   </tr>  
+			 			          	           
 			   <tr>
 		            <td align="right">	        
 		               <p:outputLabel for="invTypeListID" value="Investment Type" rendered="#{pc_SlomFinMain.renderTrxInvestmentType}"/>		              	
@@ -184,16 +144,36 @@
 					
 					    <p:selectOneMenu id="invTypeListID" value="#{pc_SlomFinMain.selectedTransaction.investmentTypeID}" required="true" hideNoSelectionOption="true" 
 					                       rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxInvestmentType}">
-					        <f:selectItems value="#{pc_SlomFinMain.investmentTypeList}"/>	
-					        <p:ajax event="valueChange" listener="#{pc_SlomFinMain.valueChgInvType}" update="transactionAddUpdateForm" />				
+					        <f:selectItems value="#{pc_SlomFinMain.investmentTypeDropdownList}"/>	
+					        <p:ajax event="change" listener="#{pc_SlomFinMain.valueChgInvType}" update="transactionAddUpdateForm" />				
 						</p:selectOneMenu>
 						
 						<p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.investmentTypeDescription}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxInvestmentType}"/>
 						
 					</td>
-			   </tr>
+			    </tr>
 			   
-			   <tr>
+			    <tr>
+	  		
+		 			<td align="right">	        
+					    <p:outputLabel for="trxPostedDateID" value="Posted Date" rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxPostedDate}"/>
+				    </td>	
+				 
+		            <td align="left">	        
+		               <p:calendar id="trxPostedDateID" 
+			       	        size="23"
+			       	        required="true"
+			       	        rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxPostedDate}"
+			       	        readonlyInput="false" 
+			       	        value="#{pc_SlomFinMain.selectedTransaction.postedDateJava}"
+			       			mode="popup" showOn="both" pattern="MM-dd-yyyy HH:mm:ss" yearRange="c-50:c">						        									            			
+			       	    </p:calendar>
+			       	    <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.postedDateJava}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields}"/>
+		            </td>
+		            
+		       </tr> 		
+		       
+			    <tr>
 		            <td align="right">	        
 		               <p:outputLabel for="invOwnedCheckBoxId" value="Already Owned Investment" rendered="#{pc_SlomFinMain.renderOwnedInvestmentsCheckbox}"/>
 		            </td>
@@ -206,9 +186,9 @@
 						</p:selectBooleanCheckbox>	
 						
 					</td>
-			   </tr>
+			    </tr>
 			   
-			   <tr>
+			    <tr>
 		            <td align="right">	        
 		               <p:outputLabel for="invListID" value="Investment" rendered="#{pc_SlomFinMain.renderTrxInvestment}"/>
 		            </td>
@@ -217,29 +197,29 @@
 				
 					    <p:selectOneMenu id="invListID" value="#{pc_SlomFinMain.selectedTransaction.investmentID}" required="true" hideNoSelectionOption="true" 
 					                       rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxInvestment}">
-					        <f:selectItems value="#{pc_SlomFinMain.investmentList}"/>	
+					        <f:selectItems value="#{pc_SlomFinMain.investmentDropdownList}"/>	
 						</p:selectOneMenu>
 						
 						<p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.investmentDescription}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxInvestment}"/>
 						
 					</td>
-			   </tr>
+			    </tr>
 			   
-			   <tr>
+			    <tr>
 	  		
 	 			   <td align="right">	        
 		              <p:outputLabel for="unitsID" value="Units" rendered="#{pc_SlomFinMain.renderTrxUnits}"/>
 		           </td>
 				 
 		           <td align="left">
-		               <p:inputText id="unitsID" size="8" value="#{pc_SlomFinMain.selectedTransaction.units}" required="true" 
+		               <p:inputText id="unitsID" size="8" value="#{pc_SlomFinMain.selectedTransaction.units}"
 		                            rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxUnits}"/>
 		               <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.units}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxUnits}"/>		
 		            </td>
 		            
-		       </tr>
+		        </tr>
 		       
-		       <tr>
+		        <tr>
 	  		
 	 			   <td align="right">	        
 		              <p:outputLabel for="priceID" value="Price" rendered="#{pc_SlomFinMain.renderTrxPrice}"/>
@@ -252,9 +232,9 @@
 		               <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.price}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxPrice}"/>		
 		            </td>
 		            
-		       </tr>
+		        </tr>
 		       
-		       <tr>
+		        <tr>
 	  		
 	 			   <td align="right">	        
 		              <p:outputLabel for="cknoID" value="Check Number" rendered="#{pc_SlomFinMain.renderTrxCheckNumber}"/>
@@ -266,9 +246,9 @@
 		               <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.checkNo}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxCheckNumber}"/>		
 		            </td>
 		            
-		       </tr>
+		        </tr>
 		       
-		       <tr>
+		        <tr>
 	  		
 	 			   <td align="right">	        
 		              <p:outputLabel for="dvtxyrID" value="Dividend Taxable Year" rendered="#{pc_SlomFinMain.renderTrxDividendTaxableYear}"/>
@@ -280,9 +260,23 @@
 		               <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.dividendTaxableYear}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxDividendTaxableYear}"/>		
 		            </td>
 		            
-		       </tr>
+		        </tr>			  
 			  
-			   <tr>
+			    <tr>
+		            <td align="right">	        
+		               <p:outputLabel for="xferInID" value="Generate corresponding transfer in/out" rendered="#{pc_SlomFinMain.renderTrxXferAccount}"/> 
+		            </td>
+		            
+		            <td align="left">	        
+					
+					    <p:selectBooleanCheckbox id="xferInID" value="#{pc_SlomFinMain.generateCorrespondingXfer}" 
+					          rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.generateCorrespondingXfer}">
+						</p:selectBooleanCheckbox>					   
+						
+					</td>
+			    </tr>      
+			   
+			    <tr>
 		            <td align="right">	        
 		               <p:outputLabel for="xferAcctListID" value="Transfer Account" rendered="#{pc_SlomFinMain.renderTrxXferAccount}"/>
 		            </td>
@@ -291,27 +285,27 @@
 					
 					    <p:selectOneMenu id="xferAcctListID" value="#{pc_SlomFinMain.selectedTransaction.transferAccountID}" required="true" hideNoSelectionOption="true" 
 					                       rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxXferAccount}">
-					        <f:selectItems value="#{pc_SlomFinMain.cashDepositTypesList}"/>	
+					        <f:selectItems value="#{pc_SlomFinMain.xferAccountsDropdownList}"/>	
 						</p:selectOneMenu>
 						
 					</td>
-			   </tr>		
+			    </tr>		
 			
-			   <tr>
+			    <tr>
 	  		
 	 			   <td align="right">	        
 		              <p:outputLabel for="amtID" value="Amount" rendered="#{pc_SlomFinMain.renderTrxAmount}"/>
 		           </td>
 				 
 		           <td align="left">
-		               <p:inputText id="amtID" size="8" value="#{pc_SlomFinMain.selectedTransaction.costProceeds}" required="true" 
+		               <p:inputText id="amtID" size="8" value="#{pc_SlomFinMain.selectedTransaction.costProceeds}" 
 		                            rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxAmount}"/>
 		               <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.costProceeds}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxAmount}"/>		
 		            </td>
 		            
-		       </tr>
+		        </tr>
          
-			   <tr>
+			    <tr>
 		            <td align="right">	        
 		               <p:outputLabel for="wdCatListID" value="Withdrawal Category" rendered="#{pc_SlomFinMain.renderTrxWDCategoriesList}"/>
 		            </td>
@@ -320,16 +314,16 @@
 					
 					    <p:selectOneMenu id="wdCatListID" value="#{pc_SlomFinMain.selectedTransaction.wdCategoryID}" required="true" hideNoSelectionOption="true" 
 					                       rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxWDCategoriesList}">
-					        <f:selectItems value="#{pc_SlomFinMain.wdCategoriesList}"/>		
+					        <f:selectItems value="#{pc_SlomFinMain.wdCategoriesDropdownList}"/>		
 						</p:selectOneMenu>
 						
 						<p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.wdCategoryDescription}" 
 							rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields  and pc_SlomFinMain.renderTrxWDCategoriesList}}"/>
 						
 					</td>
-			   </tr>
+			    </tr>	       	   
 	       	   
-        	   <tr>
+        	    <tr>
 	  		
 	 			   <td align="right">	        
 		              <p:outputLabel for="trxDescID" value="Description" rendered="#{pc_SlomFinMain.renderTrxCashDescription}"/>
@@ -351,13 +345,14 @@
 		            
 		            <td align="left">	        
 					
-					    <p:selectBooleanCheckbox id="lastTrxCycleID" value="#{pc_SlomFinMain.selectedTransaction.finalTrxOfBillingCycle}" rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxLastOfBillingCycle}">
+					    <p:selectBooleanCheckbox id="lastTrxCycleID" value="#{pc_SlomFinMain.selectedTransaction.finalTrxOfBillingCycle}" 
+					          rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxLastOfBillingCycle}">
 						</p:selectBooleanCheckbox>					   
 						
 					</td>
-			   </tr>         
-        	           		     
-		    </table>
+			   </tr>			
+			
+			</table>
 	                
 	   </h:form>
    

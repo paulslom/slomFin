@@ -38,88 +38,110 @@
                <td style="font-weight: bold; font-size:14;" colspan="2">
                
                     <p:menubar>
-			           							
-						<p:submenu label="Accounts">	
+			      			
+						<p:submenu label="Taxable Accts">	
+										
+							<c:forEach items="#{pc_SlomFinMain.activeTaxableAccountsList}" var="activeTxblAcct">
+						       	
+						        <p:menuitem id="vcdActiveTxbl" value="#{activeTxblAcct.sAccountName} List"
+					        	    ajax="false" 
+					        	    actionListener="#{pc_SlomFinMain.accountTransactionsSelection}"
+					        	    onclick="PF('blockWidgetVar').show()" 
+					        	    oncomplete="PF('blockWidgetVar').hide()" 
+					        	    update="menuForm">
+					        	   <f:param name="accountid" value="#{activeTxblAcct.iAccountID}"/>
+					        	</p:menuitem>  
+						        	
+					        	<p:menuitem id="addActiveTxbl" value="#{activeTxblAcct.sAccountName} Add"
+					        	    actionListener="#{pc_SlomFinMain.selectTransactionAcid}"
+					        	    onclick="PF('blockWidgetVar').show()" 
+					        	    oncomplete="PF('blockWidgetVar').hide()" 
+					        	    update="menuForm">
+					        	   <f:param name="operation" value="Add" />
+					        	   <f:param name="accountId" value="#{activeTxblAcct.iAccountID}" />
+					        	</p:menuitem> 					        	
+					        	
+						        <p:separator/>						       
+						       						        							        
+			    			</c:forEach>
+			    			
+			    		</p:submenu>
+			    		
+			    		<p:submenu label="Retirement Accts">
+			    							
+							<c:forEach items="#{pc_SlomFinMain.activeRetirementAccountsList}" var="activeRetAcct">
+						      	
+					        	<p:menuitem id="vcdRet" value="#{activeRetAcct.sAccountName} List"
+					        	    ajax="false" 
+					        	    actionListener="#{pc_SlomFinMain.accountTransactionsSelection}"							        	    
+					        	    onclick="PF('blockWidgetVar').show()" 
+					        	    oncomplete="PF('blockWidgetVar').hide()" 
+					        	    update="menuForm">
+					        	   <f:param name="accountid" value="#{activeRetAcct.iAccountID}"/>
+					        	</p:menuitem>  
+						        	
+					        	<p:menuitem id="addRet" value="#{activeRetAcct.sAccountName} Add"
+					        	    actionListener="#{pc_SlomFinMain.selectTransactionAcid}"
+					        	    onclick="PF('blockWidgetVar').show()" 
+					        	    oncomplete="PF('blockWidgetVar').hide()" 
+					        	    update="menuForm">
+					        	   <f:param name="operation" value="Add" />
+					        	   <f:param name="accountId" value="#{activeRetAcct.iAccountID}" />
+					        	</p:menuitem>						        
+						        
+						        <p:separator/>
+						        						        							        
+			    			</c:forEach>
+			    			
+			    		</p:submenu>
+			    								
+						<p:submenu label="Reports">
+							<p:menuitem value="Account Positions"/>	
+							<p:menuitem value="Account Summary"/>	
+							<p:menuitem value="Capital Gains"/>	
+							<p:menuitem value="Cost Basis"/>	
+							<p:menuitem value="Dividends"/>	
+							<p:menuitem value="Goals"/>	
+							<p:menuitem value="Portfolio History"/>	
+							<p:menuitem value="Portfolio By Asset Class"/>	
+							<p:menuitem value="Portfolio Summary"/>	
+							<p:menuitem value="Trx By Investment"/>	
+							<p:menuitem value="Units Owned"/>	
+							<p:menuitem value="Withdrawal Categories"/>	
+						</p:submenu>
+						
+						<p:submenu label="Work">
+							<p:menuitem value="Paycheck outflow add/view/chg/del" url="https://www.nfl.com/standings/tie-breaking-procedures"/>
+							<p:menuitem value="Add Paycheck" url="https://www.nfl.com/standings/tie-breaking-procedures"/>	
+						</p:submenu>
 							
-							<p:submenu label="Active Taxable">	
-											
-								<c:forEach items="#{pc_SlomFinMain.activeTaxableAccountsList}" var="activeTxblAcct">
-																
-							        <p:submenu label="#{activeTxblAcct.sAccountName}" style="width: 250px;">
-							        	
-							        	<p:menuitem id="vcdActiveTxbl" value="View-Chg-Del"
-							        	    ajax="false" 
-							        	    actionListener="#{pc_SlomFinMain.accountTransactionsSelection}"
-							        	    onclick="PF('blockWidgetVar').show()" 
-							        	    oncomplete="PF('blockWidgetVar').hide()" 
-							        	    update="menuForm">
-							        	   <f:param name="accountid" value="#{activeTxblAcct.iAccountID}"/>
-							        	</p:menuitem>  
-							        	
-							        	<p:menuitem id="addActiveTxbl" value="Add" 
-							        	    actionListener="#{pc_SlomFinMain.selectTransactionAcid}"
-							        	    onclick="PF('blockWidgetVar').show()" 
-							        	    oncomplete="PF('blockWidgetVar').hide()" 
-							        	    update="menuForm">
-							        	   <f:param name="operation" value="Add" />
-							        	   <f:param name="accountId" value="#{activeTxblAcct.iAccountID}" />
-							        	</p:menuitem> 
-							        	
-							        	<p:menuitem id="updActiveTxbl" value="Update Account" 
-							        	    actionListener="#{pc_SlomFinMain.accountSelection}"
-							        	    onclick="PF('blockWidgetVar').show()" 
-							        	    oncomplete="PF('blockWidgetVar').hide()" 
-							        	    update="menuForm">
-							        	   <f:param name="accountid" value="#{activeTxblAcct.iAccountID}"/>
-							        	   <f:param name="operation" value="Update" />
-							        	</p:menuitem>  
-							        	  						       											
-							        </p:submenu>
-							        							        
-				    			</c:forEach>
-				    			
-				    		</p:submenu>
-				    		
-				    		<p:submenu label="Active Retirement">
-				    							
-								<c:forEach items="#{pc_SlomFinMain.activeRetirementAccountsList}" var="activeRetAcct">
-																
-							        <p:submenu label="#{activeRetAcct.sAccountName}" style="width: 250px;">	
-							        	
-							        	<p:menuitem id="vcdRet" value="View-Chg-Del" 
-							        	    ajax="false" 
-							        	    actionListener="#{pc_SlomFinMain.accountTransactionsSelection}"							        	    
-							        	    onclick="PF('blockWidgetVar').show()" 
-							        	    oncomplete="PF('blockWidgetVar').hide()" 
-							        	    update="menuForm">
-							        	   <f:param name="accountid" value="#{activeRetAcct.iAccountID}"/>
-							        	</p:menuitem>  
-							        	
-							        	<p:menuitem id="addRet" value="Add" 
-							        	    actionListener="#{pc_SlomFinMain.selectTransactionAcid}"
-							        	    onclick="PF('blockWidgetVar').show()" 
-							        	    oncomplete="PF('blockWidgetVar').hide()" 
-							        	    update="menuForm">
-							        	   <f:param name="operation" value="Add" />
-							        	   <f:param name="accountId" value="#{activeRetAcct.iAccountID}" />
-							        	</p:menuitem> 
-							        	
-							        	<p:menuitem id="updRet" value="Update Account" 
-							        	    actionListener="#{pc_SlomFinMain.accountSelection}"							        	    
-							        	    onclick="PF('blockWidgetVar').show()" 
-							        	    oncomplete="PF('blockWidgetVar').hide()" 
-							        	    update="menuForm">
-							        	   <f:param name="accountid" value="#{activeRetAcct.iAccountID}"/>
-							        	   <f:param name="operation" value="Update" />
-							        	</p:menuitem> 
-							        	 			       											
-							        </p:submenu>
-							        							        
-				    			</c:forEach>
-				    			
-				    		</p:submenu>
-				    		
-				    		<p:submenu label="Closed">
+						<p:submenu label="Miscellaneous">
+						
+							<p:menuitem value="Update security prices" url="https://www.nfl.com/standings/tie-breaking-procedures"/>
+							
+							<p:menuitem value="Investments add/view/chg/del" actionListener="#{pc_SlomFinMain.showInvestmentsList}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">							
+							</p:menuitem>
+							
+							<p:menuitem value="Search trx descriptions" url="https://www.nfl.com/standings/tie-breaking-procedures"/>
+							
+							<p:menuitem value="Open New Account" 
+									actionListener="#{pc_SlomFinMain.openAccount}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+					    	</p:menuitem>
+					    	
+					    	<p:menuitem value="Update Account" 
+									actionListener="#{pc_SlomFinMain.updateAccount}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+					    	</p:menuitem>
+					    	
+							<p:submenu label="Closed Accts">
 				    							
 								<c:forEach items="#{pc_SlomFinMain.closedAccountsList}" var="closedAcct">
 																
@@ -155,42 +177,8 @@
 							        							        
 				    			</c:forEach>
 				    			
-				    		</p:submenu>
-			    			
-			    			<p:menuitem value="Open New Account" 
-										actionListener="#{pc_SlomFinMain.openAccount}"
-										onclick="PF('blockWidgetVar').show()" 
-		                                oncomplete="PF('blockWidgetVar').hide()"		  
-										update="menuForm">
-						    </p:menuitem>
-			    													    				
-						</p:submenu>
-						
-						<p:submenu label="Reports">
-							<p:menuitem value="Account Positions"/>	
-							<p:menuitem value="Account Summary"/>	
-							<p:menuitem value="Capital Gains"/>	
-							<p:menuitem value="Cost Basis"/>	
-							<p:menuitem value="Dividends"/>	
-							<p:menuitem value="Goals"/>	
-							<p:menuitem value="Portfolio History"/>	
-							<p:menuitem value="Portfolio By Asset Class"/>	
-							<p:menuitem value="Portfolio Summary"/>	
-							<p:menuitem value="Trx By Investment"/>	
-							<p:menuitem value="Units Owned"/>	
-							<p:menuitem value="Withdrawal Categories"/>	
-						</p:submenu>
-						
-						<p:submenu label="Work">
-							<p:menuitem value="Paycheck outflow add/view/chg/del" url="https://www.nfl.com/standings/tie-breaking-procedures"/>
-							<p:menuitem value="Add Paycheck" url="https://www.nfl.com/standings/tie-breaking-procedures"/>	
-						</p:submenu>
-							
-						<p:submenu label="Miscellaneous">
-							<p:menuitem value="Update security prices" url="https://www.nfl.com/standings/tie-breaking-procedures"/>
-							<p:menuitem value="Investments add/view/chg/del" url="https://www.nfl.com/standings/tie-breaking-procedures"/>	
-							<p:menuitem value="WD categories add/view/chg/del" url="https://www.nfl.com/standings/tie-breaking-procedures"/>	
-							<p:menuitem value="Search trx descriptions" url="https://www.nfl.com/standings/tie-breaking-procedures"/>	
+				    		</p:submenu>	
+				    		
 						</p:submenu>
 												
 					</p:menubar> 

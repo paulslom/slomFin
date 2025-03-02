@@ -42,6 +42,10 @@ body.custom-background
 	background-color: #1e8449;
 }
 
+.relativeOP {
+	position: relative;
+}
+
 .ui-menubar	{
 	font: bold 17px "Verdana";
 	vertical-align: top;

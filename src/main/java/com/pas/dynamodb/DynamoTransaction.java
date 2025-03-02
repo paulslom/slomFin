@@ -28,7 +28,6 @@ public class DynamoTransaction implements Serializable
 	private Integer checkNo;
 	private BigDecimal costProceeds;
 	private Integer dividendTaxableYear;
-	private BigDecimal effectiveAmount;
 	private String expirationDate;
 	private Boolean finalTrxOfBillingCycle;
 	private Integer investmentID;
@@ -59,7 +58,48 @@ public class DynamoTransaction implements Serializable
     private Integer investmentTypeID;
     private String investmentTypeDescription;
     private Integer transferAccountID;
-        
+     
+    public DynamoTransaction() 
+    {		
+	}
+    
+    public DynamoTransaction(Integer accountID, String accountName, Integer checkNo, BigDecimal costProceeds, Integer dividendTaxableYear, 
+    			Integer investmentID, String investmentDescription, BigDecimal price, String transactionDescription, Integer transactionID, Integer transactionTypeID,
+    			String transactionTypeDescription, String transactionDate, String transactionEntryDate, String transactionPostedDate, String transactionChangeDate,
+    			Boolean trxTypPositiveInd, BigDecimal units, String wdCategoryDescription, Integer wdCategoryID, Date transactionEntryDateJava, Date transactionPostedDateJava)
+    {
+    	this.setAccountID(accountID);
+    	this.setAccountName(accountName); 
+    	this.setCheckNo(checkNo); 
+    	this.setCostProceeds(costProceeds); 
+    	this.setDividendTaxableYear(dividendTaxableYear);
+    	this.setInvestmentID(investmentID); 
+    	this.setInvestmentDescription(investmentDescription); 
+    	this.setPrice(price); 
+    	this.setTransactionDescription(transactionDescription); 
+    	this.setTransactionID(transactionID); 
+    	this.setTransactionTypeID(transactionTypeID); 
+    	this.setTransactionTypeDescription(transactionTypeDescription); 
+    	this.setTransactionDate(transactionDate); 
+    	this.setTransactionEntryDate(transactionEntryDate); 
+    	this.setTransactionPostedDate(transactionPostedDate); 
+    	this.setTransactionChangeDate(transactionChangeDate); 
+    	this.setTrxTypPositiveInd(trxTypPositiveInd); 
+    	this.setUnits(units); 
+    	this.setWdCategoryDescription(wdCategoryDescription); 
+    	this.setWdCategoryID(wdCategoryID); 
+    	this.setEntryDateJava(transactionEntryDateJava);
+    	this.setPostedDateJava(transactionPostedDateJava);
+    }
+    
+    public DynamoTransaction(DynamoTransaction dtr)
+    {
+    	this(dtr.getAccountID(), dtr.getAccountName(), dtr.getCheckNo(), dtr.getCostProceeds(), dtr.getDividendTaxableYear(), 
+    			dtr.getInvestmentID(), dtr.getInvestmentDescription(), dtr.getPrice(),dtr.getTransactionDescription(), dtr.getTransactionID(), dtr.getTransactionTypeID(),
+    			dtr.getTransactionTypeDescription(), dtr.getTransactionDate(), dtr.getTransactionEntryDate(), dtr.getTransactionPostedDate(), dtr.getTransactionChangeDate(),
+    			dtr.getTrxTypPositiveInd(), dtr.getUnits(), dtr.getWdCategoryDescription(), dtr.getWdCategoryID(), dtr.getEntryDateJava(), dtr.getPostedDateJava());
+    }	
+	   
     public String toString()
     {
     	return "transaction ID: " + transactionID + " desc: " + transactionDescription + " account: " + accountName + " amount: " + costProceeds;
@@ -162,14 +202,6 @@ public class DynamoTransaction implements Serializable
 
 	public void setDividendTaxableYear(Integer dividendTaxableYear) {
 		this.dividendTaxableYear = dividendTaxableYear;
-	}
-
-	public BigDecimal getEffectiveAmount() {
-		return effectiveAmount;
-	}
-
-	public void setEffectiveAmount(BigDecimal effectiveAmount) {
-		this.effectiveAmount = effectiveAmount;
 	}
 
 	public Integer getOptionTypeID() {

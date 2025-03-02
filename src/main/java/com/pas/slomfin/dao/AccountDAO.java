@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import com.pas.beans.Account;
 import com.pas.dynamodb.DynamoClients;
 
+import jakarta.faces.model.SelectItem;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
@@ -213,6 +214,44 @@ public class AccountDAO implements Serializable
 			}
 		}
 		return closedAccountsList;
+	}
+
+	public List<SelectItem> getXferAccountsDropdown(Integer inputAccountID) 
+	{
+		List<SelectItem> returnList = new ArrayList<>();
+		List<Account> tempList = new ArrayList<>();
+		
+		Account acct = this.getAccountByAccountID(inputAccountID);
+		
+		if (acct.getbTaxableInd())
+		{
+			tempList = getActiveTaxableAccountsList();
+		}
+		else
+		{
+			tempList = getActiveRetirementAccountsList();
+		}
+		
+		SelectItem si1 = new SelectItem();
+		si1.setValue(-1);
+		si1.setLabel("--Select--");
+		returnList.add(si1);
+		
+		for (int i = 0; i < tempList.size(); i++)
+		{
+			Account account = tempList.get(i);
+			
+			if (account.getiAccountID() != inputAccountID)
+			{
+	            SelectItem si = new SelectItem();
+				si.setValue(account.getiAccountID());
+				si.setLabel(account.getsAccountName());
+				returnList.add(si);
+	        }
+		}
+		
+		return returnList;
+		
 	}
 
 }

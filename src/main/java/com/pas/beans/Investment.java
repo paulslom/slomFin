@@ -20,11 +20,11 @@ public class Investment implements Serializable
 	
 	private Integer iInvestmentID;
 	private Integer iInvestmentTypeID;
+	private String investmentTypeDescription;
 	private String  tickerSymbol;
 	private String description;
 	private BigDecimal currentPrice; 
-	private Integer assetClassID;
-	private String investmentTypeDescription;
+	private Integer assetClassID;	
 	private String assetClass;
 	    
     public String toString()

@@ -53,12 +53,11 @@ public class SlomFinMain implements Serializable
 	
 	private String transactionAcidSetting;
 	private DynamoTransaction selectedTransaction;
-	private boolean renderTransactionUpdateFields = false;
-	private boolean renderTransactionId = false;
-	private List<SelectItem> trxTypeList = new ArrayList<>();
-	private List<SelectItem> investmentTypeList = new ArrayList<>();
-	private List<SelectItem> investmentList = new ArrayList<>();
 	
+	private boolean renderTransactionUpdateFields = false;
+	private boolean renderTransactionId = false;	
+	
+	private boolean renderTrxPostedDate = false;
 	private boolean renderTrxAmount = true;
 	private boolean renderTrxUnits = false;
 	private boolean renderTrxPrice = false;
@@ -67,6 +66,7 @@ public class SlomFinMain implements Serializable
 	private boolean renderTrxDividendTaxableYear = false;
 	private boolean renderTrxCashDepositType = false;
 	private boolean renderTrxXferAccount = false;
+	private boolean generateCorrespondingXfer = false;
 	private boolean renderTrxCashDescription = true;
 	private boolean renderTrxLastOfBillingCycle = false;
 	private boolean renderTrxInvestmentType = false;
@@ -75,7 +75,11 @@ public class SlomFinMain implements Serializable
 	
 	private boolean ownedInvestments = false;
 	
-	private List<SelectItem> wdCategoriesList = new ArrayList<>();
+	private List<SelectItem> trxTypeDropdownList = new ArrayList<>();
+	private List<SelectItem> investmentTypeDropdownList = new ArrayList<>();
+	private List<SelectItem> investmentDropdownList = new ArrayList<>();
+	private List<SelectItem> wdCategoriesDropdownList = new ArrayList<>();
+	private List<SelectItem> xferAccountsDropdownList = new ArrayList<>();
 	
 	private String operation;
 	
@@ -85,6 +89,8 @@ public class SlomFinMain implements Serializable
 	private PortfolioHistoryDAO portfolioHistoryDAO;
 	
 	private List<DynamoTransaction> trxList = new ArrayList<>();
+	private List<Investment> investmentsList = new ArrayList<>();
+	
 	private String trxListTitle;
 	
 	public void onStart(@Observes @Initialized(ApplicationScoped.class) Object pointless) 
@@ -169,7 +175,16 @@ public class SlomFinMain implements Serializable
 	{
 		this.getTrxList().clear();
 		
-	    this.setTrxList(new ArrayList<>(transactionDAO.getLast2YearsTransactionsMapByAccountID().get(accountID)));
+		Account acct = accountDAO.getAccountByAccountID(accountID);
+		
+		if (acct.getbClosed())
+		{
+			this.setTrxList(new ArrayList<>(transactionDAO.getFullTransactionsMapByAccountID().get(accountID)));
+		}
+		else
+	    {
+			this.setTrxList(new ArrayList<>(transactionDAO.getLast2YearsTransactionsMapByAccountID().get(accountID)));
+	    }
 	    
 	    if (this.getTrxList() != null && this.getTrxList().size() > 0)
     	{
@@ -190,6 +205,27 @@ public class SlomFinMain implements Serializable
 		    refreshTrxList(Integer.parseInt(accountid));
 		    
             String targetURL = SlomFinUtil.getContextRoot() + "/transactionList.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}  	
+	
+	public void showInvestmentsList(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("investments List selected from menu");
+		    
+		    this.setInvestmentsList(investmentDAO.getFullInvestmentsList());
+		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+            String targetURL = SlomFinUtil.getContextRoot() + "/investmentList.xhtml";
 		    ec.redirect(targetURL);
             logger.info("successfully redirected to: " + targetURL);
         } 
@@ -233,12 +269,12 @@ public class SlomFinMain implements Serializable
 			if (invOwnedWasChecked)
             {
 				logger.info("user checked that they want only owned investments in the dropdown");
-				this.setInvestmentList(setOwnedInvestmentsDropdown(this.getSelectedTransaction().getInvestmentTypeID()));				
+				this.setInvestmentDropdownList(setOwnedInvestmentsDropdown(this.getSelectedTransaction().getInvestmentTypeID()));				
             }
 			else
 			{
 				logger.info("user un-checked that they want only owned investments in the dropdown");
-				this.setInvestmentList(investmentDAO.getInvestmentsByInvestmentTypeID(this.getSelectedTransaction().getInvestmentTypeID()));
+				this.setInvestmentDropdownList(investmentDAO.getInvestmentsByInvestmentTypeID(this.getSelectedTransaction().getInvestmentTypeID()));
 			}
         } 
         catch (Exception e) 
@@ -295,9 +331,15 @@ public class SlomFinMain implements Serializable
 			String selectedTrxTypeDesc = SlomFinUtil.trxTypesMap.get(selectedOption);	
 			this.getSelectedTransaction().setTransactionTypeDescription(selectedTrxTypeDesc);
 			
-			logger.info(selectedTrxTypeDesc + " was picked");
+			logger.info(selectedTrxTypeDesc + " was picked");			
 			
-			enableTrxUpdateFields(selectedTrxTypeDesc);			
+			enableTrxUpdateFields(selectedTrxTypeDesc);	
+			
+			if (selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strTransferIn)
+			||  selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strTransferOut))
+			{
+				this.setXferAccountsDropdownList(accountDAO.getXferAccountsDropdown(this.getSelectedTransaction().getAccountID()));
+			}
 		}
 		catch (Exception e)
 		{
@@ -317,19 +359,39 @@ public class SlomFinMain implements Serializable
 			Integer selectedOption = (Integer)selectonemenu.getValue();			
 			String selectedInvTypeDesc = SlomFinUtil.invTypesMap.get(selectedOption);
 			logger.info(SlomFinUtil.getLoggedInUserName() + " picked investment type " + selectedInvTypeDesc);
-			setRenderTrxInvestment(true);
 			
-			if (this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strSell)
-			||  this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strReinvest)
-			||  this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strCashDividend)
-			||	this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strSplit))
+			if (selectedInvTypeDesc.equalsIgnoreCase("Cash"))
 			{
-				this.setInvestmentList(setOwnedInvestmentsDropdown(this.getSelectedTransaction().getInvestmentTypeID()));		
+				setRenderTrxInvestment(false);
+				setRenderTrxUnits(false);
+				setRenderTrxAmount(true);
 			}
-			else
+			else //not cash
 			{
-				this.setInvestmentList(investmentDAO.getInvestmentsByInvestmentTypeID(this.getSelectedTransaction().getInvestmentTypeID()));
+				setRenderTrxInvestment(true);
+				setRenderTrxUnits(true);
+				
+				if (this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strBuy)
+				||	this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strSell))
+				{
+					setRenderTrxAmount(true);
+				}
+				else
+				{
+					setRenderTrxAmount(false);
+				}
+				
+				if (this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strBuy))
+				{
+					this.setInvestmentDropdownList(investmentDAO.getInvestmentsByInvestmentTypeID(this.getSelectedTransaction().getInvestmentTypeID()));
+				}
+				else
+				{
+					this.setInvestmentDropdownList(setOwnedInvestmentsDropdown(this.getSelectedTransaction().getInvestmentTypeID()));		
+				}		
 			}
+			
+			setRenderTrxPostedDate(true);
 		}
 		catch (Exception e)
 		{
@@ -356,6 +418,7 @@ public class SlomFinMain implements Serializable
 			setRenderTrxInvestmentType(false);
 			setRenderTrxInvestment(false);
 			setRenderOwnedInvestmentsCheckbox(false);
+			setRenderTrxPostedDate(true);
 		}
 		else if (selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strBuy))
 		{
@@ -372,6 +435,7 @@ public class SlomFinMain implements Serializable
 			setRenderTrxInvestmentType(true);
 			setRenderTrxInvestment(false);
 			setRenderOwnedInvestmentsCheckbox(true);
+			setRenderTrxPostedDate(false);
 		}
 		else if (selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strCashDeposit))
 		{
@@ -388,6 +452,7 @@ public class SlomFinMain implements Serializable
 			setRenderTrxInvestmentType(false);	
 			setRenderTrxInvestment(false);
 			setRenderOwnedInvestmentsCheckbox(false);
+			setRenderTrxPostedDate(true);
 		}
 		else if (selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strCashDividend))
 		{
@@ -404,6 +469,7 @@ public class SlomFinMain implements Serializable
 			setRenderTrxInvestmentType(true);
 			setRenderTrxInvestment(false);
 			setRenderOwnedInvestmentsCheckbox(false);
+			setRenderTrxPostedDate(false);
 		}
 		else if (selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strCheckWithdrawal))
 		{
@@ -420,6 +486,7 @@ public class SlomFinMain implements Serializable
 			setRenderTrxInvestmentType(false);
 			setRenderTrxInvestment(false);
 			setRenderOwnedInvestmentsCheckbox(false);
+			setRenderTrxPostedDate(true);
 		}
 		else if (selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strExerciseOption))
 		{
@@ -444,6 +511,7 @@ public class SlomFinMain implements Serializable
 			setRenderTrxInvestmentType(false);
 			setRenderTrxInvestment(false);
 			setRenderOwnedInvestmentsCheckbox(false);
+			setRenderTrxPostedDate(true);
 		}
 		else if (selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strInterestEarned))
 		{
@@ -459,6 +527,7 @@ public class SlomFinMain implements Serializable
 			setRenderTrxLastOfBillingCycle(false);
 			setRenderTrxInvestment(false);
 			setRenderOwnedInvestmentsCheckbox(false);
+			setRenderTrxPostedDate(true);
 		}
 		else if (selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strLoan))
 		{
@@ -475,6 +544,7 @@ public class SlomFinMain implements Serializable
 			setRenderTrxInvestmentType(false);
 			setRenderTrxInvestment(false);
 			setRenderOwnedInvestmentsCheckbox(false);
+			setRenderTrxPostedDate(true);
 		}
 		else if (selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strMarginInterest))
 		{
@@ -491,6 +561,7 @@ public class SlomFinMain implements Serializable
 			setRenderTrxInvestmentType(false);
 			setRenderTrxInvestment(false);
 			setRenderOwnedInvestmentsCheckbox(false);
+			setRenderTrxPostedDate(true);
 		}
 		else if (selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strReinvest))
 		{
@@ -507,6 +578,7 @@ public class SlomFinMain implements Serializable
 			setRenderTrxInvestmentType(true);
 			setRenderTrxInvestment(false);
 			setRenderOwnedInvestmentsCheckbox(false);
+			setRenderTrxPostedDate(false);
 		}
 		else if (selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strSell))
 		{
@@ -523,6 +595,7 @@ public class SlomFinMain implements Serializable
 			setRenderTrxInvestmentType(true);	
 			setRenderTrxInvestment(false);
 			setRenderOwnedInvestmentsCheckbox(false);
+			setRenderTrxPostedDate(false);
 		}
 		else if (selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strSplit))
 		{
@@ -539,6 +612,7 @@ public class SlomFinMain implements Serializable
 			setRenderTrxInvestmentType(true);
 			setRenderTrxInvestment(true);
 			setRenderOwnedInvestmentsCheckbox(false);
+			setRenderTrxPostedDate(false);
 		}
 		else if (selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strTransferIn))
 		{
@@ -555,6 +629,8 @@ public class SlomFinMain implements Serializable
 			setRenderTrxInvestmentType(true);
 			setRenderTrxInvestment(true);	
 			setRenderOwnedInvestmentsCheckbox(false);
+			setGenerateCorrespondingXfer(false);
+			setRenderTrxPostedDate(false);
 		}
 		else if (selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strTransferOut))
 		{
@@ -569,8 +645,10 @@ public class SlomFinMain implements Serializable
 			setRenderTrxCashDescription(false);
 			setRenderTrxLastOfBillingCycle(false);
 			setRenderTrxInvestmentType(true);
-			setRenderTrxInvestment(true);
+			setRenderTrxInvestment(false);
 			setRenderOwnedInvestmentsCheckbox(false);
+			setGenerateCorrespondingXfer(true);
+			setRenderTrxPostedDate(false);
 		}
 		
 	}
@@ -611,7 +689,7 @@ public class SlomFinMain implements Serializable
 		    		enableTrxUpdateFields(dynamoTrx.getTransactionTypeDescription());		
 		    	}
 		    	
-		    	this.setSelectedTransaction(dynamoTrx);	    	
+		    	this.setSelectedTransaction(dynamoTrx);	
 		    }
 		    else //go get the existing trx
 		    {
@@ -622,13 +700,13 @@ public class SlomFinMain implements Serializable
             ||	acid.equalsIgnoreCase("update"))
 		    {
 		    	Account acct = getAccountByAccountID(this.getSelectedTransaction().getAccountID());
-		    	this.getTrxTypeList().clear();
-		    	this.setTrxTypeList(SlomFinUtil.getValidTrxTypesForAccountTypes(acct.getiAccountTypeID()));
+		    	this.getTrxTypeDropdownList().clear();
+		    	this.setTrxTypeDropdownList(SlomFinUtil.getValidTrxTypesForAccountTypes(acct.getiAccountTypeID()));
 		    	
-		    	Collections.sort(this.getTrxTypeList(), new TransactionTypeComparator());
+		    	Collections.sort(this.getTrxTypeDropdownList(), new TransactionTypeComparator());
 		    	
-		    	this.getInvestmentTypeList().clear();
-		    	this.setInvestmentTypeList(SlomFinUtil.getValidInvTypesForAccountTypes(acct.getiAccountTypeID()));
+		    	this.getInvestmentTypeDropdownList().clear();
+		    	this.setInvestmentTypeDropdownList(SlomFinUtil.getValidInvTypesForAccountTypes(acct.getiAccountTypeID()));
 		    }
 		    
 		    setRenderTransactionViewAddUpdateDelete(); 
@@ -703,7 +781,6 @@ public class SlomFinMain implements Serializable
 				||  this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strLoan))
 				{
 					this.getSelectedTransaction().setTrxTypPositiveInd(false);
-					this.getSelectedTransaction().setEffectiveAmount(this.getSelectedTransaction().getCostProceeds().multiply(new BigDecimal(-1.0)));
 				}
 				else if (this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strBuy)
 					||  this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strCashDividend)
@@ -716,7 +793,36 @@ public class SlomFinMain implements Serializable
 					||  this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strExerciseOption))
 				{
 					this.getSelectedTransaction().setTrxTypPositiveInd(true);
-					this.getSelectedTransaction().setEffectiveAmount(this.getSelectedTransaction().getCostProceeds());
+				}
+				
+				if (this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strTransferOut))
+				{					
+					if (this.isGenerateCorrespondingXfer())
+					{
+						DynamoTransaction correspondingTrx = new DynamoTransaction(this.getSelectedTransaction());
+						correspondingTrx.setAccountID(this.getSelectedTransaction().getTransferAccountID());
+						Account xferAcct = accountDAO.getAccountByAccountID(this.getSelectedTransaction().getTransferAccountID());
+						correspondingTrx.setAccountName(xferAcct.getsAccountName());
+						correspondingTrx.setTransactionTypeID(SlomFinUtil.TransferIn);
+						correspondingTrx.setTransactionTypeDescription(SlomFinUtil.strTransferIn);
+						correspondingTrx.setTrxTypPositiveInd(true);
+						transactionDAO.addTransaction(correspondingTrx);
+					}															
+				}
+				
+				if (this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strTransferIn))
+				{
+					if (this.isGenerateCorrespondingXfer())
+					{
+						DynamoTransaction correspondingTrx = new DynamoTransaction(this.getSelectedTransaction());
+						correspondingTrx.setAccountID(this.getSelectedTransaction().getTransferAccountID());
+						Account xferAcct = accountDAO.getAccountByAccountID(this.getSelectedTransaction().getTransferAccountID());
+						correspondingTrx.setAccountName(xferAcct.getsAccountName());
+						correspondingTrx.setTransactionTypeID(SlomFinUtil.TransferOut);
+						correspondingTrx.setTransactionTypeDescription(SlomFinUtil.strTransferOut);
+						correspondingTrx.setTrxTypPositiveInd(false);
+						transactionDAO.addTransaction(correspondingTrx);
+					}					
 				}
 												
 			}
@@ -909,14 +1015,6 @@ public class SlomFinMain implements Serializable
 		this.renderTransactionId = renderTransactionId;
 	}
 
-	public List<SelectItem> getTrxTypeList() {
-		return trxTypeList;
-	}
-
-	public void setTrxTypeList(List<SelectItem> trxTypeList) {
-		this.trxTypeList = trxTypeList;
-	}
-
 	public boolean isRenderTrxAmount() {
 		return renderTrxAmount;
 	}
@@ -997,14 +1095,14 @@ public class SlomFinMain implements Serializable
 		this.renderTrxLastOfBillingCycle = renderTrxLastOfBillingCycle;
 	}
 
-	public List<SelectItem> getWdCategoriesList() 
+	public List<SelectItem> getWdCategoriesDropdownList() 
 	{
-		setWdCategoriesList(transactionDAO.getWdCategoryDropdownList());
-		return wdCategoriesList;
+		setWdCategoriesDropdownList(transactionDAO.getWdCategoryDropdownList());
+		return wdCategoriesDropdownList;
 	}
 
-	public void setWdCategoriesList(List<SelectItem> wdCategoriesList) {
-		this.wdCategoriesList = wdCategoriesList;
+	public void setWdCategoriesDropdownList(List<SelectItem> wdCategoriesDropdownList) {
+		this.wdCategoriesDropdownList = wdCategoriesDropdownList;
 	}
 
 	public boolean isRenderTrxInvestmentType() {
@@ -1023,14 +1121,6 @@ public class SlomFinMain implements Serializable
 		this.renderTrxInvestment = renderTrxInvestment;
 	}
 
-	public List<SelectItem> getInvestmentTypeList() {
-		return investmentTypeList;
-	}
-
-	public void setInvestmentTypeList(List<SelectItem> investmentTypeList) {
-		this.investmentTypeList = investmentTypeList;
-	}
-
 	public boolean isOwnedInvestments() {
 		return ownedInvestments;
 	}
@@ -1038,21 +1128,69 @@ public class SlomFinMain implements Serializable
 	public void setOwnedInvestments(boolean ownedInvestments) {
 		this.ownedInvestments = ownedInvestments;
 	}
-
-	public List<SelectItem> getInvestmentList() {
-		return investmentList;
-	}
-
-	public void setInvestmentList(List<SelectItem> investmentList) {
-		this.investmentList = investmentList;
-	}
-
+	
 	public boolean isRenderOwnedInvestmentsCheckbox() {
 		return renderOwnedInvestmentsCheckbox;
 	}
 
 	public void setRenderOwnedInvestmentsCheckbox(boolean renderOwnedInvestmentsCheckbox) {
 		this.renderOwnedInvestmentsCheckbox = renderOwnedInvestmentsCheckbox;
+	}
+
+	public boolean isGenerateCorrespondingXfer() {
+		return generateCorrespondingXfer;
+	}
+
+	public void setGenerateCorrespondingXfer(boolean generateCorrespondingXfer) {
+		this.generateCorrespondingXfer = generateCorrespondingXfer;
+	}
+
+	public List<SelectItem> getTrxTypeDropdownList() {
+		return trxTypeDropdownList;
+	}
+
+	public void setTrxTypeDropdownList(List<SelectItem> trxTypeDropdownList) {
+		this.trxTypeDropdownList = trxTypeDropdownList;
+	}
+
+	public List<SelectItem> getInvestmentTypeDropdownList() {
+		return investmentTypeDropdownList;
+	}
+
+	public void setInvestmentTypeDropdownList(List<SelectItem> investmentTypeDropdownList) {
+		this.investmentTypeDropdownList = investmentTypeDropdownList;
+	}
+
+	public List<SelectItem> getInvestmentDropdownList() {
+		return investmentDropdownList;
+	}
+
+	public void setInvestmentDropdownList(List<SelectItem> investmentDropdownList) {
+		this.investmentDropdownList = investmentDropdownList;
+	}
+
+	public List<SelectItem> getXferAccountsDropdownList() {
+		return xferAccountsDropdownList;
+	}
+
+	public void setXferAccountsDropdownList(List<SelectItem> xferAccountsDropdownList) {
+		this.xferAccountsDropdownList = xferAccountsDropdownList;
+	}
+
+	public List<Investment> getInvestmentsList() {
+		return investmentsList;
+	}
+
+	public void setInvestmentsList(List<Investment> investmentsList) {
+		this.investmentsList = investmentsList;
+	}
+
+	public boolean isRenderTrxPostedDate() {
+		return renderTrxPostedDate;
+	}
+
+	public void setRenderTrxPostedDate(boolean renderTrxPostedDate) {
+		this.renderTrxPostedDate = renderTrxPostedDate;
 	}
 
 }

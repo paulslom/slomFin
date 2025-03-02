@@ -16,7 +16,7 @@
          		
 			   <tr>
 			      <td align="center">
-			   		  <h:outputText value="#{pc_SlomFinMain.investmentsListTitle}" styleClass="pageSectionTitle"/>
+			   		  <h:outputText value="Investments List" styleClass="pageSectionTitle"/>
 			   	  </td>
 			   </tr>
 		    
@@ -34,37 +34,57 @@
 						  <p:column style="width:3%" headerText="View">			
 						   		<p:commandLink actionListener="#{pc_SlomFinMain.selectInvestmentAcid}" value="View">
     								<f:param name="operation" value="View" />
-    								<f:param name="InvestmentId" value="#{inv.InvestmentID}" />
+    								<f:param name="InvestmentId" value="#{inv.iInvestmentID}" />
                                 </p:commandLink>
                           </p:column>
                           
                           <p:column style="width:3%" headerText="Chg">			
 						   		<p:commandLink actionListener="#{pc_SlomFinMain.selectInvestmentAcid}" value="Chg">
     								<f:param name="operation" value="Update" />
-    								<f:param name="InvestmentId" value="#{inv.InvestmentID}" />
+    								<f:param name="InvestmentId" value="#{inv.iInvestmentID}" />
                                 </p:commandLink>
                           </p:column>
                           
                           <p:column style="width:3%" headerText="Del">			
 						   		<p:commandLink actionListener="#{pc_SlomFinMain.selectInvestmentAcid}" value="Del">
     								<f:param name="operation" value="Delete" />
-    								<f:param name="InvestmentId" value="#{inv.InvestmentID}" />
+    								<f:param name="InvestmentId" value="#{inv.iInvestmentID}" />
                                 </p:commandLink>
                           </p:column>
                           
-                          <p:column style="width:4%" headerText="Investment ID" sortBy="#{inv.InvestmentID}">												
-							  <h:outputText value="#{inv.InvestmentID}"/>															
+                          <p:column style="width:4%" headerText="Investment ID" sortBy="#{inv.iInvestmentID}">												
+							  <h:outputText value="#{inv.iInvestmentID}"/>															
 						  </p:column>
-								  
-						  <p:column style="width:10%" headerText="Current Price" sortBy="#{inv.currentPrice}">												
+							
+						  <p:column style="width:20%" headerText="Description" sortBy="#{inv.description}">												
+							  <h:outputText value="#{inv.description}"/>															
+						  </p:column>		
+						  
+						  <p:column style="width:4%" headerText="Investment Type ID" sortBy="#{inv.iInvestmentTypeID}">												
+							  <h:outputText value="#{inv.iInvestmentTypeID}"/>															
+						  </p:column>
+							
+						  <p:column style="width:20%" headerText="Inv Type Description" sortBy="#{inv.investmentTypeDescription}">												
+							  <h:outputText value="#{inv.investmentTypeDescription}"/>															
+						  </p:column>	
+						
+						  <p:column style="width:8%" headerText="Ticker Symbol" sortBy="#{inv.tickerSymbol}">												
+							  <h:outputText value="#{inv.tickerSymbol}"/>															
+						  </p:column>
+						  
+		                  <p:column style="width:4%" headerText="Asset Class ID" sortBy="#{inv.assetClassID}">												
+							  <h:outputText value="#{inv.assetClassID}"/>															
+						  </p:column>
+							
+						  <p:column style="width:20%" headerText="Asset Class" sortBy="#{inv.assetClass}">												
+							  <h:outputText value="#{inv.assetClass}"/>															
+						  </p:column>	
+						  
+						  <p:column style="width:8%" headerText="Current Price" sortBy="#{inv.currentPrice}">												
 							   <h:outputText value="#{inv.currentPrice}">
 							      <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
 							  </h:outputText>   														
-						  </p:column>
-						  
-						  <p:column style="width:20%" headerText="Description" sortBy="#{inv.InvestmentDescription}">												
-							  <h:outputText value="#{inv.InvestmentDescription}"/>															
-						  </p:column>							 				 
+						  </p:column>	 				 
 										  
 				     </p:dataTable>
 				     

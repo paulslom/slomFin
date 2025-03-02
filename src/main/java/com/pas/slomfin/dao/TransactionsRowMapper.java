@@ -27,7 +27,6 @@ public class TransactionsRowMapper implements RowMapper<DynamoTransaction>, Seri
 	    dynamoTransaction.setPrice(rs.getBigDecimal("mPrice"));
 	    dynamoTransaction.setCostProceeds(rs.getBigDecimal("mCostProceeds"));	    
 	    dynamoTransaction.setDividendTaxableYear(rs.getInt("iDividendTaxableYear"));
-	    dynamoTransaction.setEffectiveAmount(rs.getBigDecimal("mEffectiveAmount"));
 	    dynamoTransaction.setOptionTypeID(rs.getInt("iOptionTypeID"));
 	    dynamoTransaction.setStrikePrice(rs.getBigDecimal("mStrikePrice"));	   
 	    dynamoTransaction.setOpeningTrxInd(rs.getBoolean("bOpeningTrxInd"));
