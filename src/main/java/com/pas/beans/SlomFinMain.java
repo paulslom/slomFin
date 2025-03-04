@@ -19,10 +19,13 @@ import com.pas.dynamodb.DateToStringConverter;
 import com.pas.dynamodb.DynamoClients;
 import com.pas.dynamodb.DynamoTransaction;
 import com.pas.dynamodb.DynamoUtil;
+
 import com.pas.slomfin.dao.AccountDAO;
 import com.pas.slomfin.dao.InvestmentDAO;
 import com.pas.slomfin.dao.PortfolioHistoryDAO;
 import com.pas.slomfin.dao.TransactionDAO;
+import com.pas.slomfin.dao.PaydayDAO;
+
 import com.pas.util.SlomFinUtil;
 import com.pas.util.TransactionTypeComparator;
 
@@ -51,8 +54,17 @@ public class SlomFinMain implements Serializable
 	
 	private String siteTitle;	
 	
+	private String trxSearchTerm;
+	
 	private String transactionAcidSetting;
 	private DynamoTransaction selectedTransaction;
+	
+	private String accountAcidSetting;
+	private Account selectedAccount;
+	private boolean renderAccountUpdateFields = false;
+	
+	private String paydayAcidSetting;
+	private Payday selectedPayday;
 	
 	private boolean renderTransactionUpdateFields = false;
 	private boolean renderTransactionId = false;	
@@ -75,11 +87,13 @@ public class SlomFinMain implements Serializable
 	
 	private boolean ownedInvestments = false;
 	
+	private List<SelectItem> accountDropdownList = new ArrayList<>();
 	private List<SelectItem> trxTypeDropdownList = new ArrayList<>();
 	private List<SelectItem> investmentTypeDropdownList = new ArrayList<>();
 	private List<SelectItem> investmentDropdownList = new ArrayList<>();
 	private List<SelectItem> wdCategoriesDropdownList = new ArrayList<>();
 	private List<SelectItem> xferAccountsDropdownList = new ArrayList<>();
+	private List<SelectItem> accountTypesDropdownList = new ArrayList<>();
 	
 	private String operation;
 	
@@ -87,9 +101,14 @@ public class SlomFinMain implements Serializable
 	private InvestmentDAO investmentDAO;
 	private AccountDAO accountDAO;
 	private PortfolioHistoryDAO portfolioHistoryDAO;
+	private PaydayDAO paydayDAO;
 	
 	private List<DynamoTransaction> trxList = new ArrayList<>();
-	private List<Investment> investmentsList = new ArrayList<>();
+	private List<Investment> investmentsList = new ArrayList<>();	
+	private List<Payday> paydayList = new ArrayList<>();
+	
+	private Integer citiDoubleCashAccountID;
+	private Integer sofiCheckingAccountID;
 	
 	private String trxListTitle;
 	
@@ -98,6 +117,8 @@ public class SlomFinMain implements Serializable
 		logger.info("Entering SlomFinMain onStart method.  Should only be here ONE time");
 		logger.info("SlomFinMain id is: " + this.getId());
 		this.setSiteTitle("Slomkowski Financial");
+		
+		this.setAccountTypesDropdownList(SlomFinUtil.getAccountTypesDropdownList());
 		
 		try 
 		{
@@ -110,6 +131,10 @@ public class SlomFinMain implements Serializable
 				loadInvestments(dynamoClients);
 				loadPortfolioHistory(dynamoClients);
 				loadTransactions(dynamoClients);
+				loadPaydays(dynamoClients);
+				
+				this.setSofiCheckingAccountID(accountDAO.getSoFiCheckingAccountID());
+				this.setCitiDoubleCashAccountID(accountDAO.getCitiDoubleCashAccountID());
 			}
 		} 
 		catch (Exception e) 
@@ -148,6 +173,14 @@ public class SlomFinMain implements Serializable
 		portfolioHistoryDAO = new PortfolioHistoryDAO(dynamoClients);
 		portfolioHistoryDAO.readPortfolioHistoryFromDB();
 		logger.info("Portfolio History read in. List size = " + portfolioHistoryDAO.getFullPortfolioHistoryList().size());
+	}
+	
+	private void loadPaydays(DynamoClients dynamoClients) throws Exception 
+	{
+		logger.info("entering loadPaydays");
+		paydayDAO = new PaydayDAO(dynamoClients);
+		paydayDAO.readPaydaysFromDB();
+		logger.info("Paydays read in. List size = " + portfolioHistoryDAO.getFullPortfolioHistoryList().size());
 	}
 	
 	public String getSignedOnUserName()
@@ -193,6 +226,12 @@ public class SlomFinMain implements Serializable
     		this.setTrxListTitle("Transaction List for Account " + trx.getAccountName());
     	}
 	}
+		
+	private void refreshTrxList(String searchTerm)
+	{
+		this.getTrxList().clear();		
+		this.setTrxList(transactionDAO.searchTransactions(searchTerm));
+	}
 	
 	public void accountTransactionsSelection(ActionEvent event) 
 	{
@@ -216,6 +255,74 @@ public class SlomFinMain implements Serializable
         }
 	}  	
 	
+	public String searchTrxDescriptions() 
+	{
+		try 
+        {		    
+		    logger.info("search requested for: " + this.getTrxSearchTerm());
+		    
+		    refreshTrxList(this.getTrxSearchTerm());
+		    
+            logger.info("successfully searched.  Found " + this.getTrxList().size() + " items");
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+		return "/transactionList.xhtml";
+	}  	
+	
+	public void accountAdd(ActionEvent event) 
+	{
+		try 
+        {		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+		    
+		    logger.info("Open New Account selected from menu");
+
+		    this.setSelectedAccount(new Account());
+		    this.setRenderAccountUpdateFields(true);
+		    
+		    setAccountAcidSetting("Add");
+		    
+            String targetURL = SlomFinUtil.getContextRoot() + "/accountAddUpdate.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}  	
+	
+	public void accountUpdate(ActionEvent event) 
+	{
+		try 
+        {		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+		    String accountid = ec.getRequestParameterMap().get("accountid");		    
+		    logger.info("account ID " + accountid + " selected for update from menu");
+
+		    this.setSelectedAccount(accountDAO.getAccountByAccountID(Integer.parseInt(accountid)));
+		    this.setRenderAccountUpdateFields(true);
+		    setAccountAcidSetting("Update");
+		    
+            String targetURL = SlomFinUtil.getContextRoot() + "/accountAddUpdate.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}  	
+	
 	public void showInvestmentsList(ActionEvent event) 
 	{
 		try 
@@ -226,6 +333,27 @@ public class SlomFinMain implements Serializable
 		    
 		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
             String targetURL = SlomFinUtil.getContextRoot() + "/investmentList.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}  	
+	
+	public void showPaydayList(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("Payday List selected from menu");
+		    
+		    this.setPaydayList(paydayDAO.getFullPaydaysList());
+		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+            String targetURL = SlomFinUtil.getContextRoot() + "/paydayList.xhtml";
 		    ec.redirect(targetURL);
             logger.info("successfully redirected to: " + targetURL);
         } 
@@ -658,6 +786,12 @@ public class SlomFinMain implements Serializable
 		return "/transactionList.xhtml";
 	}
 	
+	public String returnToPaydayList()
+	{
+		this.setPaydayList(paydayDAO.getFullPaydaysList());
+		return "/paydayList.xhtml";
+	}
+	
 	public String selectTransactionAcid()
 	{		
 		try 
@@ -726,6 +860,55 @@ public class SlomFinMain implements Serializable
 		return "";		
 	}	
 	
+	public String selectPaydayAcid()
+	{		
+		try 
+        {
+			ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+		    String acid = ec.getRequestParameterMap().get("operation");
+		    String paydayId = ec.getRequestParameterMap().get("paydayId");
+		    
+		    this.setPaydayAcidSetting(acid);
+		    
+		    logger.info("Payday operation setup for add-change-inquire-delete.  Function is: " + acid);
+		     
+		    if (acid.equalsIgnoreCase("add"))
+		    {
+		    	Payday pd = new Payday();
+		    	this.setSelectedPayday(pd);	
+		    }
+		    else //go get the existing trx
+		    {
+		    	this.setSelectedPayday(this.getPaydayByPaydayID(Integer.parseInt(paydayId)));
+		    }
+		    
+		    this.getTrxTypeDropdownList().clear();
+	    	this.setTrxTypeDropdownList(SlomFinUtil.getAllTrxTypesTypesDropdownList());	    	
+	    	Collections.sort(this.getTrxTypeDropdownList(), new TransactionTypeComparator());
+	    	
+		    this.setAccountDropdownList(accountDAO.getXferAccountsDropdown(0));
+		    this.setXferAccountsDropdownList(accountDAO.getXferAccountsDropdown(0));
+		    
+		    String targetURL = SlomFinUtil.getContextRoot() + "/paydayAddUpdate.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL + " with operation: " + acid);
+					    
+        } 
+        catch (Exception e) 
+        {
+        	logger.error("selectPaydayAcid errored: " + e.getMessage(), e);
+			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+		
+		return "";		
+	}	
+	
+	private Payday getPaydayByPaydayID(int paydayID) 
+	{
+		return paydayDAO.getPaydayByPaydayID(paydayID);
+	}
+
 	private Account getAccountByAccountID(Integer accountID) 
 	{
 		return accountDAO.getAccountByAccountID(accountID);
@@ -851,6 +1034,132 @@ public class SlomFinMain implements Serializable
 		refreshTrxList(this.getSelectedTransaction().getAccountID());
 		
 		return "/transactionList.xhtml";	
+	}
+	
+	public String paydayDelete()
+	{
+		try
+		{
+			paydayDAO.deletePayday(this.getSelectedPayday());			
+		}
+		catch (Exception e)
+		{
+        	logger.error("paydayDelete errored: " + e.getMessage(), e);
+			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+		 	return "";
+        }
+		
+		FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Payday successfully deleted", "Payday successfully deleted");
+	 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+		
+		return "";	
+	}
+	
+	public String addChangeDelAccount()
+	{
+		logger.info("entering addChangeDelAccount for operation: " + accountAcidSetting);
+		
+		try
+		{
+			if (!accountAcidSetting.equalsIgnoreCase("Delete"))
+			{
+				if (this.getSelectedAccount().getiAccountTypeID() == -1)
+				{
+					FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Account Type not selected", "Account Type not selected");
+				 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+				 	return "";
+				}
+				else
+				{
+					this.getSelectedAccount().setsAccountType(SlomFinUtil.getAccountTypesMap().get(this.getSelectedAccount().getiAccountTypeID()));
+				}
+			}				
+			
+			if (accountAcidSetting.equalsIgnoreCase("Add"))
+			{
+				accountDAO.addAccount(this.getSelectedAccount());
+			}
+			else if (accountAcidSetting.equalsIgnoreCase("Update"))
+			{
+				accountDAO.updateAccount(this.getSelectedAccount());
+			}
+			else if (accountAcidSetting.equalsIgnoreCase("Delete"))
+			{
+				accountDAO.deleteAccount(this.getSelectedAccount());
+			}
+		}
+		catch (Exception e)
+		{
+        	logger.error("addChangeDelAccount errored: " + e.getMessage(), e);
+			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+		 	return "";
+        }
+		
+		FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Account successfully added", "Account successfully added");
+	 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+		
+		return "";	
+	}
+	
+	public String addChangePayday()
+	{
+		logger.info("entering addChangePayday for operation: " + paydayAcidSetting);
+		
+		try
+		{
+			if (this.getSelectedPayday().getTransactionTypeID() == -1)
+			{
+				FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "trx Type not selected", "trx Type not selected");
+			 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+			 	return "";
+			}
+			else
+			{
+				this.getSelectedPayday().setTrxTypeDescription(SlomFinUtil.getTrxTypesMap().get(this.getSelectedPayday().getTransactionTypeID()));
+			}
+			
+			if (this.getSelectedPayday().getAccountID() == -1)
+			{
+				FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Account not selected", "Account not selected");
+			 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+			 	return "";
+			}
+			else
+			{
+				Account acct = accountDAO.getAccountByAccountID(this.getSelectedPayday().getAccountID());
+				this.getSelectedPayday().setAccountName(acct.getsAccountName());
+			}
+		   
+			if (this.getSelectedPayday().getXferAccountID() != -1)
+			{
+				Account acct = accountDAO.getAccountByAccountID(this.getSelectedPayday().getXferAccountID());
+				this.getSelectedPayday().setAccountName(acct.getsAccountName());
+			}
+					    
+			if (paydayAcidSetting.equalsIgnoreCase("Add"))
+			{
+				paydayDAO.addPayday(this.getSelectedPayday());
+			}
+			else if (paydayAcidSetting.equalsIgnoreCase("Update"))
+			{
+				paydayDAO.updatePayday(this.getSelectedPayday());
+			}
+			
+		}
+		catch (Exception e)
+		{
+        	logger.error("addChangePayday errored: " + e.getMessage(), e);
+			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+		 	return "";
+        }
+		
+		FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Payday successfully added/changed", "Account successfully added/changed");
+	 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+		
+		return "";	
 	}
 	
 	public void setRenderTransactionViewAddUpdateDelete() 
@@ -1191,6 +1500,94 @@ public class SlomFinMain implements Serializable
 
 	public void setRenderTrxPostedDate(boolean renderTrxPostedDate) {
 		this.renderTrxPostedDate = renderTrxPostedDate;
+	}
+
+	public String getAccountAcidSetting() {
+		return accountAcidSetting;
+	}
+
+	public void setAccountAcidSetting(String accountAcidSetting) {
+		this.accountAcidSetting = accountAcidSetting;
+	}
+
+	public Account getSelectedAccount() {
+		return selectedAccount;
+	}
+
+	public void setSelectedAccount(Account selectedAccount) {
+		this.selectedAccount = selectedAccount;
+	}
+
+	public boolean isRenderAccountUpdateFields() {
+		return renderAccountUpdateFields;
+	}
+
+	public void setRenderAccountUpdateFields(boolean renderAccountUpdateFields) {
+		this.renderAccountUpdateFields = renderAccountUpdateFields;
+	}
+
+	public List<SelectItem> getAccountTypesDropdownList() {
+		return accountTypesDropdownList;
+	}
+
+	public void setAccountTypesDropdownList(List<SelectItem> accountTypesDropdownList) {
+		this.accountTypesDropdownList = accountTypesDropdownList;
+	}
+
+	public String getTrxSearchTerm() {
+		return trxSearchTerm;
+	}
+
+	public void setTrxSearchTerm(String trxSearchTerm) {
+		this.trxSearchTerm = trxSearchTerm;
+	}
+
+	public List<Payday> getPaydayList() {
+		return paydayList;
+	}
+
+	public void setPaydayList(List<Payday> paydayList) {
+		this.paydayList = paydayList;
+	}
+
+	public Integer getCitiDoubleCashAccountID() {
+		return citiDoubleCashAccountID;
+	}
+
+	public void setCitiDoubleCashAccountID(Integer citiDoubleCashAccountID) {
+		this.citiDoubleCashAccountID = citiDoubleCashAccountID;
+	}
+
+	public Integer getSofiCheckingAccountID() {
+		return sofiCheckingAccountID;
+	}
+
+	public void setSofiCheckingAccountID(Integer sofiCheckingAccountID) {
+		this.sofiCheckingAccountID = sofiCheckingAccountID;
+	}
+
+	public String getPaydayAcidSetting() {
+		return paydayAcidSetting;
+	}
+
+	public void setPaydayAcidSetting(String paydayAcidSetting) {
+		this.paydayAcidSetting = paydayAcidSetting;
+	}
+
+	public Payday getSelectedPayday() {
+		return selectedPayday;
+	}
+
+	public void setSelectedPayday(Payday selectedPayday) {
+		this.selectedPayday = selectedPayday;
+	}
+
+	public List<SelectItem> getAccountDropdownList() {
+		return accountDropdownList;
+	}
+
+	public void setAccountDropdownList(List<SelectItem> accountDropdownList) {
+		this.accountDropdownList = accountDropdownList;
 	}
 
 }

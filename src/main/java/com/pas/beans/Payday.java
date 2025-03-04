@@ -17,15 +17,16 @@ public class Payday implements Serializable
 	//private static Logger logger = LogManager.getLogger(PortfolioHistory.class);	
 	
 	private Integer paydayID;
+	private String paydayDescription;
 	private Integer transactionTypeID;
-    private String accountName;
-    private Integer accountID;
-    private String trxTypeDescription;
+	private String trxTypeDescription;
+	private Integer accountID;
+    private String accountName;    
     private BigDecimal defaultAmount;
     private Integer defaultDay;
-    private Boolean nextMonthInd;
-    private String paydayDescription;
+    private Boolean nextMonthInd;    
     private Integer xferAccountID;
+    private String xferAccountName;
     
     public String toString()
     {
@@ -111,6 +112,14 @@ public class Payday implements Serializable
 
 	public void setXferAccountID(Integer xferAccountID) {
 		this.xferAccountID = xferAccountID;
+	}
+
+	public String getXferAccountName() {
+		return xferAccountName;
+	}
+
+	public void setXferAccountName(String xferAccountName) {
+		this.xferAccountName = xferAccountName;
 	}
     
 }

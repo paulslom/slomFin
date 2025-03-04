@@ -20,7 +20,9 @@ import com.pas.dynamodb.DynamoClients;
 
 import jakarta.faces.model.SelectItem;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.DeleteItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
 
 public class AccountDAO implements Serializable 
@@ -65,30 +67,29 @@ public class AccountDAO implements Serializable
 	}
 	
 	private Account dynamoUpsert(Account account) throws Exception 
-	{
-		Account dynamoAccount = new Account();
-        
+	{		  
 		if (account.getiAccountID() == null)
-		{
-			Integer currentMaxAccountID = 0;
-			for (int i = 0; i < this.getFullAccountsList().size(); i++) 
-			{
-				Account account2 = this.getFullAccountsList().get(i);
-				currentMaxAccountID = account2.getiAccountID();
-			}
-			dynamoAccount.setiAccountID(currentMaxAccountID + 1);
+		{			
+			account.setiAccountID(determineNextAccountId());
 		}
-		else
-		{
-			dynamoAccount.setiAccountID(account.getiAccountID());
-		}
-				
-		PutItemEnhancedRequest<Account> putItemEnhancedRequest = PutItemEnhancedRequest.builder(Account.class).item(dynamoAccount).build();
+						
+		PutItemEnhancedRequest<Account> putItemEnhancedRequest = PutItemEnhancedRequest.builder(Account.class).item(account).build();
 		accountsTable.putItem(putItemEnhancedRequest);
 			
-		return dynamoAccount;
+		return account;
 	}
 
+	private Integer determineNextAccountId() 
+	{
+		int nextID = 0;
+		
+		List<Integer> ids = this.getFullAccountsMap().keySet().stream().toList();
+		int max = Collections.max(ids);
+        nextID = max + 1;
+        
+		return nextID;
+	}
+	
 	public void updateAccount(Account account)  throws Exception
 	{
 		dynamoUpsert(account);		
@@ -223,7 +224,12 @@ public class AccountDAO implements Serializable
 		
 		Account acct = this.getAccountByAccountID(inputAccountID);
 		
-		if (acct.getbTaxableInd())
+		if (acct == null) //will be this on payday add
+		{
+			tempList = getActiveTaxableAccountsList();
+			tempList.addAll(getActiveRetirementAccountsList());
+		}
+		else if (acct.getbTaxableInd())
 		{
 			tempList = getActiveTaxableAccountsList();
 		}
@@ -252,6 +258,53 @@ public class AccountDAO implements Serializable
 		
 		return returnList;
 		
+	}
+
+	public void deleteAccount(Account account) throws Exception 
+	{
+		Key key = Key.builder().partitionValue(account.getiAccountID()).build();
+		DeleteItemEnhancedRequest deleteItemEnhancedRequest = DeleteItemEnhancedRequest.builder().key(key).build();
+		accountsTable.deleteItem(deleteItemEnhancedRequest);
+		
+		logger.info("LoggedDBOperation: function-delete; table:account; rows:1");
+		
+		refreshListsAndMaps("delete", account);		
+		
+		logger.info("delete transaction complete");	
+	}
+
+	public Integer getSoFiCheckingAccountID() 
+	{
+		Integer acctID = 0;
+		
+		for (int i = 0; i < fullAccountsList.size(); i++) 
+		{
+			Account acct = fullAccountsList.get(i);
+			if (acct.getsAccountName().contains("SoFi Checking"))
+			{
+				acctID = acct.getiAccountID();
+				break;
+			}
+		}
+		
+		return acctID;
+	}
+
+	public Integer getCitiDoubleCashAccountID() 
+	{
+		Integer acctID = 0;
+		
+		for (int i = 0; i < fullAccountsList.size(); i++) 
+		{
+			Account acct = fullAccountsList.get(i);
+			if (acct.getsAccountName().contains("Citi Double Cash"))
+			{
+				acctID = acct.getiAccountID();
+				break;
+			}
+		}
+		
+		return acctID;
 	}
 
 }

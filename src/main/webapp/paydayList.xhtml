@@ -1,0 +1,103 @@
+<ui:composition template="template.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+     
+    <ui:define name="content">
+    
+         <h:form id="paydayListForm">                      
+     
+            <p:messages id="facesMessagesID" showDetail="false"/>
+            
+            <table>
+         		
+			   <tr>
+			      <td align="center">
+			   		  <h:outputText value="Payday List" styleClass="pageSectionTitle"/>
+			   	  </td>
+			   </tr>
+		    
+	          <tr>
+	          
+	              <td>
+	                    
+			  		 <p:dataTable id="paydayTableID" value="#{pc_SlomFinMain.paydayList}" rowIndexVar="rowIndex"
+				          var="pd" scrollable="true" scrollHeight="950" styleClass="dataTableStyle">						
+						   
+						  <p:column style="width:3%" headerText="Num">												
+							  <h:outputText value="#{rowIndex + 1}"/>															
+						  </p:column>
+						  
+						  <p:column style="width:3%" headerText="View">			
+						   		<p:commandLink actionListener="#{pc_SlomFinMain.selectPaydayAcid}" value="Add">
+    								<f:param name="operation" value="Add" />
+                                </p:commandLink>
+                          </p:column>
+                          
+                          <p:column style="width:3%" headerText="Chg">			
+						   		<p:commandLink actionListener="#{pc_SlomFinMain.selectPaydayAcid}" value="Chg">
+    								<f:param name="operation" value="Update" />
+    								<f:param name="paydayId" value="#{pd.paydayID}" />
+                                </p:commandLink>
+                          </p:column>
+                          
+                          <p:column style="width:3%" headerText="Del">			
+						   		<p:commandLink actionListener="#{pc_SlomFinMain.paydayDelete}" value="Del" update="paydayListForm">
+    								<f:param name="paydayId" value="#{pd.paydayID}" />
+    								<p:confirm header="Confirmation" message="Really completely delete this??" icon="pi pi-exclamation-triangle" />
+                                </p:commandLink>
+                          </p:column>
+                          
+                          <p:column style="width:4%" headerText="Payday ID" sortBy="#{pd.paydayID}">												
+							  <h:outputText value="#{pd.paydayID}"/>															
+						  </p:column>
+							
+						  <p:column style="width:20%" headerText="Payday Description" sortBy="#{pd.paydayDescription}">												
+							  <h:outputText value="#{pd.paydayDescription}"/>															
+						  </p:column>		
+						  
+						  <p:column style="width:20%" headerText="Trx Type Description" sortBy="#{pd.trxTypeDescription}">												
+							  <h:outputText value="#{pd.trxTypeDescription}"/>															
+						  </p:column>
+						  
+						  <p:column style="width:20%" headerText="Account Name" sortBy="#{pd.accountName}">												
+							  <h:outputText value="#{pd.accountName}"/>															
+						  </p:column>
+						  
+						  <p:column style="width:8%" headerText="Default Amt" sortBy="#{pd.defaultAmount}">												
+							   <h:outputText value="#{pd.defaultAmount}">
+							      <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+							  </h:outputText>   														
+						  </p:column>	 
+		
+		                  <p:column style="width:8%" headerText="Next Month Ind">			
+                              <p:selectBooleanCheckbox value="#{pd.nextMonthInd}" disabled="true"></p:selectBooleanCheckbox>					   
+                          </p:column>
+    
+						  <p:column style="width:4%" headerText="Default Day" sortBy="#{pd.defaultDay}">												
+							  <h:outputText value="#{pd.defaultDay}"/>															
+						  </p:column>						
+										  
+				     </p:dataTable>	     
+				     
+							   
+					  <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+					        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+					        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+					  </p:confirmDialog>  
+					  
+				     
+				  </td>
+		     </tr>
+		     
+		    </table>
+	                
+	   </h:form>
+   
+    </ui:define>
+
+</ui:composition>
+  

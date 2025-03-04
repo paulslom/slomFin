@@ -59,29 +59,28 @@ public class InvestmentDAO implements Serializable
         return investment2.getiInvestmentID(); //this is the key that was just added
     }
 
+    private Integer determineNextInvestmentId() 
+	{
+		int nextID = 0;
+		
+		List<Integer> ids = this.getFullInvestmentsMap().keySet().stream().toList();
+		int max = Collections.max(ids);
+        nextID = max + 1;
+        
+		return nextID;
+	}
+    
     private Investment dynamoUpsert(Investment investment) throws Exception
     {
-        Investment dynamoInvestment = new Investment();
-
         if (investment.getiInvestmentID() == null)
-        {
-            Integer currentMaxInvestmentID = 0;
-            for (int i = 0; i < this.getFullInvestmentsList().size(); i++)
-            {
-                Investment investment2 = this.getFullInvestmentsList().get(i);
-                currentMaxInvestmentID = investment2.getiInvestmentID();
-            }
-            dynamoInvestment.setiInvestmentID(currentMaxInvestmentID + 1);
+        {            
+            investment.setiInvestmentID(determineNextInvestmentId());
         }
-        else
-        {
-            dynamoInvestment.setiInvestmentID(investment.getiInvestmentID());
-        }
-
-        PutItemEnhancedRequest<Investment> putItemEnhancedRequest = PutItemEnhancedRequest.builder(Investment.class).item(dynamoInvestment).build();
+      
+        PutItemEnhancedRequest<Investment> putItemEnhancedRequest = PutItemEnhancedRequest.builder(Investment.class).item(investment).build();
         investmentsTable.putItem(putItemEnhancedRequest);
 
-        return dynamoInvestment;
+        return investment;
     }
 
     public void updateInvestment(Investment investment)  throws Exception

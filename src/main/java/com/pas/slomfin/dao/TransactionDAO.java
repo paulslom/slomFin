@@ -104,8 +104,8 @@ public class TransactionDAO implements Serializable
 	{
 		int nextTrxID = 0;
 		
-		List<Integer> gameIds = this.getFullTransactionsMap().keySet().stream().toList();
-		int max = Collections.max(gameIds);
+		List<Integer> ids = this.getFullTransactionsMap().keySet().stream().toList();
+		int max = Collections.max(ids);
         nextTrxID = max + 1;
         
 		return nextTrxID;
@@ -230,6 +230,27 @@ public class TransactionDAO implements Serializable
 		return newList;
 	}
 
+	public List<DynamoTransaction> searchTransactions(String searchTerm) 
+	{
+		List<DynamoTransaction> returnList = new ArrayList<>();
+		
+		for (int i = 0; i < this.getFullTransactionsList().size(); i++) 
+		{
+			DynamoTransaction trx = this.getFullTransactionsList().get(i);
+			if (trx.getTransactionDescription() != null)
+			{
+				String tempString = trx.getTransactionDescription().toUpperCase();
+				String inputStringCaps = searchTerm.toUpperCase();
+				
+				if (tempString.contains(inputStringCaps))
+				{
+					returnList.add(trx);
+				}
+			}
+		}
+		return returnList;
+	}
+	
 	/*
 	public void readTransactionsWithin2YearsFromDB() throws Exception 
     {

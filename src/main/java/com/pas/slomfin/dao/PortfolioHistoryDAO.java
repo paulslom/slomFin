@@ -54,29 +54,28 @@ public class PortfolioHistoryDAO implements Serializable
 
     private PortfolioHistory dynamoUpsert(PortfolioHistory portfolioHistory) throws Exception
     {
-        PortfolioHistory dynamoPortfolioHistory = new PortfolioHistory();
-
         if (portfolioHistory.getiPortfolioHistoryID() == null)
         {
-            Integer currentMaxPortfolioHistoryID = 0;
-            for (int i = 0; i < this.getFullPortfolioHistoryList().size(); i++)
-            {
-                PortfolioHistory portfolioHistory2 = this.getFullPortfolioHistoryList().get(i);
-                currentMaxPortfolioHistoryID = portfolioHistory2.getiPortfolioHistoryID();
-            }
-            dynamoPortfolioHistory.setiPortfolioHistoryID(currentMaxPortfolioHistoryID + 1);
+            portfolioHistory.setiPortfolioHistoryID(determineNextPortfolioHistoryId());
         }
-        else
-        {
-            dynamoPortfolioHistory.setiPortfolioHistoryID(portfolioHistory.getiPortfolioHistoryID());
-        }
-
-        PutItemEnhancedRequest<PortfolioHistory> putItemEnhancedRequest = PutItemEnhancedRequest.builder(PortfolioHistory.class).item(dynamoPortfolioHistory).build();
+       
+        PutItemEnhancedRequest<PortfolioHistory> putItemEnhancedRequest = PutItemEnhancedRequest.builder(PortfolioHistory.class).item(portfolioHistory).build();
         portfolioHistoryTable.putItem(putItemEnhancedRequest);
 
-        return dynamoPortfolioHistory;
+        return portfolioHistory;
     }
 
+    private Integer determineNextPortfolioHistoryId() 
+	{
+		int nextID = 0;
+		
+		List<Integer> ids = this.getFullPortfolioHistoryMap().keySet().stream().toList();
+		int max = Collections.max(ids);
+        nextID = max + 1;
+        
+		return nextID;
+	}
+    
     public void updatePortfolioHistory(PortfolioHistory portfolioHistory)  throws Exception
     {
         dynamoUpsert(portfolioHistory);

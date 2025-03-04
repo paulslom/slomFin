@@ -111,7 +111,13 @@
 						</p:submenu>
 						
 						<p:submenu label="Work">
-							<p:menuitem value="Paycheck outflow add/view/chg/del" url="https://www.nfl.com/standings/tie-breaking-procedures"/>
+						
+							<p:menuitem value="Paycheck outflow List" actionListener="#{pc_SlomFinMain.showPaydayList}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+							</p:menuitem>	
+										
 							<p:menuitem value="Add Paycheck" url="https://www.nfl.com/standings/tie-breaking-procedures"/>	
 						</p:submenu>
 							
@@ -119,28 +125,59 @@
 						
 							<p:menuitem value="Update security prices" url="https://www.nfl.com/standings/tie-breaking-procedures"/>
 							
-							<p:menuitem value="Investments add/view/chg/del" actionListener="#{pc_SlomFinMain.showInvestmentsList}"
+							<p:menuitem value="Investments List" actionListener="#{pc_SlomFinMain.showInvestmentsList}"
 									onclick="PF('blockWidgetVar').show()" 
 	                                oncomplete="PF('blockWidgetVar').hide()"		  
 									update="menuForm">							
 							</p:menuitem>
 							
-							<p:menuitem value="Search trx descriptions" url="https://www.nfl.com/standings/tie-breaking-procedures"/>
+							<p:menuitem value="Search trx descriptions"
+									oncomplete="PF('searchDialog').show()"
+									update="searchdialogid">				
+							</p:menuitem>
 							
 							<p:menuitem value="Open New Account" 
-									actionListener="#{pc_SlomFinMain.openAccount}"
+									actionListener="#{pc_SlomFinMain.accountAdd}"
 									onclick="PF('blockWidgetVar').show()" 
 	                                oncomplete="PF('blockWidgetVar').hide()"		  
 									update="menuForm">
+									 <f:param name="operation" value="Add" />
 					    	</p:menuitem>
 					    	
-					    	<p:menuitem value="Update Account" 
-									actionListener="#{pc_SlomFinMain.updateAccount}"
-									onclick="PF('blockWidgetVar').show()" 
-	                                oncomplete="PF('blockWidgetVar').hide()"		  
-									update="menuForm">
-					    	</p:menuitem>
-					    	
+					    	<p:submenu label="Update Actv Txbl">	
+											
+								<c:forEach items="#{pc_SlomFinMain.activeTaxableAccountsList}" var="activeTxblAcct">
+								      	
+						        	<p:menuitem id="updActiveTxbl" value="Update #{activeTxblAcct.sAccountName}" 
+						        	    actionListener="#{pc_SlomFinMain.accountUpdate}"
+						        	    onclick="PF('blockWidgetVar').show()" 
+						        	    oncomplete="PF('blockWidgetVar').hide()" 
+						        	    update="menuForm">
+						        	   <f:param name="operation" value="Update" />
+						        	   <f:param name="accountid" value="#{activeTxblAcct.iAccountID}" />
+						        	</p:menuitem> 
+							        							        
+				    			</c:forEach>
+				    			
+				    		</p:submenu>
+				    		
+				    		<p:submenu label="Update Actv Retirmt">
+				    							
+								<c:forEach items="#{pc_SlomFinMain.activeRetirementAccountsList}" var="activeRetAcct">
+									        	
+						        	<p:menuitem id="updRetId" value="Update #{activeRetAcct.sAccountName}" 
+						        	    actionListener="#{pc_SlomFinMain.accountUpdate}"
+						        	    onclick="PF('blockWidgetVar').show()" 
+						        	    oncomplete="PF('blockWidgetVar').hide()" 
+						        	    update="menuForm">
+						        	   <f:param name="operation" value="Update" />
+						        	   <f:param name="accountid" value="#{activeRetAcct.iAccountID}" />
+						        	</p:menuitem> 							        	
+							        							        
+				    			</c:forEach>
+				    			
+				    		</p:submenu>
+				    					    						    	
 							<p:submenu label="Closed Accts">
 				    							
 								<c:forEach items="#{pc_SlomFinMain.closedAccountsList}" var="closedAcct">
@@ -155,18 +192,9 @@
 							        	    update="menuForm">
 							        	   <f:param name="accountid" value="#{closedAcct.iAccountID}"/>
 							        	</p:menuitem>  
-							        	
-							        	<p:menuitem id="addClosed" value="Add" 
-							        	    actionListener="#{pc_SlomFinMain.selectTransactionAcid}"
-							        	    onclick="PF('blockWidgetVar').show()" 
-							        	    oncomplete="PF('blockWidgetVar').hide()" 
-							        	    update="menuForm">
-							        	   <f:param name="operation" value="Add" />
-							        	   <f:param name="accountId" value="#{closedAcct.iAccountID}" />
-							        	</p:menuitem> 
-							        	
+							              	
 							        	<p:menuitem id="updClosed" value="Update Account" 
-							        	    actionListener="#{pc_SlomFinMain.accountSelection}"
+							        	    actionListener="#{pc_SlomFinMain.accountUpdate}"
 							        	    onclick="PF('blockWidgetVar').show()" 
 							        	    oncomplete="PF('blockWidgetVar').hide()" 
 							        	    update="menuForm">
@@ -180,6 +208,8 @@
 				    		</p:submenu>	
 				    		
 						</p:submenu>
+						
+						<p:menuitem value="Return to Main" url="#{request.contextPath}/main.xhtml"/>	
 												
 					</p:menubar> 
         		    
@@ -188,6 +218,22 @@
         	</tr>
   		
         </table>
+        
+        <p:dialog id="searchdialogid" header="Search" widgetVar="searchDialog" minHeight="80" width="350" showEffect="fade" modal="true" closeOnEscape="true">
+        
+		    <p:inputText id="srchId" value="#{pc_SlomFinMain.trxSearchTerm}"/>
+		     
+		    <f:facet name="footer">
+		    
+		        <p:commandButton id="SearchId1" 				   
+				    value="Search" 	
+				    action="#{pc_SlomFinMain.searchTrxDescriptions}"				     
+	                oncomplete="PF('searchDialog').hide()"	
+				    update="menuForm">
+			    </p:commandButton>
+			    
+		    </f:facet>             
+		</p:dialog>
         
       </h:form>       
         

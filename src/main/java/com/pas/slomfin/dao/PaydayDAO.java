@@ -1,12 +1,13 @@
 package com.pas.slomfin.dao;
 
 import com.pas.beans.Payday;
-import com.pas.beans.PortfolioHistory;
 import com.pas.dynamodb.DynamoClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.DeleteItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
 
 import java.io.Serial;
@@ -52,32 +53,44 @@ public class PaydayDAO implements Serializable
 
         return payday2.getPaydayID(); //this is the key that was just added
     }
+    
+    public void deletePayday(Payday payday) throws Exception
+    {
+    	Key key = Key.builder().partitionValue(payday.getPaydayID()).build();
+		DeleteItemEnhancedRequest deleteItemEnhancedRequest = DeleteItemEnhancedRequest.builder().key(key).build();
+		paydaysTable.deleteItem(deleteItemEnhancedRequest);
+
+        logger.info("LoggedDBOperation: function-delete; table:payday; rows:1");
+
+        refreshListsAndMaps("delete", payday);
+
+        logger.info("deletePayday complete");
+    }    
 
     private Payday dynamoUpsert(Payday payday) throws Exception
     {
-        Payday dynamoPayday = new Payday();
-
         if (payday.getPaydayID() == null)
         {
-            Integer currentMaxPaydayID = 0;
-            for (int i = 0; i < this.getFullPaydaysList().size(); i++)
-            {
-                Payday payday2 = this.getFullPaydaysList().get(i);
-                currentMaxPaydayID = payday2.getPaydayID();
-            }
-            dynamoPayday.setPaydayID(currentMaxPaydayID + 1);
+            payday.setPaydayID(determineNextPaydayId());
         }
-        else
-        {
-            dynamoPayday.setPaydayID(payday.getPaydayID());
-        }
-
-        PutItemEnhancedRequest<Payday> putItemEnhancedRequest = PutItemEnhancedRequest.builder(Payday.class).item(dynamoPayday).build();
+       
+        PutItemEnhancedRequest<Payday> putItemEnhancedRequest = PutItemEnhancedRequest.builder(Payday.class).item(payday).build();
         paydaysTable.putItem(putItemEnhancedRequest);
 
-        return dynamoPayday;
+        return payday;
     }
 
+    private Integer determineNextPaydayId() 
+	{
+		int nextID = 0;
+		
+		List<Integer> ids = this.getFullPaydaysMap().keySet().stream().toList();
+		int max = Collections.max(ids);
+        nextID = max + 1;
+        
+		return nextID;
+	}
+    
     public void updatePayday(Payday payday)  throws Exception
     {
         dynamoUpsert(payday);
@@ -89,7 +102,7 @@ public class PaydayDAO implements Serializable
         logger.debug("update payday table complete");
     }
 
-    public void readPaydaysFromDB(List<PortfolioHistory> nflSeasonsList)
+    public void readPaydaysFromDB()
     {
         for (Payday payday : paydaysTable.scan().items())
         {

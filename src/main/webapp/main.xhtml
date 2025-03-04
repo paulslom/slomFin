@@ -13,7 +13,93 @@
             <h3><h:outputText value="#{pc_SlomFinMain.siteTitle}"/></h3>
   		    
 		    <p:messages id="facesMessagesID" showDetail="false">
-		    </p:messages>   			
+		    </p:messages> 
+		    
+		    <table>
+            
+           	   <colgroup>
+           	       <col width="33%"/>
+           	       <col width="33%"/>
+           	       <col width="34%"/>
+           	   </colgroup>
+           	   
+               <p:blockUI block="mainForm" widgetVar="blockWidgetVar"> 
+			       <p:graphicImage value="/images/wait.gif"/>  
+			   </p:blockUI> 
+				
+			   <tr>
+			   
+			      <td  align="center">
+			         <p:graphicImage id="citiLogoId" value="/images/Citi.jpg"/> 
+			      </td>
+			          
+			      <td align="center">
+			      
+			   		  <p:commandButton id="citiID1" 				   
+						    value="Citi Double Cash trx"
+			        	    actionListener="#{pc_SlomFinMain.selectTransactionAcid}"
+			        	    onclick="PF('blockWidgetVar').show()" 
+			        	    oncomplete="PF('blockWidgetVar').hide()" 
+			        	    update="mainForm">
+			        	   <f:param name="operation" value="Add" />
+			        	   <f:param name="accountId" value="#{pc_SlomFinMain.citiDoubleCashAccountID}"/>
+					  </p:commandButton>
+					  
+				  </td>
+				  
+				  <td align="center">
+			      
+			   		  <p:commandButton id="citiID2" 				   
+						   value="Citi Double Cash List" 	
+						   ajax="false" 
+			        	   actionListener="#{pc_SlomFinMain.accountTransactionsSelection}"
+			        	   onclick="PF('blockWidgetVar').show()" 
+			        	   oncomplete="PF('blockWidgetVar').hide()" 
+			        	   update="menuForm">
+			        	   <f:param name="accountid" value="#{pc_SlomFinMain.citiDoubleCashAccountID}"/>
+					  </p:commandButton>
+					  
+				  </td>
+				  
+			   </tr>
+				  
+			   <tr>
+			   
+			      <td  align="center">
+			         <p:graphicImage id="sofiLogoId" value="/images/sofi.png"/> 
+			      </td>
+			      
+			      <td align="center">
+			      
+			   		  <p:commandButton id="sofiID1" 				   
+						   value="SoFi checking trx" 	
+						   actionListener="#{pc_SlomFinMain.selectTransactionAcid}"
+			        	   onclick="PF('blockWidgetVar').show()" 
+			        	   oncomplete="PF('blockWidgetVar').hide()" 
+			        	   update="mainForm">
+			        	   <f:param name="operation" value="Add" />
+			        	   <f:param name="accountId" value="#{pc_SlomFinMain.sofiCheckingAccountID}"/>
+					  </p:commandButton>
+					  
+				  </td>
+				  
+				  <td align="center">
+			      
+			   		  <p:commandButton id="sofiID2" 				   
+						   value="SoFi checking List" 	
+						   ajax="false" 
+			        	   actionListener="#{pc_SlomFinMain.accountTransactionsSelection}"
+			        	   onclick="PF('blockWidgetVar').show()" 
+			        	   oncomplete="PF('blockWidgetVar').hide()" 
+			        	   update="menuForm">
+			        	   <f:param name="accountid" value="#{pc_SlomFinMain.sofiCheckingAccountID}"/>
+					  </p:commandButton>
+					  
+				  </td>
+			   
+			   </tr>
+			   
+			</table>  			
 	                
 	     </h:form>
    

@@ -1,0 +1,158 @@
+<ui:composition template="template.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+     
+    <ui:define name="content">
+    
+         <h:form id="accountAddUpdateForm">                      
+          
+             <p:messages id="facesMessagesID" showDetail="false"/>
+            
+             <table>
+            
+           	   <colgroup>
+           	       <col width="50%"/>
+           	       <col width="50%"/>
+           	   </colgroup>
+           	   
+               <p:blockUI block="accountAddUpdateForm" widgetVar="blockWidgetVar"> 
+			       <p:graphicImage value="/images/wait.gif"/>  
+			   </p:blockUI> 
+				
+			   <tr>
+			   
+			      <td colspan="2" align="center">
+			   		  <h:outputText value="#{pc_SlomFinMain.accountAcidSetting} account" styleClass="pageSectionTitle"/>
+			   	  </td>
+			   	  
+			   </tr>
+			   
+			   <tr>
+			   
+			      <td colspan="2" align="center">
+			      
+			   		  <p:commandButton id="UpdateId1" 				   
+						    value="Add" 	
+						    rendered="#{pc_SlomFinMain.accountAcidSetting eq 'Add'}"
+						    action="#{pc_SlomFinMain.addChangeDelAccount}"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"
+						    update="accountAddUpdateForm">
+					  </p:commandButton>
+					  
+					  <p:commandButton id="UpdateId2" 				   
+						    value="Update" 	
+						    rendered="#{pc_SlomFinMain.accountAcidSetting eq 'Update'}"
+						    action="#{pc_SlomFinMain.addChangeDelAccount}"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"		
+						    update="accountAddUpdateForm">
+					  </p:commandButton>
+					  
+					  <p:commandButton id="UpdateId3" 				   
+						    value="Delete" 	
+						    rendered="#{pc_SlomFinMain.accountAcidSetting eq 'Delete'}"
+						    action="#{pc_SlomFinMain.addChangeDelAccount}"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"		
+						    update="accountAddUpdateForm">
+						    <p:confirm header="Confirmation" message="Really completely delete this account??" icon="pi pi-exclamation-triangle" />
+					  </p:commandButton>
+							   
+					  <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+					        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+					        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+					  </p:confirmDialog>  
+					 					  
+			   	  </td>
+			   	  
+			   </tr>
+			
+			   <tr>
+	          
+	              <td align="right">
+         		     <p:outputLabel id="acctlabelId" value="Account Id"/> &#xA0;&#xA0;
+		          </td>
+		          
+	              <td align="left">	              
+        		     <h:outputText id="accountIdId" value="#{pc_SlomFinMain.selectedAccount.iAccountID}"/>
+		          </td>
+        	        		
+        	   </tr>
+        	   
+        	   <tr>
+	          
+	              <td align="right">
+         		     <p:outputLabel for="aNameId" value="Account Name"/> &#xA0;&#xA0;
+		          </td>
+		          
+	              <td align="left">	
+	                 <p:inputText id="aNameId" value="#{pc_SlomFinMain.selectedAccount.sAccountName}" 
+		                            rendered="#{pc_SlomFinMain.renderAccountUpdateFields}"/>              
+        		     <p:outputLabel value="#{pc_SlomFinMain.selectedAccount.sAccountName}" rendered="#{!pc_SlomFinMain.renderAccountUpdateFields}"/>
+		          </td>
+        	        		
+        	   </tr>		       
+		     	
+		       <tr>
+	          
+	              <td align="right">
+         		     <p:outputLabel for="acctNameAbbrId" value="Account Name Abbreviation"/> &#xA0;&#xA0;
+		          </td>
+		          
+	              <td align="left">	              
+        		     <p:inputText id="acctNameAbbrId" value="#{pc_SlomFinMain.selectedAccount.sAccountNameAbbr}" 
+		                            rendered="#{pc_SlomFinMain.renderAccountUpdateFields}"/>              
+        		     <p:outputLabel value="#{pc_SlomFinMain.selectedAccount.sAccountNameAbbr}" rendered="#{!pc_SlomFinMain.renderAccountUpdateFields}"/>
+		          </td>
+        	        		
+        	   </tr>		
+        	      
+			   <tr>
+		            <td align="right">	        
+		               <p:outputLabel for="acctTypeListID" value="Account Type"/>
+		            </td>
+		            
+		            <td align="left">	        
+					
+					    <p:selectOneMenu id="acctTypeListID" value="#{pc_SlomFinMain.selectedAccount.iAccountTypeID}" required="true" hideNoSelectionOption="false" 
+					                       rendered="#{pc_SlomFinMain.renderAccountUpdateFields}">
+					        <f:selectItems value="#{pc_SlomFinMain.accountTypesDropdownList}"/>
+						</p:selectOneMenu>
+						
+						<p:outputLabel value="#{pc_SlomFinMain.selectedAccount.sAccountType}" rendered="#{!pc_SlomFinMain.renderAccountUpdateFields}"/>
+					</td>
+			   </tr> 	          	           
+			   
+               <tr>
+		            <td align="right">	        
+		               <p:outputLabel for="taxableID" value="Taxable Indicator"/> 
+		            </td>
+		            
+		            <td align="left">					
+					    <p:selectBooleanCheckbox id="taxableID" value="#{pc_SlomFinMain.selectedAccount.bTaxableInd}" disabled="#{!pc_SlomFinMain.renderAccountUpdateFields}"></p:selectBooleanCheckbox>					   
+					</td>
+			   </tr>	
+      
+		       <tr>
+		            <td align="right">	        
+		               <p:outputLabel for="closedID" value="Account Closed Indicator"/> 
+		            </td>
+		            
+		            <td align="left">					
+					    <p:selectBooleanCheckbox id="closedID" value="#{pc_SlomFinMain.selectedAccount.bClosed}" disabled="#{!pc_SlomFinMain.renderAccountUpdateFields}"></p:selectBooleanCheckbox>					   
+					</td>
+			   </tr>			
+			
+			</table>
+	                
+	   </h:form>
+   
+    </ui:define>
+
+</ui:composition>
+  

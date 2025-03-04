@@ -307,6 +307,46 @@ public class SlomFinUtil
 	    return currentUser == null ? null : currentUser.toLowerCase().trim();
 	}	
 
+	public static List<SelectItem> getAllTrxTypesTypesDropdownList() 
+	{
+		List<SelectItem> returnList = new ArrayList<>();
+		
+		SelectItem si1 = new SelectItem();
+		si1.setValue(-1);
+		si1.setLabel("--Select--");
+		returnList.add(si1);
+		
+		for (Integer key : trxTypesMap.keySet()) 
+		{
+        	String description = trxTypesMap.get(key);
+            SelectItem si = new SelectItem();
+			si.setValue(key);
+			si.setLabel(description);
+			returnList.add(si);            	
+        }
+		return returnList;
+	}
+	
+	public static List<SelectItem> getAccountTypesDropdownList() 
+	{
+		List<SelectItem> returnList = new ArrayList<>();
+		
+		SelectItem si1 = new SelectItem();
+		si1.setValue(-1);
+		si1.setLabel("--Select--");
+		returnList.add(si1);
+		
+		for (Integer key : accountTypesMap.keySet()) 
+		{
+        	String description = accountTypesMap.get(key);
+            SelectItem si = new SelectItem();
+			si.setValue(key);
+			si.setLabel(description);
+			returnList.add(si);            	
+        }
+		return returnList;
+	}
+	
 	public static String getDayofWeekString(Date date) 
 	{
 		Locale locale = Locale.getDefault();
@@ -471,6 +511,22 @@ public class SlomFinUtil
 		
 		return returnAmount;
 		
+	}
+
+	public static Map<Integer, String> getAccountTypesMap() {
+		return accountTypesMap;
+	}
+
+	public static void setAccountTypesMap(Map<Integer, String> accountTypesMap) {
+		SlomFinUtil.accountTypesMap = accountTypesMap;
+	}
+
+	public static Map<Integer, String> getTrxTypesMap() {
+		return trxTypesMap;
+	}
+
+	public static void setTrxTypesMap(Map<Integer, String> trxTypesMap) {
+		SlomFinUtil.trxTypesMap = trxTypesMap;
 	}
 	
 	

@@ -1,0 +1,176 @@
+<ui:composition template="template.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+     
+    <ui:define name="content">
+    
+         <h:form id="paydayAddUpdateForm">                      
+          
+             <p:messages id="facesMessagesID" showDetail="false"/>
+            
+             <table>
+            
+           	   <colgroup>
+           	       <col width="50%"/>
+           	       <col width="50%"/>
+           	   </colgroup>
+           	   
+               <p:blockUI block="paydayAddUpdateForm" widgetVar="blockWidgetVar"> 
+			       <p:graphicImage value="/images/wait.gif"/>  
+			   </p:blockUI> 
+				
+			   <tr>
+			   
+			      <td colspan="2" align="center">
+			   		  <h:outputText value="#{pc_SlomFinMain.paydayAcidSetting} payday" styleClass="pageSectionTitle"/>
+			   	  </td>
+			   	  
+			   </tr>
+			   
+			   <tr>
+			   
+			      <td colspan="2" align="center">
+			      
+			   		  <p:commandButton id="UpdateId1" 				   
+						    value="Add" 	
+						    rendered="#{pc_SlomFinMain.paydayAcidSetting eq 'Add'}"
+						    action="#{pc_SlomFinMain.addChangePayday}"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"
+						    update="paydayAddUpdateForm">
+					  </p:commandButton>
+					  
+					  <p:commandButton id="UpdateId2" 				   
+						    value="Update" 	
+						    rendered="#{pc_SlomFinMain.paydayAcidSetting eq 'Update'}"
+						    action="#{pc_SlomFinMain.addChangePayday}"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"		
+						    update="paydayAddUpdateForm">
+					  </p:commandButton>
+					  
+					  <p:commandButton id="backId4" 				   
+						    value="Return to payday list"						    
+						    action="#{pc_SlomFinMain.returnToPaydayList}"
+						    immediate="true"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"		
+						    update="paydayAddUpdateForm">						    
+					  </p:commandButton>					   
+					 					  
+			   	  </td>
+			   	  
+			   </tr>
+			
+			   <tr>
+	          
+	              <td align="right">
+         		     <p:outputLabel for="paydayIdId" value="Payday Id"/> &#xA0;&#xA0;
+		          </td>
+		          
+	              <td align="left">	              
+        		     <h:outputText id="paydayIdId" value="#{pc_SlomFinMain.selectedPayday.paydayID}"/>
+		          </td>
+        	        		
+        	   </tr>
+        	   
+        	   <tr>
+	          
+	              <td align="right">
+         		     <p:outputLabel for="paydayDescriptionId" value="Payday Description"/> &#xA0;&#xA0;
+		          </td>
+		          
+	              <td align="left">	              
+        		     <p:inputText id="paydayDescriptionId" value="#{pc_SlomFinMain.selectedPayday.paydayDescription}"/>
+		          </td>
+        	        		
+        	   </tr>		
+        	      
+			   <tr>
+		            <td align="right">	        
+		               <p:outputLabel for="trxTypeListID" value="Transaction Type"/>
+		            </td>
+		            
+		            <td align="left">   
+					
+					    <p:selectOneMenu id="trxTypeListID" value="#{pc_SlomFinMain.selectedPayday.transactionTypeID}" required="true" hideNoSelectionOption="false">
+					        <f:selectItems value="#{pc_SlomFinMain.trxTypeDropdownList}"/>
+						</p:selectOneMenu>
+						
+					</td>
+			   </tr> 	          	           
+			   
+			   <tr>
+		            <td align="right">	        
+		               <p:outputLabel for="acctListID" value="Account"/>
+		            </td>
+		            
+		            <td align="left">   
+					
+					    <p:selectOneMenu id="acctListID" value="#{pc_SlomFinMain.selectedPayday.accountID}" required="true" hideNoSelectionOption="false">
+					        <f:selectItems value="#{pc_SlomFinMain.accountDropdownList}"/>
+						</p:selectOneMenu>
+						
+					</td>
+			   </tr> 	 
+			   
+			   <tr>
+	  		
+	 			   <td align="right">	        
+		              <p:outputLabel for="amtID" value="Default Amount"/>
+		           </td>
+				 
+		           <td align="left">
+		               <p:inputText id="amtID" size="8" value="#{pc_SlomFinMain.selectedPayday.defaultAmount}"/>
+		           </td>
+		            
+		       </tr>
+		       
+		       <tr>
+	          
+	              <td align="right">
+         		     <p:outputLabel for="defaultDayId" value="Default Day"/> &#xA0;&#xA0;
+		          </td>
+		          
+	              <td align="left">	              
+        		     <p:inputNumber id="defaultDayId" emptyValue="empty" maxValue="99" decimalPlaces="0" size="2" value="#{pc_SlomFinMain.selectedPayday.defaultDay}"/>
+		          </td>
+        	        		
+        	   </tr>	
+        	      
+               <tr>
+		            <td align="right">	        
+		               <p:outputLabel for="nextMonthID" value="Next Month Indicator"/> 
+		            </td>
+		            
+		            <td align="left">					
+					    <p:selectBooleanCheckbox id="nextMonthID" value="#{pc_SlomFinMain.selectedPayday.nextMonthInd}"></p:selectBooleanCheckbox>					   
+					</td>
+			   </tr>
+			   
+			   <tr>
+		            <td align="right">	        
+		               <p:outputLabel for="xferAcctListID" value="Transfer Account"/>
+		            </td>
+		            
+		            <td align="left">	        
+					
+					    <p:selectOneMenu id="xferAcctListID" value="#{pc_SlomFinMain.selectedPayday.xferAccountID}" hideNoSelectionOption="true">
+					        <f:selectItems value="#{pc_SlomFinMain.xferAccountsDropdownList}"/>	
+						</p:selectOneMenu>
+						
+					</td>
+			    </tr>					     		
+			
+			</table>
+	                
+	   </h:form>
+   
+    </ui:define>
+
+</ui:composition>
+  
