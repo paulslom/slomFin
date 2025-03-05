@@ -23,6 +23,17 @@
     font-weight: bold;
 }
 
+.rowGreen {
+	background-color: #32cd32 !important;
+    background-image: none !important;
+    color: #ffffff !important;
+}
+.rowRed {
+	background-color: #F08080 !important;
+    background-image: none !important;
+    color: #ffffff !important;
+}
+
 .menuGreen .ui-selectonemenu-label { 
     background: #32cd32;
 }

@@ -2,11 +2,13 @@ package com.pas.beans;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 //import org.apache.logging.log4j.LogManager;
 //import org.apache.logging.log4j.Logger;
 
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbIgnore;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 
 @DynamoDbBean
@@ -27,6 +29,11 @@ public class Payday implements Serializable
     private Boolean nextMonthInd;    
     private Integer xferAccountID;
     private String xferAccountName;
+    
+    //non-dynamoFields
+    private Boolean processInd;
+    private Date paydayTrxDate;
+    private String pdRowStyleClass;
     
     public String toString()
     {
@@ -120,6 +127,36 @@ public class Payday implements Serializable
 
 	public void setXferAccountName(String xferAccountName) {
 		this.xferAccountName = xferAccountName;
+	}
+
+	@DynamoDbIgnore
+	public Boolean getProcessInd() {
+		return processInd;
+	}
+
+	@DynamoDbIgnore
+	public void setProcessInd(Boolean processInd) {
+		this.processInd = processInd;
+	}
+
+	@DynamoDbIgnore
+	public Date getPaydayTrxDate() {
+		return paydayTrxDate;
+	}
+
+	@DynamoDbIgnore
+	public void setPaydayTrxDate(Date paydayTrxDate) {
+		this.paydayTrxDate = paydayTrxDate;
+	}
+
+	@DynamoDbIgnore
+	public String getPdRowStyleClass() {
+		return pdRowStyleClass;
+	}
+
+	@DynamoDbIgnore
+	public void setPdRowStyleClass(String pdRowStyleClass) {
+		this.pdRowStyleClass = pdRowStyleClass;
 	}
     
 }

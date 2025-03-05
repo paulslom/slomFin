@@ -87,11 +87,11 @@
         	   <tr>
 	          
 	              <td align="right">
-         		     <p:outputLabel for="aNameId" value="Account Name"/> &#xA0;&#xA0;
+         		     <p:outputLabel for="acctNmId" value="Acct Nm"/> &#xA0;&#xA0;
 		          </td>
 		          
 	              <td align="left">	
-	                 <p:inputText id="aNameId" value="#{pc_SlomFinMain.selectedAccount.sAccountName}" 
+	                 <p:inputText id="acctNmId" value="#{pc_SlomFinMain.selectedAccount.sAccountName}" 
 		                            rendered="#{pc_SlomFinMain.renderAccountUpdateFields}"/>              
         		     <p:outputLabel value="#{pc_SlomFinMain.selectedAccount.sAccountName}" rendered="#{!pc_SlomFinMain.renderAccountUpdateFields}"/>
 		          </td>
@@ -101,11 +101,11 @@
 		       <tr>
 	          
 	              <td align="right">
-         		     <p:outputLabel for="acctNameAbbrId" value="Account Name Abbreviation"/> &#xA0;&#xA0;
+         		     <p:outputLabel for="acctNmAbbrId" value="Acct Nm Abbreviation"/> &#xA0;&#xA0;
 		          </td>
 		          
 	              <td align="left">	              
-        		     <p:inputText id="acctNameAbbrId" value="#{pc_SlomFinMain.selectedAccount.sAccountNameAbbr}" 
+        		     <p:inputText id="acctNmAbbrId" value="#{pc_SlomFinMain.selectedAccount.sAccountNameAbbr}" 
 		                            rendered="#{pc_SlomFinMain.renderAccountUpdateFields}"/>              
         		     <p:outputLabel value="#{pc_SlomFinMain.selectedAccount.sAccountNameAbbr}" rendered="#{!pc_SlomFinMain.renderAccountUpdateFields}"/>
 		          </td>

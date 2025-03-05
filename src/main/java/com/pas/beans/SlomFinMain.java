@@ -3,6 +3,7 @@ package com.pas.beans;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -344,6 +345,89 @@ public class SlomFinMain implements Serializable
         }
 	}  	
 	
+	public void addPaycheckShowForm(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("Add new paycheck selected from menu");
+		    
+		    this.setPaydayList(paydayDAO.getFullPaydaysList());
+		    
+		    for (int i = 0; i < this.getPaydayList().size(); i++) 
+		    {
+				Payday pd = this.getPaydayList().get(i);
+
+				Calendar cal = Calendar.getInstance();
+				
+				if (pd.getDefaultDay() == 0) //if not on a specific day (indicated by zero) then assume you always want it.
+				{
+					pd.setPdRowStyleClass(SlomFinUtil.GREEN_STYLECLASS);
+					pd.setProcessInd(true);
+					Date tempDate = cal.getTime();
+					pd.setPaydayTrxDate(tempDate);
+				}
+				else //specific date requested
+				{
+					pd.setPdRowStyleClass(SlomFinUtil.RED_STYLECLASS);
+					pd.setProcessInd(false);
+					
+					if (pd.getNextMonthInd())
+					{
+						cal.add(Calendar.MONTH, 1);
+						cal.set(Calendar.DAY_OF_MONTH, pd.getDefaultDay());
+					    Date tempDate = cal.getTime();
+						pd.setPaydayTrxDate(tempDate);
+					}
+					else
+					{
+						cal.set(Calendar.DAY_OF_MONTH, pd.getDefaultDay());
+					    Date tempDate = cal.getTime();
+						pd.setPaydayTrxDate(tempDate);
+					}
+				}
+				
+				if (pd.getXferAccountID() != null && pd.getXferAccountID() != 0)
+				{
+					Account xferAccount = accountDAO.getAccountByAccountID(pd.getXferAccountID());
+					pd.setXferAccountName(xferAccount.getsAccountName());
+				}
+			}
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+            String targetURL = SlomFinUtil.getContextRoot() + "/addPaycheck.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}  	
+	
+	public String addPaycheck()
+	{
+		logger.info("entering addPaycheck");
+		
+		try
+		{			
+			transactionDAO.addTransaction(this.getSelectedTransaction());
+			
+			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Paycheck transactions successfully added", "Paycheck transactions successfully added");
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+		 	
+		}
+		catch (Exception e)
+		{
+        	logger.error("addChangeDelTransaction errored: " + e.getMessage(), e);
+			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+		 	return "";
+        }
+				
+		return "";	
+	}
+	
 	public void showPaydayList(ActionEvent event) 
 	{
 		try 
@@ -386,6 +470,11 @@ public class SlomFinMain implements Serializable
 		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
         }
 	} 
+	
+	public void paydayRowChecked(AjaxBehaviorEvent event) 
+	{
+		logger.info("payday row was either checked or unchecked");
+	}  	
 	
 	public void invOwnedCheck(AjaxBehaviorEvent event) 
 	{
@@ -781,6 +870,11 @@ public class SlomFinMain implements Serializable
 		
 	}
 
+	public String returnToMain()
+	{
+		return "/main.xhtml";
+	}
+	
 	public String returnToTrxList()
 	{
 		return "/transactionList.xhtml";
@@ -1097,9 +1191,17 @@ public class SlomFinMain implements Serializable
 		 	return "";
         }
 		
-		FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Account successfully added", "Account successfully added");
-	 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
-		
+		if (accountAcidSetting.equalsIgnoreCase("Add"))
+		{
+			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Account successfully added", "Account successfully added");
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+		}
+		else if (accountAcidSetting.equalsIgnoreCase("Update"))
+		{
+			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Account successfully updated", "Account successfully updated");
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+		}
+				
 		return "";	
 	}
 	

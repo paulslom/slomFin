@@ -118,7 +118,12 @@
 									update="menuForm">
 							</p:menuitem>	
 										
-							<p:menuitem value="Add Paycheck" url="https://www.nfl.com/standings/tie-breaking-procedures"/>	
+							<p:menuitem value="Add Paycheck" actionListener="#{pc_SlomFinMain.addPaycheckShowForm}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+							</p:menuitem>	
+								
 						</p:submenu>
 							
 						<p:submenu label="Miscellaneous">

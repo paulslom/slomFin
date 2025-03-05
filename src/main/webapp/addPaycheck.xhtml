@@ -1,0 +1,121 @@
+<ui:composition template="template.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+     
+    <ui:define name="content">
+    
+         <h:form id="addPaycheckForm">                      
+          
+             <p:messages id="facesMessagesID" showDetail="false"/>
+            
+             <table>
+            
+           	   <colgroup>
+           	       <col width="50%"/>
+           	       <col width="50%"/>
+           	   </colgroup>
+           	   
+               <p:blockUI block="addPaycheckForm" widgetVar="blockWidgetVar"> 
+			       <p:graphicImage value="/images/wait.gif"/>  
+			   </p:blockUI> 
+				
+			   <tr>
+			   
+			      <td colspan="2" align="center">
+			   		  <h:outputText value="Add Paycheck" styleClass="pageSectionTitle"/>
+			   	  </td>
+			   	  
+			   </tr>
+			   
+			   <tr>
+			   
+			      <td colspan="2" align="center">
+			      
+			   		  <p:commandButton id="UpdateId1" 				   
+						    value="Add"						    
+						    action="#{pc_SlomFinMain.addPaycheck}"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"
+						    update="addPaycheckForm">
+					  </p:commandButton>
+					  					  
+					  <p:commandButton id="backId4" 				   
+						    value="Cancel - Return to main"						    
+						    action="#{pc_SlomFinMain.returnToMain}"
+						    immediate="true"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"		
+						    update="addPaycheckForm">						    
+					  </p:commandButton>					   
+					 					  
+			   	  </td>
+			   	  
+			   </tr>
+			
+			   <tr>
+	          
+	              <td colspan="2">
+	                       
+			  		 <p:dataTable id="paycheckTableID" value="#{pc_SlomFinMain.paydayList}" rowIndexVar="rowIndex"
+				          var="pd" scrollable="true" scrollHeight="950" styleClass="dataTableStyle" rowStyleClass="#{pd.processInd ? 'rowGreen' : 'rowRed'}">						
+						   
+						  <p:column style="width:3%" headerText="Num">												
+							  <h:outputText value="#{rowIndex + 1}"/>															
+						  </p:column>
+						  
+						  <p:column style="width:4%" headerText="Y/N">			
+                              <p:selectBooleanCheckbox value="#{pd.processInd}">
+                                 <p:ajax event="change" update="paycheckTableID" listener="#{pc_SlomFinMain.paydayRowChecked}" />
+                              </p:selectBooleanCheckbox>					   
+                          </p:column>
+                                                   
+                          <p:column style="width:15%" headerText="Account Name" sortBy="#{pd.accountName}">												
+							  <h:outputText value="#{pd.accountName}"/>															
+						  </p:column>						
+						
+						  <p:column style="width:15%" headerText="Trx Type" sortBy="#{pd.trxTypeDescription}">												
+							  <h:outputText value="#{pd.trxTypeDescription}"/>															
+						  </p:column>
+						  
+						  <p:column style="width:8%" headerText="Amount" sortBy="#{pd.defaultAmount}">												
+							   <p:inputText value="#{pd.defaultAmount}" size="10">
+							      <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+							  </p:inputText>   														
+						  </p:column>
+						  
+						  <p:column style="width:23%" headerText="Date" sortBy="#{pd.paydayTrxDate}">												
+							  <p:calendar id="paydayTrxDateID"
+					       	        size="23"
+					       	        required="true"
+					       	        readonlyInput="false" 
+					       	        value="#{pd.paydayTrxDate}"
+					       			mode="popup" showOn="both" pattern="MM-dd-yyyy HH:mm:ss" yearRange="c-50:c">						        									            			
+					       	  </p:calendar>													
+						  </p:column>		
+						  	
+						  <p:column style="width:20%" headerText="Payday Description" sortBy="#{pd.paydayDescription}">												
+							  <p:inputText value="#{pd.paydayDescription}" size="50"/>															
+						  </p:column>		
+						  
+						   <p:column style="width:15%" headerText="Xfer To" sortBy="#{pd.xferAccountName}">												
+							  <h:outputText value="#{pd.xferAccountName}"/>															
+						  </p:column>
+										  
+				     </p:dataTable>	     
+				    				     
+				  </td>
+				  
+		       </tr>     		
+			
+			</table>
+	                
+	   </h:form>
+   
+    </ui:define>
+
+</ui:composition>
+  
