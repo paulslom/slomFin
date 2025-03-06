@@ -409,23 +409,69 @@ public class SlomFinMain implements Serializable
 	{
 		logger.info("entering addPaycheck");
 		
+		boolean somethingFailed = false;
+		
 		try
-		{			
-			transactionDAO.addTransaction(this.getSelectedTransaction());
+		{	
+			transactionAcidSetting = "Add";
+			this.setGenerateCorrespondingXfer(true);
 			
+			for (int i = 0; i < this.getPaydayList().size(); i++) 
+			{
+				Payday pd = this.getPaydayList().get(i);
+				if (pd.getProcessInd())
+				{
+					logger.info("processing selected for transaction: " + pd.getPaydayDescription() + " for amount: " + pd.getDefaultAmount());
+					DynamoTransaction dynamoTrx = new DynamoTransaction();
+					dynamoTrx.setAccountID(pd.getAccountID());
+			    	Account acct = getAccountByAccountID(dynamoTrx.getAccountID());
+			    	dynamoTrx.setEntryDateJava(new Date());
+			    	dynamoTrx.setPostedDateJava(pd.getPaydayTrxDate());
+			    	dynamoTrx.setAccountName(acct.getsAccountName());
+			    	dynamoTrx.setTransactionTypeID(pd.getTransactionTypeID());
+			    	dynamoTrx.setTransactionTypeDescription(SlomFinUtil.trxTypesMap.get(dynamoTrx.getTransactionTypeID()));		
+			    	dynamoTrx.setCostProceeds(pd.getDefaultAmount());
+			    	dynamoTrx.setTransactionDescription(pd.getPaydayDescription());
+			    	
+			    	if (dynamoTrx.getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strTransferOut))
+					{
+			    		dynamoTrx.setTransferAccountID(pd.getXferAccountID());
+					}
+			    	
+			    	this.setSelectedTransaction(dynamoTrx);	
+			    	
+			    	String result = prepTrxAndUpsertDatabase();
+					
+			    	if (result.equalsIgnoreCase("fail"))
+			    	{
+			    		somethingFailed = true;
+			    	}
+			    	
+				}
+				
+			}
+						
 			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Paycheck transactions successfully added", "Paycheck transactions successfully added");
 		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
 		 	
 		}
 		catch (Exception e)
 		{
-        	logger.error("addChangeDelTransaction errored: " + e.getMessage(), e);
+        	logger.error("addPaycheck errored: " + e.getMessage(), e);
 			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
 		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
 		 	return "";
         }
 				
-		return "";	
+		if (somethingFailed)
+		{
+			return "";	
+		}
+		else
+		{
+			refreshTrxList(accountDAO.getSoFiCheckingAccountID());
+			return "/transactionList.xhtml";
+		}
 	}
 	
 	public void showPaydayList(ActionEvent event) 
@@ -1012,10 +1058,27 @@ public class SlomFinMain implements Serializable
 	{
 		logger.info("entering addChangeDelTransaction for operation: " + transactionAcidSetting);
 		
+		String result = prepTrxAndUpsertDatabase();
+		
+		if (result.equalsIgnoreCase("success"))
+		{
+			return "/transactionList.xhtml";	
+		}
+		else
+		{
+			return "";
+		}
+	}	
+		
+	private String prepTrxAndUpsertDatabase() 
+	{
+		String returnString = "";
+	
 		try
 		{
 			if (!transactionAcidSetting.equalsIgnoreCase("Delete"))
 			{
+		
 				if (this.getSelectedTransaction().getTransactionTypeID() == -1)
 				{
 					FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Transaction Type not selected", "Transaction Type not selected");
@@ -1101,9 +1164,8 @@ public class SlomFinMain implements Serializable
 						transactionDAO.addTransaction(correspondingTrx);
 					}					
 				}
-												
-			}
-			
+			}		
+		
 			if (transactionAcidSetting.equalsIgnoreCase("Add"))
 			{
 				transactionDAO.addTransaction(this.getSelectedTransaction());
@@ -1116,20 +1178,22 @@ public class SlomFinMain implements Serializable
 			{
 				transactionDAO.deleteTransaction(this.getSelectedTransaction());
 			}
+			
+			refreshTrxList(this.getSelectedTransaction().getAccountID());
+			
+			returnString = "success";
 		}
 		catch (Exception e)
 		{
-        	logger.error("addChangeDelTransaction errored: " + e.getMessage(), e);
+			logger.error("upsert transaction(s) errored: " + e.getMessage(), e);
 			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
 		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
-		 	return "";
-        }
-		
-		refreshTrxList(this.getSelectedTransaction().getAccountID());
-		
-		return "/transactionList.xhtml";	
+		 	returnString = "fail";
+		}
+
+		return returnString;		
 	}
-	
+
 	public String paydayDelete()
 	{
 		try
