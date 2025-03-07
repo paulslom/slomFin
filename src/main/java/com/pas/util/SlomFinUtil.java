@@ -34,6 +34,7 @@ public class SlomFinUtil
 	public static String MY_TIME_ZONE = "America/New_York";
 	public static String GREEN_STYLECLASS = "resultGreen";
 	public static String RED_STYLECLASS = "resultRed";
+	public static String BIGREDBOLD_STYLECLASS = "resultRedBigBold";
 	public static String YELLOW_STYLECLASS = "resultYellow";
 	
 	public static Map<Integer, List<Integer>> invTypeTrxTypeMap = new HashMap<>();
@@ -43,6 +44,7 @@ public class SlomFinUtil
 	public static Map<Integer, String> accountTypesMap = new HashMap<>();	
 	public static Map<Integer, String> trxTypesMap = new HashMap<>();
 	public static Map<Integer, String> invTypesMap = new HashMap<>();
+	public static Map<Integer, String> assetClassesMap = new HashMap<>();	
 	
 	public static Map<Integer, List<SelectItem>> acctTypeTrxTypeDropdownsMap = new HashMap<>();
 	
@@ -110,6 +112,28 @@ public class SlomFinUtil
 	public static int ExerciseOption = 16;
 	public static int Loan = 17;
 	
+	//Asset Classes
+	public static int EmergingMarketStocks = 1;
+	public static int USSmallCapStocks = 2;
+	public static int USLargeCapStocks = 3;
+	public static int ForeignStocks = 4;
+	public static int USRealEstate = 5;
+	public static int USOilandGas = 6;
+	public static int CorporateBonds = 7;
+	public static int ForeignBonds = 8;
+	public static int TreasuryBonds = 9;
+	public static int MunicipalBonds = 10;
+	public static int MoneyMarket = 11;
+	public static int TBills = 12;
+	public static int Gold = 13;
+	public static int Options = 14;
+	public static int Cash = 15;
+	public static int Energy = 16;
+	public static int Technology = 17;
+	public static int MidcapStocks = 18;
+	public static int Cryptocurrency = 20;
+
+	
 	//Transaction Type Descriptions
 	public static String strBuy = "Buy"; 
 	public static String strCashDividend = "Cash Dividend";	
@@ -147,6 +171,26 @@ public class SlomFinUtil
 		accountTypesMap.put(Roth401k, strRoth401k); 
 		accountTypesMap.put(HSA, strHsa); 
 		
+		assetClassesMap.put(EmergingMarketStocks, "Emerging Market Stocks"); 
+		assetClassesMap.put(USSmallCapStocks, "US Small Cap Stocks"); 
+		assetClassesMap.put(USLargeCapStocks, "US Large Cap Stocks"); 
+		assetClassesMap.put(ForeignStocks, "Foreign Stocks"); 
+		assetClassesMap.put(USRealEstate, "US Real Estate"); 
+		assetClassesMap.put(USOilandGas, "US Oil and Gas"); 
+		assetClassesMap.put(CorporateBonds, "Corporate Bonds"); 
+		assetClassesMap.put(ForeignBonds, "Foreign Bonds"); 
+		assetClassesMap.put(TreasuryBonds, "Treasury Bonds"); 
+		assetClassesMap.put(MunicipalBonds, "Municipal Bonds"); 
+		assetClassesMap.put(MoneyMarket, "Money Market"); 
+		assetClassesMap.put(TBills, "T-Bills"); 
+		assetClassesMap.put(Gold, "Gold"); 
+		assetClassesMap.put(Options, "Options"); 
+		assetClassesMap.put(Cash, "Cash"); 
+		assetClassesMap.put(Energy, "Energy"); 
+		assetClassesMap.put(Technology, "Technology"); 
+		assetClassesMap.put(MidcapStocks, "Midcap Stocks"); 
+		assetClassesMap.put(Cryptocurrency, "Cryptocurrency"); 
+
 		trxTypesMap.put(Buy, "Buy"); 
 		trxTypesMap.put(CashDividend, "Cash Dividend"); 
 		trxTypesMap.put(ExpireOption, "Expire Option"); 
@@ -327,6 +371,26 @@ public class SlomFinUtil
 		return returnList;
 	}
 	
+	public static List<SelectItem> getAssetClassesDropdownList() 
+	{
+		List<SelectItem> returnList = new ArrayList<>();
+		
+		SelectItem si1 = new SelectItem();
+		si1.setValue(-1);
+		si1.setLabel("--Select--");
+		returnList.add(si1);
+		
+		for (Integer key : assetClassesMap.keySet()) 
+		{
+        	String description = assetClassesMap.get(key);
+            SelectItem si = new SelectItem();
+			si.setValue(key);
+			si.setLabel(description);
+			returnList.add(si);            	
+        }
+		return returnList;
+	}
+	
 	public static List<SelectItem> getAccountTypesDropdownList() 
 	{
 		List<SelectItem> returnList = new ArrayList<>();
@@ -339,6 +403,26 @@ public class SlomFinUtil
 		for (Integer key : accountTypesMap.keySet()) 
 		{
         	String description = accountTypesMap.get(key);
+            SelectItem si = new SelectItem();
+			si.setValue(key);
+			si.setLabel(description);
+			returnList.add(si);            	
+        }
+		return returnList;
+	}
+	
+	public static List<SelectItem> getInvestmentTypesDropdownList() 
+	{
+		List<SelectItem> returnList = new ArrayList<>();
+		
+		SelectItem si1 = new SelectItem();
+		si1.setValue(-1);
+		si1.setLabel("--Select--");
+		returnList.add(si1);
+		
+		for (Integer key : invTypesMap.keySet()) 
+		{
+        	String description = invTypesMap.get(key);
             SelectItem si = new SelectItem();
 			si.setValue(key);
 			si.setLabel(description);
@@ -411,6 +495,11 @@ public class SlomFinUtil
 	    	else if (currentBalance.compareTo(BigDecimal.ZERO) < 0)
 	    	{
 	            trx.setBalanceStyleClass(RED_STYLECLASS);
+	            
+	            if (trx.getFinalTrxOfBillingCycle())
+	            {
+	            	trx.setBalanceStyleClass(BIGREDBOLD_STYLECLASS);
+	            }
 	        }
 	    	
 		}
@@ -418,14 +507,15 @@ public class SlomFinUtil
 		return tempList;
 	}
 	
-	//Assumes input parameter tempList is already sorted.
-	public static Map<Integer, BigDecimal> getUnitsOwnedForAccount(List<DynamoTransaction> accountTransactionsList) 
+	
+	//Assumes input parameter list is already sorted.
+	public static Map<Integer, BigDecimal> getUnitsOwned(List<DynamoTransaction> transactionsList) 
 	{
 		Map<Integer, BigDecimal> returnMap = new HashMap<>();
 		
-		for (int i = 0; i < accountTransactionsList.size(); i++)
+		for (int i = 0; i < transactionsList.size(); i++)
 	    {
-	    	DynamoTransaction trx = accountTransactionsList.get(i);
+	    	DynamoTransaction trx = transactionsList.get(i);
 	    	
 	    	if (trx.getUnits() != null
 	    	&&  trx.getUnits().compareTo(BigDecimal.ZERO) != 0)
@@ -528,6 +618,7 @@ public class SlomFinUtil
 	public static void setTrxTypesMap(Map<Integer, String> trxTypesMap) {
 		SlomFinUtil.trxTypesMap = trxTypesMap;
 	}
+	
 	
 	
 }

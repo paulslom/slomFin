@@ -96,18 +96,79 @@
 			    		</p:submenu>
 			    								
 						<p:submenu label="Reports">
-							<p:menuitem value="Account Positions"/>	
-							<p:menuitem value="Account Summary"/>	
-							<p:menuitem value="Capital Gains"/>	
-							<p:menuitem value="Cost Basis"/>	
-							<p:menuitem value="Dividends"/>	
-							<p:menuitem value="Goals"/>	
-							<p:menuitem value="Portfolio History"/>	
-							<p:menuitem value="Portfolio By Asset Class"/>	
-							<p:menuitem value="Portfolio Summary"/>	
-							<p:menuitem value="Trx By Investment"/>	
-							<p:menuitem value="Units Owned"/>	
-							<p:menuitem value="Withdrawal Categories"/>	
+						
+							<p:menuitem value="Account Positions" actionListener="#{pc_SlomFinMain.reportAccountPositions}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+							</p:menuitem>	
+							
+							<p:menuitem value="Account Summary" actionListener="#{pc_SlomFinMain.reportAccountSummary}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+							</p:menuitem>	
+							
+							<p:menuitem value="Capital Gains" actionListener="#{pc_SlomFinMain.reportCapitalGains}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+							</p:menuitem>	
+							
+							<p:menuitem value="Cost Basis" actionListener="#{pc_SlomFinMain.reportCostBasis}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+							</p:menuitem>	
+							
+							<p:menuitem value="Dividends" actionListener="#{pc_SlomFinMain.reportDividends}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+							</p:menuitem>	
+							
+							<p:menuitem value="Goals" actionListener="#{pc_SlomFinMain.reportGoals}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+							</p:menuitem>	
+							
+							<p:menuitem value="Portfolio History" actionListener="#{pc_SlomFinMain.reportPortfolioHistory}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+							</p:menuitem>	
+							
+							<p:menuitem value="Portfolio By Asset Class" actionListener="#{pc_SlomFinMain.reportPortfolioByAssetClass}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+							</p:menuitem>	
+							
+							<p:menuitem value="Portfolio Summary" actionListener="#{pc_SlomFinMain.reportPortfolioSummary}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+							</p:menuitem>	
+							
+							<p:menuitem value="Trx By Investment" actionListener="#{pc_SlomFinMain.reportTrxByInvestment}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+							</p:menuitem>	
+							
+							<p:menuitem value="Units Owned" actionListener="#{pc_SlomFinMain.reportUnitsOwned}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+							</p:menuitem>	
+							
+							<p:menuitem value="Withdrawal Categories" actionListener="#{pc_SlomFinMain.reportWdCategories}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+							</p:menuitem>	
+							
 						</p:submenu>
 						
 						<p:submenu label="Work">
@@ -128,7 +189,11 @@
 							
 						<p:submenu label="Miscellaneous">
 						
-							<p:menuitem value="Update security prices" url="https://www.nfl.com/standings/tie-breaking-procedures"/>
+							<p:menuitem value="Update security prices" actionListener="#{pc_SlomFinMain.updateSecurityPrices}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">				
+							</p:menuitem>
 							
 							<p:menuitem value="Investments List" actionListener="#{pc_SlomFinMain.showInvestmentsList}"
 									onclick="PF('blockWidgetVar').show()" 
@@ -136,12 +201,20 @@
 									update="menuForm">							
 							</p:menuitem>
 							
+							<p:menuitem value="Add New Investment" 
+									actionListener="#{pc_SlomFinMain.investmentAdd}"
+									onclick="PF('blockWidgetVar').show()" 
+	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									update="menuForm">
+									 <f:param name="operation" value="Add" />
+					    	</p:menuitem>
+					    	
 							<p:menuitem value="Search trx descriptions"
 									oncomplete="PF('searchDialog').show()"
 									update="searchdialogid">				
 							</p:menuitem>
 							
-							<p:menuitem value="Open New Account" 
+							<p:menuitem value="Add New Account" 
 									actionListener="#{pc_SlomFinMain.accountAdd}"
 									onclick="PF('blockWidgetVar').show()" 
 	                                oncomplete="PF('blockWidgetVar').hide()"		  

@@ -56,17 +56,19 @@ public class Create_Transaction_Dynamo_Table_From_MySQL
 		MysqlDataSource ds = getMySQLDatasource();
     	JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);    
     	String sql = "select trx.iTransactionID, trx.iAccountID, trx.iInvestmentID, trx.iTransactionTypeID,"
-    			+ "        trx.dTransactionDate, trx.decUnits, trx.mPrice, trx.mCostProceeds, trx.dTranEntryDate,"
-    			+ "        trx.dTranPostedDate, trx.dTranChangeDate, trx.iDividendTaxableYear, trx.mEffectiveAmount,"
-    			+ "        trx.iOptionTypeID, trx.mStrikePrice, trx.dExpirationDate, trx.bOpeningTrxInd, trx.iCheckNo,"
-    			+ "        trx.sDescription as trxDescription, trx.iWDCategoryID, trx.iCashDepositTypeID, trx.bFinalTrxOfBillingCycle,"
-    			+ "        acct.sAccountName, inv.sDescription as invDescription, wdc.sWDCategoryDescription, cdtyp.sCashDepositTypeDesc,"
-    			+ "        trxtyp.sDescription as trxTypDescription, trxtyp.bPositiveInd as trxTypPositiveInd"
-    			+ " from tbltransaction trx inner join tbltransactiontype trxtyp on trx.iTransactionTypeID = trxtyp.iTransactionTypeID"
-    			+ "   inner join tblaccount acct on trx.iAccountID = acct.iAccountID"
-    			+ "   inner join tblinvestment inv on trx.iInvestmentID = inv.iInvestmentID"
-    			+ "   left outer join tblwdcategory wdc on trx.iWDCategoryID = wdc.iWDCategoryID"
-    			+ "   left outer join tblcashdeposittype cdtyp on trx.iCashDepositTypeID = cdtyp.iCashDepositTypeID";		 
+    			+ "       trx.dTransactionDate, trx.decUnits, trx.mPrice, trx.mCostProceeds, trx.dTranEntryDate,"
+    			+ "       trx.dTranPostedDate, trx.dTranChangeDate, trx.iDividendTaxableYear, trx.mEffectiveAmount,"
+    			+ "       trx.iOptionTypeID, trx.mStrikePrice, trx.dExpirationDate, trx.bOpeningTrxInd, trx.iCheckNo,"
+    			+ "       trx.sDescription as trxDescription, trx.iWDCategoryID, trx.iCashDepositTypeID, trx.bFinalTrxOfBillingCycle,"
+    			+ "       acct.sAccountName, inv.sDescription as invDescription, wdc.sWDCategoryDescription, cdtyp.sCashDepositTypeDesc,"
+    			+ "       trxtyp.sDescription as trxTypDescription, trxtyp.bPositiveInd as trxTypPositiveInd"
+    			+ "  from tbltransaction trx inner join tbltransactiontype trxtyp on trx.iTransactionTypeID = trxtyp.iTransactionTypeID"
+    			+ "    	inner join tblaccount acct on trx.iAccountID = acct.iAccountID"
+    			+ "        inner join tblportfolio portf on acct.iPortfolioID = portf.iPortfolioID"
+    			+ "    	inner join tblinvestment inv on trx.iInvestmentID = inv.iInvestmentID"
+    			+ "    	left outer join tblwdcategory wdc on trx.iWDCategoryID = wdc.iWDCategoryID"
+    			+ "    	left outer join tblcashdeposittype cdtyp on trx.iCashDepositTypeID = cdtyp.iCashDepositTypeID"
+    			+ "  where portf.iPortfolioID in (1,2) ";		 
     	List<DynamoTransaction> transactionsList = jdbcTemplate.query(sql, new TransactionsRowMapper());
 		return transactionsList;
 	}

@@ -16,6 +16,13 @@
     color:  #000000;
     font-weight: normal;
 }
+.resultRedBigBold {
+	white-space: pre-line;
+    background-color:  #F08080;
+    color:  #000000;
+    font: bold 20px "Verdana";
+    font-weight: bold;
+}
 .resultYellow {
 	white-space: pre-line;
     background-color:  #fcc200;

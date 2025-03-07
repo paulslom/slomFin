@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 //import org.apache.logging.log4j.Logger;
 
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbIgnore;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 
 @DynamoDbBean
@@ -26,7 +27,19 @@ public class Investment implements Serializable
 	private BigDecimal currentPrice; 
 	private Integer assetClassID;	
 	private String assetClass;
-	    
+	  
+	//not saved to dynamo - used on report
+	private BigDecimal unitsOwned;
+	
+	@DynamoDbPartitionKey
+	public Integer getiInvestmentID() {
+		return iInvestmentID;
+	}
+
+	public void setiInvestmentID(Integer iInvestmentID) {
+		this.iInvestmentID = iInvestmentID;
+	}
+	
     public String toString()
 	{
 		return description;
@@ -81,15 +94,6 @@ public class Investment implements Serializable
 		this.assetClass = assetClass;
 	}
 
-	@DynamoDbPartitionKey
-	public Integer getiInvestmentID() {
-		return iInvestmentID;
-	}
-
-	public void setiInvestmentID(Integer iInvestmentID) {
-		this.iInvestmentID = iInvestmentID;
-	}
-
 	public Integer getiInvestmentTypeID() {
 		return iInvestmentTypeID;
 	}
@@ -97,8 +101,15 @@ public class Investment implements Serializable
 	public void setiInvestmentTypeID(Integer iInvestmentTypeID) {
 		this.iInvestmentTypeID = iInvestmentTypeID;
 	}
-	
-	
-	
+
+	@DynamoDbIgnore
+	public BigDecimal getUnitsOwned() {
+		return unitsOwned;
+	}
+
+	@DynamoDbIgnore
+	public void setUnitsOwned(BigDecimal unitsOwned) {
+		this.unitsOwned = unitsOwned;
+	}
    	
 }

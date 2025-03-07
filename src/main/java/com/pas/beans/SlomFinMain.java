@@ -29,6 +29,7 @@ import com.pas.slomfin.dao.PaydayDAO;
 
 import com.pas.util.SlomFinUtil;
 import com.pas.util.TransactionTypeComparator;
+import com.pas.util.InvestmentComparator;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.Initialized;
@@ -56,6 +57,10 @@ public class SlomFinMain implements Serializable
 	private String siteTitle;	
 	
 	private String trxSearchTerm;
+	
+	private String investmentAcidSetting;
+	private Investment selectedInvestment;
+	private boolean renderInvestmentUpdateFields;
 	
 	private String transactionAcidSetting;
 	private DynamoTransaction selectedTransaction;
@@ -95,6 +100,7 @@ public class SlomFinMain implements Serializable
 	private List<SelectItem> wdCategoriesDropdownList = new ArrayList<>();
 	private List<SelectItem> xferAccountsDropdownList = new ArrayList<>();
 	private List<SelectItem> accountTypesDropdownList = new ArrayList<>();
+	private List<SelectItem> assetClassesDropdownList = new ArrayList<>();
 	
 	private String operation;
 	
@@ -107,6 +113,7 @@ public class SlomFinMain implements Serializable
 	private List<DynamoTransaction> trxList = new ArrayList<>();
 	private List<Investment> investmentsList = new ArrayList<>();	
 	private List<Payday> paydayList = new ArrayList<>();
+	private List<Investment> reportUnitsOwnedList = new ArrayList<>();
 	
 	private Integer citiDoubleCashAccountID;
 	private Integer sofiCheckingAccountID;
@@ -120,6 +127,7 @@ public class SlomFinMain implements Serializable
 		this.setSiteTitle("Slomkowski Financial");
 		
 		this.setAccountTypesDropdownList(SlomFinUtil.getAccountTypesDropdownList());
+		this.setAssetClassesDropdownList(SlomFinUtil.getAssetClassesDropdownList());
 		
 		try 
 		{
@@ -204,7 +212,7 @@ public class SlomFinMain implements Serializable
 		}
 		return username;
 	}
-	
+		
 	private void refreshTrxList(Integer accountID)
 	{
 		this.getTrxList().clear();
@@ -323,6 +331,212 @@ public class SlomFinMain implements Serializable
 		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
         }
 	}  	
+		
+	public void reportAccountPositions(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("Account Positions report selected from menu");
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}
+	
+	public void reportAccountSummary(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("Account Summary report selected from menu");
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}
+	
+	public void reportCapitalGains(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("Capital Gains report selected from menu");
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}
+	
+	public void reportCostBasis(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("Cost Basis report selected from menu");
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}
+	
+	public void reportDividends(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("Dividends report selected from menu");
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}
+	
+	public void reportGoals(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("Goals report selected from menu");
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}
+	
+	public void reportPortfolioHistory(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("Portfolio History report selected from menu");
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}
+	
+	public void reportPortfolioByAssetClass(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("units owned report selected from menu");
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}
+	
+	public void reportPortfolioSummary(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("Portfolio Summary report selected from menu");
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}
+	
+	public void reportTrxByInvestment(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("Trx By Investment report selected from menu");
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}
+	
+	public void reportUnitsOwned(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("units owned report selected from menu");
+		    
+		    this.getReportUnitsOwnedList().clear();
+		    
+		    Map<Integer, BigDecimal> unitsOwnedMap = SlomFinUtil.getUnitsOwned(transactionDAO.getFullTransactionsList());
+		    
+		    for (Integer key : unitsOwnedMap.keySet()) 
+			{
+	            BigDecimal totalUnitsOwned = unitsOwnedMap.get(key);
+	            
+	            if (totalUnitsOwned != null
+	        	&&  totalUnitsOwned.compareTo(BigDecimal.ZERO) != 0)
+	            {
+	            	Investment inv = investmentDAO.getInvestmentByInvestmentID(key);
+	            	inv.setUnitsOwned(totalUnitsOwned);
+	            	this.getReportUnitsOwnedList().add(inv);	            	
+	            }
+	        }
+		    
+		    Collections.sort(this.getReportUnitsOwnedList(), new InvestmentComparator());
+		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+		    String targetURL = SlomFinUtil.getContextRoot() + "/reportUnitsOwned.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}
+	
+	public void reportWdCategories(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("WD Categories report selected from menu");
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}
+	
+	public void updateSecurityPrices(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("update Security prices selected from menu");
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}
 	
 	public void showInvestmentsList(ActionEvent event) 
 	{
@@ -553,7 +767,7 @@ public class SlomFinMain implements Serializable
 		List<SelectItem> returnList = new ArrayList<>();
 		
 		List<DynamoTransaction> accountTrxList = transactionDAO.getFullTransactionsMapByAccountID().get(this.getSelectedTransaction().getAccountID());
-		Map<Integer, BigDecimal> unitsOwnedForAccountMap = SlomFinUtil.getUnitsOwnedForAccount(accountTrxList); 
+		Map<Integer, BigDecimal> unitsOwnedForAccountMap = SlomFinUtil.getUnitsOwned(accountTrxList); 
 		
 		SelectItem si1 = new SelectItem();
 		si1.setValue(-1);
@@ -932,6 +1146,98 @@ public class SlomFinMain implements Serializable
 		return "/paydayList.xhtml";
 	}
 	
+	public String returnToInvestmentsList()
+	{
+		this.setInvestmentsList(investmentDAO.getFullInvestmentsList());
+		return "/investmentList.xhtml";
+	}
+	
+	public String selectInvestmentAcid()
+	{		
+		try 
+        {
+			ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+		    String acid = ec.getRequestParameterMap().get("operation");
+		    String investmentId = ec.getRequestParameterMap().get("InvestmentId");
+		    
+		    this.setInvestmentAcidSetting(acid);
+		    
+		    logger.info("Investment operation setup for add-change-inquire-delete.  Function is: " + acid);
+		     
+		    if (acid.equalsIgnoreCase("add"))
+		    {
+		    	Investment investment = new Investment();
+		    	this.setSelectedInvestment(investment);	
+		    }
+		    else //go get the existing 
+		    {
+		    	this.setSelectedInvestment(this.getInvestmentByInvestmentID(Integer.parseInt(investmentId)));
+		    }
+		 	
+		    if (acid.equalsIgnoreCase("view")
+		    ||  acid.equalsIgnoreCase("delete"))
+		    {
+				this.getSelectedInvestment().setInvestmentTypeDescription(SlomFinUtil.invTypesMap.get(this.getSelectedInvestment().getiInvestmentTypeID()));
+				this.getSelectedInvestment().setAssetClass(SlomFinUtil.assetClassesMap.get(this.getSelectedInvestment().getAssetClassID()));		
+	
+		    	this.setRenderInvestmentUpdateFields(false);
+		    }
+		    else
+		    {
+		    	this.getInvestmentTypeDropdownList().clear();
+			    this.setInvestmentTypeDropdownList(SlomFinUtil.getInvestmentTypesDropdownList());
+			    	
+			    this.getAssetClassesDropdownList().clear();
+			    this.setAssetClassesDropdownList(SlomFinUtil.getAssetClassesDropdownList());
+			 
+		    	this.setRenderInvestmentUpdateFields(true);
+		    }
+		    
+		    String targetURL = SlomFinUtil.getContextRoot() + "/investmentAddUpdate.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL + " with operation: " + acid);
+					    
+        } 
+        catch (Exception e) 
+        {
+        	logger.error("selectInvestmentAcid errored: " + e.getMessage(), e);
+			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+		
+		return "";		
+	}	
+	
+	public void investmentAdd(ActionEvent event) 
+	{
+		try 
+        {		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+		    
+		    logger.info("Add New Investment selected from menu");
+
+		    this.setSelectedInvestment(new Investment());
+		    this.setRenderInvestmentUpdateFields(true);
+		    setInvestmentAcidSetting("Add");
+		    
+		    this.getInvestmentTypeDropdownList().clear();
+	    	this.setInvestmentTypeDropdownList(SlomFinUtil.getInvestmentTypesDropdownList());
+	    	
+	    	this.getAssetClassesDropdownList().clear();
+	    	this.setAssetClassesDropdownList(SlomFinUtil.getAssetClassesDropdownList());
+	    	
+            String targetURL = SlomFinUtil.getContextRoot() + "/investmentAddUpdate.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}  	
+	
 	public String selectTransactionAcid()
 	{		
 		try 
@@ -956,11 +1262,12 @@ public class SlomFinMain implements Serializable
 		    	dynamoTrx.setAccountName(acct.getsAccountName());
 		    	
 		    	String accountType = SlomFinUtil.accountTypesMap.get(acct.getiAccountTypeID());
-		    	if (accountType != null && accountType.equalsIgnoreCase(SlomFinUtil.strCreditCard))
+		    	
+		    	if (accountType != null 
+		    	&& (accountType.equalsIgnoreCase(SlomFinUtil.strCreditCard) || accountType.equalsIgnoreCase(SlomFinUtil.strChecking)))
 		    	{
 		    		dynamoTrx.setTransactionTypeID(SlomFinUtil.CashWithdrawal);
-		    		dynamoTrx.setTransactionTypeDescription(SlomFinUtil.strCashWithdrawal);
-		    		enableTrxUpdateFields(dynamoTrx.getTransactionTypeDescription());		
+		    		dynamoTrx.setTransactionTypeDescription(SlomFinUtil.strCashWithdrawal);		    			
 		    	}
 		    	
 		    	this.setSelectedTransaction(dynamoTrx);	
@@ -984,6 +1291,7 @@ public class SlomFinMain implements Serializable
 		    }
 		    
 		    setRenderTransactionViewAddUpdateDelete(); 
+		    enableTrxUpdateFields(this.getSelectedTransaction().getTransactionTypeDescription());	
 		    
 		    String targetURL = SlomFinUtil.getContextRoot() + "/transactionAddUpdate.xhtml";
 		    ec.redirect(targetURL);
@@ -1053,7 +1361,75 @@ public class SlomFinMain implements Serializable
 	{
 		return accountDAO.getAccountByAccountID(accountID);
 	}
+	
+	private Investment getInvestmentByInvestmentID(Integer investmentID) 
+	{
+		return investmentDAO.getInvestmentByInvestmentID(investmentID);
+	}
 
+	public String addChangeDelInvestment()
+	{
+		logger.info("entering addChangeDelInvestment for operation: " + investmentAcidSetting);
+		
+		String result = prepInvestmentAndUpsertDatabase();
+		
+		if (result.equalsIgnoreCase("success"))
+		{
+			this.setInvestmentsList(investmentDAO.getFullInvestmentsList());
+			return "/investmentList.xhtml";	
+		}
+		else
+		{
+			return "";
+		}
+	}	
+	
+	private String prepInvestmentAndUpsertDatabase() 
+	{
+		String returnString = "";
+	
+		try
+		{
+			if (!investmentAcidSetting.equalsIgnoreCase("Delete"))
+			{
+		
+				if (this.getSelectedInvestment().getiInvestmentTypeID() == -1)
+				{
+					FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Investment Type not selected", "Investment Type not selected");
+				 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+				 	return "";
+				}
+				
+				this.getSelectedInvestment().setInvestmentTypeDescription(SlomFinUtil.invTypesMap.get(this.getSelectedInvestment().getiInvestmentTypeID()));
+				this.getSelectedInvestment().setAssetClass(SlomFinUtil.assetClassesMap.get(this.getSelectedInvestment().getAssetClassID()));		
+			}				
+				
+			if (investmentAcidSetting.equalsIgnoreCase("Add"))
+			{
+				investmentDAO.addInvestment(this.getSelectedInvestment());
+			}
+			else if (investmentAcidSetting.equalsIgnoreCase("Update"))
+			{
+				investmentDAO.updateInvestment(this.getSelectedInvestment());
+			}
+			else if (investmentAcidSetting.equalsIgnoreCase("Delete"))
+			{
+				investmentDAO.deleteInvestment(this.getSelectedInvestment());
+			}
+				
+			returnString = "success";
+		}
+		catch (Exception e)
+		{
+			logger.error("upsert transaction(s) errored: " + e.getMessage(), e);
+			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+		 	returnString = "fail";
+		}
+
+		return returnString;		
+	}
+	
 	public String addChangeDelTransaction()
 	{
 		logger.info("entering addChangeDelTransaction for operation: " + transactionAcidSetting);
@@ -1754,6 +2130,46 @@ public class SlomFinMain implements Serializable
 
 	public void setAccountDropdownList(List<SelectItem> accountDropdownList) {
 		this.accountDropdownList = accountDropdownList;
+	}
+
+	public List<Investment> getReportUnitsOwnedList() {
+		return reportUnitsOwnedList;
+	}
+
+	public void setReportUnitsOwnedList(List<Investment> reportUnitsOwnedList) {
+		this.reportUnitsOwnedList = reportUnitsOwnedList;
+	}
+
+	public String getInvestmentAcidSetting() {
+		return investmentAcidSetting;
+	}
+
+	public void setInvestmentAcidSetting(String investmentAcidSetting) {
+		this.investmentAcidSetting = investmentAcidSetting;
+	}
+
+	public Investment getSelectedInvestment() {
+		return selectedInvestment;
+	}
+
+	public void setSelectedInvestment(Investment selectedInvestment) {
+		this.selectedInvestment = selectedInvestment;
+	}
+
+	public List<SelectItem> getAssetClassesDropdownList() {
+		return assetClassesDropdownList;
+	}
+
+	public void setAssetClassesDropdownList(List<SelectItem> assetClassesDropdownList) {
+		this.assetClassesDropdownList = assetClassesDropdownList;
+	}
+
+	public boolean isRenderInvestmentUpdateFields() {
+		return renderInvestmentUpdateFields;
+	}
+
+	public void setRenderInvestmentUpdateFields(boolean renderInvestmentUpdateFields) {
+		this.renderInvestmentUpdateFields = renderInvestmentUpdateFields;
 	}
 
 }

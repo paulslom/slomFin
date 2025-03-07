@@ -8,7 +8,7 @@
      
     <ui:define name="content">
     
-         <h:form id="accountAddUpdateForm">                      
+         <h:form id="investmentAddUpdateForm">                      
           
              <p:messages id="facesMessagesID" showDetail="false"/>
             
@@ -19,14 +19,14 @@
            	       <col width="50%"/>
            	   </colgroup>
            	   
-               <p:blockUI block="accountAddUpdateForm" widgetVar="blockWidgetVar"> 
+               <p:blockUI block="investmentAddUpdateForm" widgetVar="blockWidgetVar"> 
 			       <p:graphicImage value="/images/wait.gif"/>  
 			   </p:blockUI> 
 				
 			   <tr>
 			   
 			      <td colspan="2" align="center">
-			   		  <h:outputText value="#{pc_SlomFinMain.accountAcidSetting} account" styleClass="pageSectionTitle"/>
+			   		  <h:outputText value="#{pc_SlomFinMain.investmentAcidSetting} investment" styleClass="pageSectionTitle"/>
 			   	  </td>
 			   	  
 			   </tr>
@@ -37,36 +37,45 @@
 			      
 			   		  <p:commandButton id="UpdateId1" 				   
 						    value="Add" 	
-						    rendered="#{pc_SlomFinMain.accountAcidSetting eq 'Add'}"
-						    action="#{pc_SlomFinMain.addChangeDelAccount}"
+						    rendered="#{pc_SlomFinMain.investmentAcidSetting eq 'Add'}"
+						    action="#{pc_SlomFinMain.addChangeDelInvestment}"
 						    onclick="PF('blockWidgetVar').show()" 
 						    oncomplete="PF('blockWidgetVar').hide()"
-						    update="accountAddUpdateForm">
+						    update="investmentAddUpdateForm">
 					  </p:commandButton>
 					  
 					  <p:commandButton id="UpdateId2" 				   
 						    value="Update" 	
-						    rendered="#{pc_SlomFinMain.accountAcidSetting eq 'Update'}"
-						    action="#{pc_SlomFinMain.addChangeDelAccount}"
+						    rendered="#{pc_SlomFinMain.investmentAcidSetting eq 'Update'}"
+						    action="#{pc_SlomFinMain.addChangeDelInvestment}"
 						    onclick="PF('blockWidgetVar').show()" 
 						    oncomplete="PF('blockWidgetVar').hide()"		
-						    update="accountAddUpdateForm">
+						    update="investmentAddUpdateForm">
 					  </p:commandButton>
 					  
 					  <p:commandButton id="UpdateId3" 				   
 						    value="Delete" 	
-						    rendered="#{pc_SlomFinMain.accountAcidSetting eq 'Delete'}"
-						    action="#{pc_SlomFinMain.addChangeDelAccount}"
+						    rendered="#{pc_SlomFinMain.investmentAcidSetting eq 'Delete'}"
+						    action="#{pc_SlomFinMain.addChangeDelInvestment}"
 						    onclick="PF('blockWidgetVar').show()" 
 						    oncomplete="PF('blockWidgetVar').hide()"		
-						    update="accountAddUpdateForm">
-						    <p:confirm header="Confirmation" message="Really completely delete this account??" icon="pi pi-exclamation-triangle" />
+						    update="investmentAddUpdateForm">
+						    <p:confirm header="Confirmation" message="Really completely delete this investment??" icon="pi pi-exclamation-triangle" />
 					  </p:commandButton>
 							   
 					  <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
 					        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
 					        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
-					  </p:confirmDialog>  
+					  </p:confirmDialog> 
+					  
+					  <p:commandButton id="backId4" 				   
+						    value="Return to investments list"						    
+						    action="#{pc_SlomFinMain.returnToInvestmentsList}"
+						    immediate="true"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"		
+						    update="investmentAddUpdateForm">						    
+					  </p:commandButton> 
 					 					  
 			   	  </td>
 			   	  
@@ -75,25 +84,25 @@
 			   <tr>
 	          
 	              <td align="right">
-         		     <p:outputLabel id="acctlabelId" value="Account Id"/> &#xA0;&#xA0;
+         		     <p:outputLabel id="acctlabelId" value="Investment Id"/> &#xA0;&#xA0;
 		          </td>
 		          
 	              <td align="left">	              
-        		     <h:outputText id="accountIdId" value="#{pc_SlomFinMain.selectedAccount.iAccountID}"/>
+        		     <h:outputText id="investmentIdId" value="#{pc_SlomFinMain.selectedInvestment.iInvestmentID}"/>
 		          </td>
         	        		
-        	   </tr>
+        	   </tr> 
         	   
         	   <tr>
 	          
 	              <td align="right">
-         		     <p:outputLabel for="aNameId" value="Account Name"/> &#xA0;&#xA0;
+         		     <p:outputLabel for="invNmID" value="Investment Nm"/> &#xA0;&#xA0;
 		          </td>
 		          
 	              <td align="left">	
-	                 <p:inputText id="aNameId" value="#{pc_SlomFinMain.selectedAccount.sAccountName}" 
-		                            rendered="#{pc_SlomFinMain.renderAccountUpdateFields}"/>              
-        		     <p:outputLabel value="#{pc_SlomFinMain.selectedAccount.sAccountName}" rendered="#{!pc_SlomFinMain.renderAccountUpdateFields}"/>
+	                 <p:inputText id="invNmID" value="#{pc_SlomFinMain.selectedInvestment.description}" required="true"  
+		                            rendered="#{pc_SlomFinMain.renderInvestmentUpdateFields}"/>              
+        		     <p:outputLabel value="#{pc_SlomFinMain.selectedInvestment.description}" rendered="#{!pc_SlomFinMain.renderInvestmentUpdateFields}"/>
 		          </td>
         	        		
         	   </tr>		       
@@ -101,52 +110,62 @@
 		       <tr>
 	          
 	              <td align="right">
-         		     <p:outputLabel for="acctNameAbbrId" value="Account Name Abbreviation"/> &#xA0;&#xA0;
+         		     <p:outputLabel for="tickerSymbolId" value="Ticker Symbol"/> &#xA0;&#xA0;
 		          </td>
 		          
 	              <td align="left">	              
-        		     <p:inputText id="acctNameAbbrId" value="#{pc_SlomFinMain.selectedAccount.sAccountNameAbbr}" 
-		                            rendered="#{pc_SlomFinMain.renderAccountUpdateFields}"/>              
-        		     <p:outputLabel value="#{pc_SlomFinMain.selectedAccount.sAccountNameAbbr}" rendered="#{!pc_SlomFinMain.renderAccountUpdateFields}"/>
+        		     <p:inputText id="tickerSymbolId" value="#{pc_SlomFinMain.selectedInvestment.tickerSymbol}" required="true" 
+		                            rendered="#{pc_SlomFinMain.renderInvestmentUpdateFields}"/>              
+        		     <p:outputLabel value="#{pc_SlomFinMain.selectedInvestment.tickerSymbol}" rendered="#{!pc_SlomFinMain.renderInvestmentUpdateFields}"/>
 		          </td>
         	        		
         	   </tr>		
         	      
 			   <tr>
 		            <td align="right">	        
-		               <p:outputLabel for="acctTypeListID" value="Account Type"/>
+		               <p:outputLabel for="invTypeListID" value="Investment Type"/>
 		            </td>
 		            
 		            <td align="left">	        
 					
-					    <p:selectOneMenu id="acctTypeListID" value="#{pc_SlomFinMain.selectedAccount.iAccountTypeID}" required="true" hideNoSelectionOption="false" 
-					                       rendered="#{pc_SlomFinMain.renderAccountUpdateFields}">
-					        <f:selectItems value="#{pc_SlomFinMain.accountTypesDropdownList}"/>
+					    <p:selectOneMenu id="invTypeListID" value="#{pc_SlomFinMain.selectedInvestment.iInvestmentTypeID}" required="true" hideNoSelectionOption="false" 
+					                       rendered="#{pc_SlomFinMain.renderInvestmentUpdateFields}">
+					        <f:selectItems value="#{pc_SlomFinMain.investmentTypeDropdownList}"/>
 						</p:selectOneMenu>
 						
-						<p:outputLabel value="#{pc_SlomFinMain.selectedAccount.sAccountType}" rendered="#{!pc_SlomFinMain.renderAccountUpdateFields}"/>
+						<p:outputLabel value="#{pc_SlomFinMain.selectedInvestment.investmentTypeDescription}" rendered="#{!pc_SlomFinMain.renderInvestmentUpdateFields}"/>
 					</td>
 			   </tr> 	          	           
-			   
+						
                <tr>
-		            <td align="right">	        
-		               <p:outputLabel for="taxableID" value="Taxable Indicator"/> 
+	  		
+	 			   <td align="right">	        
+		              <p:outputLabel for="priceID" value="Current Price"/>
+		           </td>
+				 
+		           <td align="left">
+		               <p:inputText id="priceID" size="8" value="#{pc_SlomFinMain.selectedInvestment.currentPrice}" required="true" 
+		                            rendered="#{pc_SlomFinMain.renderInvestmentUpdateFields}"/>
+		               <p:outputLabel value="#{pc_SlomFinMain.selectedInvestment.currentPrice}" rendered="#{!pc_SlomFinMain.renderInvestmentUpdateFields}"/>		
 		            </td>
 		            
-		            <td align="left">					
-					    <p:selectBooleanCheckbox id="taxableID" value="#{pc_SlomFinMain.selectedAccount.bTaxableInd}" disabled="#{!pc_SlomFinMain.renderAccountUpdateFields}"></p:selectBooleanCheckbox>					   
-					</td>
-			   </tr>	
+		        </tr>
       
 		       <tr>
 		            <td align="right">	        
-		               <p:outputLabel for="closedID" value="Account Closed Indicator"/> 
+		               <p:outputLabel for="assetClassListID" value="Asset Class"/>
 		            </td>
 		            
-		            <td align="left">					
-					    <p:selectBooleanCheckbox id="closedID" value="#{pc_SlomFinMain.selectedAccount.bClosed}" disabled="#{!pc_SlomFinMain.renderAccountUpdateFields}"></p:selectBooleanCheckbox>					   
+		            <td align="left">	        
+					
+					    <p:selectOneMenu id="assetClassListID" value="#{pc_SlomFinMain.selectedInvestment.assetClassID}" required="true" hideNoSelectionOption="false" 
+					                       rendered="#{pc_SlomFinMain.renderInvestmentUpdateFields}">
+					        <f:selectItems value="#{pc_SlomFinMain.assetClassesDropdownList}"/>
+						</p:selectOneMenu>
+						
+						<p:outputLabel value="#{pc_SlomFinMain.selectedInvestment.assetClass}" rendered="#{!pc_SlomFinMain.renderInvestmentUpdateFields}"/>
 					</td>
-			   </tr>			
+			   </tr> 	   		
 			
 			</table>
 	                

@@ -8,7 +8,9 @@ import jakarta.faces.model.SelectItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.DeleteItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
 
 import java.io.Serial;
@@ -54,7 +56,7 @@ public class InvestmentDAO implements Serializable
 
         refreshListsAndMaps("add", investment);
 
-        logger.info("addInvestment complete");
+        logger.info("addInvestment complete.  We just added investment id: " + investment2.getiInvestmentID());
 
         return investment2.getiInvestmentID(); //this is the key that was just added
     }
@@ -94,6 +96,19 @@ public class InvestmentDAO implements Serializable
         logger.debug("update investment table complete");
     }
 
+    public void deleteInvestment(Investment investment) 
+	{
+		Key key = Key.builder().partitionValue(investment.getiInvestmentID()).build();
+		DeleteItemEnhancedRequest deleteItemEnhancedRequest = DeleteItemEnhancedRequest.builder().key(key).build();
+		investmentsTable.deleteItem(deleteItemEnhancedRequest);
+		
+		logger.info("LoggedDBOperation: function-delete; table:investment; rows:1");
+		
+		refreshListsAndMaps("delete", investment);		
+		
+		logger.info("delete investment complete");	
+	}
+    
     public void readInvestmentsFromDB()
     {
     	Iterator<Investment> results = investmentsTable.scan().items().iterator();
@@ -194,7 +209,7 @@ public class InvestmentDAO implements Serializable
         this.fullInvestmentsMap = fullInvestmentsMap;
     }
 
-    public Investment getInvestmentByInvestmentID(int investmentId)
+    public Investment getInvestmentByInvestmentID(Integer investmentId)
     {
         return this.getFullInvestmentsMap().get(investmentId);
     }
@@ -236,4 +251,6 @@ public class InvestmentDAO implements Serializable
 	public void setInvestmentsMapByInvestmentTypeID(Map<Integer, List<Investment>> investmentsMapByInvestmentTypeID) {
 		this.investmentsMapByInvestmentTypeID = investmentsMapByInvestmentTypeID;
 	}
+
+	
 }

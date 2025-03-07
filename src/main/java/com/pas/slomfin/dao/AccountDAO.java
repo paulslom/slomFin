@@ -270,7 +270,7 @@ public class AccountDAO implements Serializable
 		
 		refreshListsAndMaps("delete", account);		
 		
-		logger.info("delete transaction complete");	
+		logger.info("delete account complete");	
 	}
 
 	public Integer getSoFiCheckingAccountID() 
