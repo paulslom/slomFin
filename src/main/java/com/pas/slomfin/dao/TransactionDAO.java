@@ -19,9 +19,9 @@ import org.apache.logging.log4j.Logger;
 import com.pas.dynamodb.DateToStringConverter;
 import com.pas.dynamodb.DynamoClients;
 import com.pas.dynamodb.DynamoTransaction;
+import com.pas.util.SlomFinUtil;
 import com.pas.util.TransactionComparatorAscDate;
 import com.pas.util.TransactionComparatorDescDate;
-import com.pas.util.SlomFinUtil;
 
 import jakarta.faces.model.SelectItem;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -251,6 +251,7 @@ public class TransactionDAO implements Serializable
 		return returnList;
 	}
 	
+
 	/*
 	public void readTransactionsWithin2YearsFromDB() throws Exception 
     {
@@ -414,4 +415,5 @@ public class TransactionDAO implements Serializable
 		this.fullTransactionsMapByAccountID = fullTransactionsMapByAccountID;
 	}
 
+	
 }

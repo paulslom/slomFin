@@ -445,6 +445,33 @@ public class SlomFinUtil
 		return encryptedPW;
 	}
 	
+	public static List<String> getRecentYearsList(boolean withTaxableInd)
+	{
+		List<String> returnList = new ArrayList<>();
+		
+		Calendar now = Calendar.getInstance();
+		int nowYear = now.get(Calendar.YEAR);
+		
+		for (int i=nowYear; i>nowYear-8; i--)
+		{
+			
+			if (withTaxableInd)
+			{
+				String tempStr1 = String.valueOf(i) + " Taxable Only";
+				returnList.add(tempStr1);
+				
+				String tempStr2 = String.valueOf(i) + " All";
+				returnList.add(tempStr2);
+			}
+			else
+			{
+				returnList.add(String.valueOf(i));
+			}			
+		} 
+		
+		return returnList;
+	}
+	
 	public static String getContextRoot()
 	{
 		String contextRoot = "";

@@ -118,6 +118,11 @@ public class SlomFinMain implements Serializable
 	private List<Investment> reportUnitsOwnedList = new ArrayList<>();
 	private List<PortfolioHistory> portfolioHistoryList = new ArrayList<>();
 	
+	private List<String> reportDividendsYearsList = new ArrayList<>();
+	private List<DynamoTransaction> dividendTransactionsList = new ArrayList<>();
+	private String reportDividendsTitle;
+	private BigDecimal dividendsTotal;
+	
 	private Integer citiDoubleCashAccountID;
 	private Integer sofiCheckingAccountID;
 	
@@ -131,6 +136,7 @@ public class SlomFinMain implements Serializable
 		
 		this.setAccountTypesDropdownList(SlomFinUtil.getAccountTypesDropdownList());
 		this.setAssetClassesDropdownList(SlomFinUtil.getAssetClassesDropdownList());
+		this.setReportDividendsYearsList(SlomFinUtil.getRecentYearsList(true));
 		
 		try 
 		{
@@ -396,6 +402,38 @@ public class SlomFinMain implements Serializable
 		try 
         {		    
 		    logger.info("Dividends report selected from menu");
+		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+		    String yearSelection = ec.getRequestParameterMap().get("yearSel");		    
+		    logger.info("Dividend report selection: " + yearSelection);
+
+		    Integer taxYear;
+		    boolean taxableInd = false;
+		    
+		    if (yearSelection.contains(" "))
+		    {
+		    	String[] returnArray = yearSelection.split(" ");
+		    	
+		    	String strYear = returnArray[0];
+		    	taxYear = Integer.parseInt(strYear);
+		    	
+				String taxableChoice = returnArray[1];
+				if (taxableChoice.equalsIgnoreCase("Taxable"))
+				{
+					taxableInd = true;
+				}
+		    }
+		    else
+		    {
+		    	taxYear = Integer.parseInt(yearSelection);
+		    }
+			this.setReportDividendsTitle("Dividends: " + yearSelection);
+			
+			this.setDividendTransactionsList(getDividends(taxYear, taxableInd));
+			
+            String targetURL = SlomFinUtil.getContextRoot() + "/reportDividends.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
         } 
         catch (Exception e) 
         {
@@ -405,6 +443,43 @@ public class SlomFinMain implements Serializable
         }
 	}
 	
+	private List<DynamoTransaction> getDividends(Integer taxYear, boolean taxableInd) throws Exception 
+	{
+		List<DynamoTransaction> returnList = new ArrayList<>();
+		
+		this.setDividendsTotal(new BigDecimal(0.0));
+		
+		for (int i = 0; i < transactionDAO.getFullTransactionsList().size(); i++) 
+		{
+			DynamoTransaction trx = transactionDAO.getFullTransactionsList().get(i);
+			
+			if (trx.getTransactionTypeID() != null 
+			&& (trx.getTransactionTypeID() == SlomFinUtil.CashDividend || trx.getTransactionTypeID() == SlomFinUtil.Reinvest))
+			{	
+				logger.debug("dividend trx id: " + trx.getTransactionID());
+				
+				if (trx.getDividendTaxableYear() != null && trx.getDividendTaxableYear().intValue() == taxYear.intValue())
+				{
+					if (taxableInd)
+					{
+						Account acct = accountDAO.getAccountByAccountID(trx.getAccountID());
+						if (acct.getbTaxableInd())
+						{
+							returnList.add(trx);
+							this.setDividendsTotal(this.getDividendsTotal().add(trx.getCostProceeds()));
+						}
+					}
+					else //we want em all so just add 
+					{
+						returnList.add(trx);
+						this.setDividendsTotal(this.getDividendsTotal().add(trx.getCostProceeds()));
+					}
+				}
+				
+			}
+		}
+		return returnList;
+	}
 	public void reportGoals(ActionEvent event) 
 	{
 		try 
@@ -2309,6 +2384,38 @@ public class SlomFinMain implements Serializable
 
 	public void setPortfolioHistoryList(List<PortfolioHistory> portfolioHistoryList) {
 		this.portfolioHistoryList = portfolioHistoryList;
+	}
+
+	public List<String> getReportDividendsYearsList() {
+		return reportDividendsYearsList;
+	}
+
+	public void setReportDividendsYearsList(List<String> reportDividendsYearsList) {
+		this.reportDividendsYearsList = reportDividendsYearsList;
+	}
+
+	public List<DynamoTransaction> getDividendTransactionsList() {
+		return dividendTransactionsList;
+	}
+
+	public void setDividendTransactionsList(List<DynamoTransaction> dividendTransactionsList) {
+		this.dividendTransactionsList = dividendTransactionsList;
+	}
+
+	public String getReportDividendsTitle() {
+		return reportDividendsTitle;
+	}
+
+	public void setReportDividendsTitle(String reportDividendsTitle) {
+		this.reportDividendsTitle = reportDividendsTitle;
+	}
+
+	public BigDecimal getDividendsTotal() {
+		return dividendsTotal;
+	}
+
+	public void setDividendsTotal(BigDecimal dividendsTotal) {
+		this.dividendsTotal = dividendsTotal;
 	}
 
 }

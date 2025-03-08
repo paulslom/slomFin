@@ -29,7 +29,7 @@ import reactor.netty.http.client.HttpClient;
 
 public class RetrieveStockQuotesService
 {
-	// example call:   https://api.polygon.io/v1/open-close/DOCU/2021-10-29?adjusted=true&apiKey=iaFDrVRIMcXK15d34pjgnOep3wB40SrF
+	// example call:   https://api.polygon.io/v1/open-close/DOCU/2021-10-29?adjusted=true&apiKey=<API_KEY>
 	
 	final static String baseURI = "https://api.polygon.io/v1/open-close/qqqq/zzzz?adjusted=true";
 	protected static Logger log = LogManager.getLogger(RetrieveStockQuotesService.class);  
@@ -37,7 +37,7 @@ public class RetrieveStockQuotesService
 	
 	String specificURI = "";	
 	
-	private static String apiKey = "iaFDrVRIMcXK15d34pjgnOep3wB40SrF";
+	private static String apiKey = System.getenv("POLYGON_API_KEY");
 	
 	public BigDecimal getStockQuote(String tickerSymbol, String marketCloseDate) 
 	{
@@ -195,7 +195,7 @@ public class RetrieveStockQuotesService
 	public static void main(String[] args)
 	{
 		/* example call
-		https://api.polygon.io/v1/open-close/DOCU/2021-10-29?adjusted=true&apiKey=iaFDrVRIMcXK15d34pjgnOep3wB40SrF
+		https://api.polygon.io/v1/open-close/DOCU/2021-10-29?adjusted=true&apiKey=<API_KEY>
 		*/
 		
 	    String tickerSymbol = "DOCU"; //docusign
