@@ -1,0 +1,93 @@
+<ui:composition template="template.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+     
+    <ui:define name="content">
+    
+       <h:form id="updateSecurityPricesForm">                      
+          
+          <p:messages id="facesMessagesID" showDetail="false"/>
+            
+             <table>
+            
+               <p:blockUI block="updateSecurityPricesForm" widgetVar="blockWidgetVar"> 
+			       <p:graphicImage value="/images/wait.gif"/>  
+			   </p:blockUI> 
+				
+			   <tr>
+			   
+			      <td colspan="2" align="center">
+			   		  <h:outputText value="Update Security Prices" styleClass="pageSectionTitle"/>
+			   	  </td>
+			   	  
+			   </tr>
+			   
+			   <tr>
+			   
+			      <td colspan="2" align="center">
+			      
+			   		  <p:commandButton id="sqId" 				   
+						    value="Get Stock Quotes" 	
+						    action="#{pc_SlomFinMain.getStockQuotes}"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"
+						    update="updateSecurityPricesForm">
+					  </p:commandButton>
+					  
+					  <p:commandButton id="savePhId" 				   
+						    value="Save / Go to Port Summary" 	
+						    action="#{pc_SlomFinMain.saveInvestmentPrices}"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"		
+						    update="updateSecurityPricesForm">
+					  </p:commandButton>
+					 					 					  
+			   	  </td>
+			   	  
+			   </tr>
+			   
+			   <tr>
+			   
+			      <td>
+			      
+			         <p:dataTable id="tableID" value="#{pc_SlomFinMain.reportUnitsOwnedList}" rowIndexVar="rowIndex"
+						var="inv" scrollable="true" scrollHeight="800px" styleClass="dataTableStyleTighterRows">						
+									   
+					   <p:column style="width:3%" headerText="Num">												
+						  <h:outputText value="#{rowIndex + 1}"/>															
+					   </p:column>
+									  
+					   <p:column style="width:50%" headerText="Investment" sortBy="#{inv.description}">												
+						  <h:outputText value="#{inv.description}"/>															
+					   </p:column>		
+						
+					   <p:column style="width:10%" headerText="Ticker Symbol" sortBy="#{inv.tickerSymbol}">												
+						  <h:outputText value="#{inv.tickerSymbol}"/>															
+					   </p:column>	
+					   
+					   <p:column style="width:10%" headerText="Units Owned" sortBy="#{inv.unitsOwned}">												
+						  <h:outputText value="#{inv.unitsOwned}"/>															
+					   </p:column>	
+					   			  
+					   <p:column style="width:27%" headerText="Current Price">												
+						   <p:inputText id="priceID" size="8" value="#{inv.currentPrice}" required="true"/>	                            										
+					   </p:column>	 				 
+													  
+					</p:dataTable>
+					
+				</td>
+				
+			</tr>
+			
+		</table>
+		
+		</h:form>			
+		   
+    </ui:define>
+
+</ui:composition>
+  

@@ -61,6 +61,29 @@ public class DateToStringConverter
        	return returnString;
     }
     
+    public static String convertMySqlDateTimeToDynamoStringFormat2(String inputMySqlTimestamp)
+    {
+    	String returnString = "";
+    	
+    	if (inputMySqlTimestamp != null)    	
+		{
+    		try
+        	{
+        		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(mysqlDateTimePattern2); 
+        		LocalDateTime ldt = LocalDateTime.parse(inputMySqlTimestamp, dtf);
+               	returnString = ldt.toString();
+        	}
+        	catch (Exception e)
+        	{
+        		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(mysqlDateTimePattern1); 
+        		LocalDateTime ldt = LocalDateTime.parse(inputMySqlTimestamp, dtf);
+        		returnString = ldt.toString();
+        	}
+		}
+       	
+       	return returnString;
+    }
+    
     public static void main(String[] args)
     {
     	/*

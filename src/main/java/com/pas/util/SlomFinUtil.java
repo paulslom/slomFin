@@ -580,7 +580,14 @@ public class SlomFinUtil
     	{		    				
 			if (amountOrUnits.equalsIgnoreCase("amount"))
     		{
-				returnAmount = inputAmount.add(trx.getCostProceeds());
+				if (trx.getCostProceeds() == null)
+				{
+					returnAmount = inputAmount;
+				}
+				else
+				{
+					returnAmount = inputAmount.add(trx.getCostProceeds());
+				}
     		}
 			else
 			{

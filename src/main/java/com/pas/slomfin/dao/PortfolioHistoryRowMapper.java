@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.pas.beans.PortfolioHistory;
+import com.pas.dynamodb.DateToStringConverter;
 
 public class PortfolioHistoryRowMapper implements RowMapper<PortfolioHistory>, Serializable 
 {
@@ -17,11 +18,9 @@ public class PortfolioHistoryRowMapper implements RowMapper<PortfolioHistory>, S
     {
 		PortfolioHistory portfolioHistory = new PortfolioHistory();
 			    
-		portfolioHistory.setiPortfolioHistoryID(rs.getInt("iPortfolioHistoryID"));
-		portfolioHistory.setAccountID(rs.getInt("iAccountID"));
-		portfolioHistory.setAccountName(rs.getString("sAccountName"));
-		portfolioHistory.setHistoryDate(rs.getTimestamp("dHistoryDate").toString());
-		portfolioHistory.setValue(rs.getBigDecimal("mValue"));
+		portfolioHistory.setiPortfolioHistoryID(rowNum);
+		portfolioHistory.setHistoryDate(rs.getString("dHistoryDate"));
+		portfolioHistory.setTotalValue(rs.getBigDecimal("totalValue"));
 							
  		return portfolioHistory; 	    	
     }

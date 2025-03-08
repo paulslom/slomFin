@@ -53,8 +53,7 @@ public class Create_PortfolioHistory_Dynamo_Table_From_MySQL
 	{
 		MysqlDataSource ds = getMySQLDatasource();
     	JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);    
-    	String sql = " select ph.iPortfolioHistoryID, ph.iAccountID, ph.dHistoryDate, ph.mValue, acc.sAccountName"
-    			+ "	 from tblportfoliohistory ph inner join tblaccount acc on ph.iaccountid = acc.iaccountid";		 
+    	String sql = "SELECT DATE_FORMAT(H.dhistoryDate, \"%Y-%m-%dT%H:%i:%S\") as dhistoryDate, SUM(H.mvalue) as totalValue FROM Tblportfoliohistory H GROUP BY H.dhistoryDate ORDER BY H.dhistoryDate";		 
     	List<PortfolioHistory> phList = jdbcTemplate.query(sql, new PortfolioHistoryRowMapper());
 		return phList;
 	}

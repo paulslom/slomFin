@@ -3,13 +3,16 @@ package com.pas.beans;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
+
+import com.pas.dynamodb.DateToStringConverter;
 
 //import org.apache.logging.log4j.LogManager;
 //import org.apache.logging.log4j.Logger;
 
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbIgnore;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
 @DynamoDbBean
 public class PortfolioHistory implements Serializable
@@ -20,14 +23,15 @@ public class PortfolioHistory implements Serializable
 	//private static Logger logger = LogManager.getLogger(PortfolioHistory.class);	
 	
 	private Integer iPortfolioHistoryID;
-    private String accountName;
-    private Integer accountID;
     private String historyDate; 
-    private BigDecimal value;
+    private BigDecimal totalValue;
+    
+    //not stored to DB
+    private Date historyDateJava;
     
     public String toString()
     {
-    	return "date: " + historyDate + " account: " + " value: " + value;
+    	return "date: " + historyDate + " account: " + " value: " + totalValue;
     }
 
     @DynamoDbPartitionKey	
@@ -39,23 +43,6 @@ public class PortfolioHistory implements Serializable
 		this.iPortfolioHistoryID = iPortfolioHistoryID;
 	}
 
-	public String getAccountName() {
-		return accountName;
-	}
-
-	public void setAccountName(String accountName) {
-		this.accountName = accountName;
-	}
-
-	public Integer getAccountID() {
-		return accountID;
-	}
-
-	public void setAccountID(Integer accountID) {
-		this.accountID = accountID;
-	}
-
-	@DynamoDbSortKey
 	public String getHistoryDate() {
 		return historyDate;
 	}
@@ -64,13 +51,25 @@ public class PortfolioHistory implements Serializable
 		this.historyDate = historyDate;
 	}
 
-	public BigDecimal getValue() {
-		return value;
+	public BigDecimal getTotalValue() {
+		return totalValue;
 	}
 
-	public void setValue(BigDecimal value) {
-		this.value = value;
+	public void setTotalValue(BigDecimal totalValue) {
+		this.totalValue = totalValue;
 	}
- 
+
+	@DynamoDbIgnore
+	public Date getHistoryDateJava() 
+	{
+		this.setHistoryDateJava(DateToStringConverter.unconvert(historyDate));
+		return historyDateJava;
+	}
+
+	@DynamoDbIgnore
+	public void setHistoryDateJava(Date historyDateJava) {
+		this.historyDateJava = historyDateJava;
+	}
+
     
 }

@@ -47,7 +47,7 @@ public class PortfolioHistoryDAO implements Serializable
 
         refreshListsAndMaps("add", portfolioHistory);
 
-        logger.info("addPortfolioHistory complete");
+        logger.info("addPortfolioHistory complete.  We just added portfolioHistoryID: " + portfolioHistory2.getiPortfolioHistoryID());
 
         return portfolioHistory2.getiPortfolioHistoryID(); //this is the key that was just added
     }
@@ -98,13 +98,18 @@ public class PortfolioHistoryDAO implements Serializable
 
         this.setFullPortfolioHistoryMap(this.getFullPortfolioHistoryList().stream().collect(Collectors.toMap(PortfolioHistory::getiPortfolioHistoryID, ply -> ply)));
 
-        this.getFullPortfolioHistoryList().sort(new Comparator<PortfolioHistory>() {
+        sortFullPhListDateDesc();
+    }
+
+    public void sortFullPhListDateDesc()
+    {
+    	this.getFullPortfolioHistoryList().sort(new Comparator<PortfolioHistory>() {
             public int compare(PortfolioHistory o1, PortfolioHistory o2) {
-                return o1.getHistoryDate().compareTo(o2.getHistoryDate());
+                return o2.getHistoryDate().compareTo(o1.getHistoryDate());
             }
         });
     }
-
+    
     private void refreshListsAndMaps(String function, PortfolioHistory portfolioHistory)
     {
         if (function.equalsIgnoreCase("delete"))

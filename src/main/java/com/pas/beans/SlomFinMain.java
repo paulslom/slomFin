@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,6 +31,7 @@ import com.pas.slomfin.dao.PaydayDAO;
 import com.pas.util.SlomFinUtil;
 import com.pas.util.TransactionTypeComparator;
 import com.pas.util.InvestmentComparator;
+import com.pas.util.RetrieveStockQuotesService;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.Initialized;
@@ -114,6 +116,7 @@ public class SlomFinMain implements Serializable
 	private List<Investment> investmentsList = new ArrayList<>();	
 	private List<Payday> paydayList = new ArrayList<>();
 	private List<Investment> reportUnitsOwnedList = new ArrayList<>();
+	private List<PortfolioHistory> portfolioHistoryList = new ArrayList<>();
 	
 	private Integer citiDoubleCashAccountID;
 	private Integer sofiCheckingAccountID;
@@ -421,6 +424,11 @@ public class SlomFinMain implements Serializable
 		try 
         {		    
 		    logger.info("Portfolio History report selected from menu");
+		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+		    String targetURL = SlomFinUtil.getContextRoot() + "/reportPortfolioHistory.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
         } 
         catch (Exception e) 
         {
@@ -529,6 +537,30 @@ public class SlomFinMain implements Serializable
 		try 
         {		    
 		    logger.info("update Security prices selected from menu");
+		    
+		    this.getReportUnitsOwnedList().clear();
+		    
+		    Map<Integer, BigDecimal> unitsOwnedMap = SlomFinUtil.getUnitsOwned(transactionDAO.getFullTransactionsList());
+		    
+		    for (Integer key : unitsOwnedMap.keySet()) 
+			{
+	            BigDecimal totalUnitsOwned = unitsOwnedMap.get(key);
+	            
+	            if (totalUnitsOwned != null
+	        	&&  totalUnitsOwned.compareTo(BigDecimal.ZERO) != 0)
+	            {
+	            	Investment inv = investmentDAO.getInvestmentByInvestmentID(key);
+	            	inv.setUnitsOwned(totalUnitsOwned);
+	            	this.getReportUnitsOwnedList().add(inv);	            	
+	            }
+	        }
+		    
+		    Collections.sort(this.getReportUnitsOwnedList(), new InvestmentComparator());
+		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+		    String targetURL = SlomFinUtil.getContextRoot() + "/updateSecurityPrices.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
         } 
         catch (Exception e) 
         {
@@ -536,6 +568,103 @@ public class SlomFinMain implements Serializable
             FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
 		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
         }
+	}
+	
+	public BigDecimal getTotalCashBalanceAllAccounts()
+	{
+		BigDecimal balance = new BigDecimal(0.0);
+		
+		for (int i = 0; i < transactionDAO.getFullTransactionsList().size(); i++) 
+		{
+			DynamoTransaction trx = transactionDAO.getFullTransactionsList().get(i);
+			Account acct = accountDAO.getAccountByAccountID(trx.getAccountID());
+			if (!acct.getbClosed())
+			{
+				balance = SlomFinUtil.transactAnAmount(trx, balance, "amount");
+			}
+		}
+		return balance;
+	}
+	
+	public String saveInvestmentPrices()
+	{
+		BigDecimal portfolioHistoryBalance = new BigDecimal(0.0);
+		
+		try 
+		{
+			for (int i = 0; i < this.getReportUnitsOwnedList().size(); i++) 
+			{
+				Investment inv = this.getReportUnitsOwnedList().get(i);
+				investmentDAO.updateInvestment(inv);				
+				portfolioHistoryBalance = portfolioHistoryBalance.add(inv.getCurrentPrice().multiply(inv.getUnitsOwned()));
+			}
+			
+			portfolioHistoryBalance = portfolioHistoryBalance.add(getTotalCashBalanceAllAccounts());
+			
+			PortfolioHistory ph = new PortfolioHistory();
+			ph.setHistoryDate(DateToStringConverter.convertDateToDynamoStringFormat(new Date()));
+			ph.setTotalValue(portfolioHistoryBalance);
+			portfolioHistoryDAO.addPortfolioHistory(ph);
+			
+			portfolioHistoryDAO.sortFullPhListDateDesc();
+			
+			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Investment prices successfully updated", "Investment prices successfully updated");
+			FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+		} 
+		catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }			
+		
+		return "/reportPortfolioHistory.xhtml";
+	}
+	
+	public String getStockQuotes()
+	{
+		RetrieveStockQuotesService rqs = new RetrieveStockQuotesService();
+		
+		try 
+		{
+			String rqsReturn = rqs.getMarketCloseDate();
+			
+			String[] rqsReturnArray = rqsReturn.split("~");
+			String strAttempts = rqsReturnArray[0];
+			int stocksCounter = Integer.parseInt(strAttempts);
+			String marketCloseDate = rqsReturnArray[1];
+			
+			for (int i = 0; i < this.getReportUnitsOwnedList().size(); i++) 
+			{
+				Investment inv = this.getReportUnitsOwnedList().get(i);
+				
+				if (inv.getInvestmentTypeDescription().equalsIgnoreCase("Stock"))
+				{
+					stocksCounter++;
+					
+					logger.info("quoting stock: " + inv.getTickerSymbol() + " - count = " + stocksCounter);
+					BigDecimal stockprice = rqs.getStockQuote(inv.getTickerSymbol(), marketCloseDate);
+					inv.setCurrentPrice(stockprice);
+					
+					//can only do 5 api calls per minute (under their free plan) so need to sleep for a bit before resuming this...
+					if (stocksCounter % 5 == 0)
+					{
+						TimeUnit.SECONDS.sleep(70);					
+					}
+				}
+			}
+			
+			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Stock quotes successful", "Stock quotes successful");
+			FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+		} 
+		catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }			
+		
+		return "";
 	}
 	
 	public void showInvestmentsList(ActionEvent event) 
@@ -2170,6 +2299,16 @@ public class SlomFinMain implements Serializable
 
 	public void setRenderInvestmentUpdateFields(boolean renderInvestmentUpdateFields) {
 		this.renderInvestmentUpdateFields = renderInvestmentUpdateFields;
+	}
+
+	public List<PortfolioHistory> getPortfolioHistoryList() 
+	{
+		this.setPortfolioHistoryList(portfolioHistoryDAO.getFullPortfolioHistoryList());
+		return portfolioHistoryList;
+	}
+
+	public void setPortfolioHistoryList(List<PortfolioHistory> portfolioHistoryList) {
+		this.portfolioHistoryList = portfolioHistoryList;
 	}
 
 }
