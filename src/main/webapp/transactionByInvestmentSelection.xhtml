@@ -1,0 +1,83 @@
+<ui:composition template="template.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+     
+    <ui:define name="content">
+    
+         <h:form id="trxByInvestmentForm">                      
+          
+             <p:messages id="facesMessagesID" showDetail="false"/>
+            
+             <table>
+            
+           	   <colgroup>
+           	       <col width="50%"/>
+           	       <col width="50%"/>
+           	   </colgroup>
+           	  				
+			   <tr>
+			   
+			      <td colspan="2" align="center">
+			   		  <h:outputText value="Trx By Investment Selection" styleClass="pageSectionTitle"/>
+			   	  </td>
+			   	  
+			   </tr>
+			   
+			   <tr>
+			   
+			      <td colspan="2" align="center">
+			      
+			   		  <p:commandButton id="submitId1" 				   
+						    value="Submit"
+						    action="#{pc_SlomFinMain.trxByInvestmentSelection}"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"
+						    update="trxByInvestmentForm">
+					  </p:commandButton>					  
+					  
+			   	  </td>
+			   	  
+			   </tr>			   
+				   
+			   <tr>
+			   
+		            <td align="right">	        
+		               <p:outputLabel for="invListID" value="Investment"/>
+		            </td>
+		            
+		            <td align="left">	        
+				
+					    <p:selectOneMenu id="invListID" value="#{pc_SlomFinMain.selectedInvestmentID}" required="true" hideNoSelectionOption="true">
+					        <f:selectItems value="#{pc_SlomFinMain.investmentDropdownList}"/>	
+						</p:selectOneMenu>
+					</td>
+					
+			    </tr>
+			   
+			  	<tr>
+			   
+		            <td align="right">	        
+		               <p:outputLabel for="acctListID" value="Account"/>
+		            </td>
+		            
+		            <td align="left">	        
+				
+					    <p:selectOneMenu id="acctListID" value="#{pc_SlomFinMain.selectedAccountID}" required="true" hideNoSelectionOption="true">
+					        <f:selectItems value="#{pc_SlomFinMain.accountDropdownList}"/>	
+						</p:selectOneMenu>
+					</td>
+					
+			    </tr>
+			
+			</table>
+	                
+	   </h:form>
+   
+    </ui:define>
+
+</ui:composition>
+  

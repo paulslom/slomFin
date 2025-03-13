@@ -175,7 +175,26 @@ public class TransactionDAO implements Serializable
 				{
 					this.getWdCategoryMap().put(trx.getWdCategoryID(), trx.getWdCategoryDescription());					
 				}
-			}			
+			}
+			
+			if (trx.getUnits() != null)
+			{
+				if (trx.getTransactionTypeDescription().equalsIgnoreCase("Buy")
+				|| 	trx.getTransactionTypeDescription().equalsIgnoreCase("Reinvest")
+				||	trx.getTransactionTypeDescription().equalsIgnoreCase("Transfer In")
+				||	trx.getTransactionTypeDescription().equalsIgnoreCase("Split"))
+				{	
+					trx.setUnitsStyleClass(SlomFinUtil.GREEN_STYLECLASS);
+					trx.setDisplayUnits(trx.getUnits());
+				}
+				else if (trx.getTransactionTypeDescription().equalsIgnoreCase("Sell")
+					 ||	 trx.getTransactionTypeDescription().equalsIgnoreCase("Transfer Out"))
+				{
+					trx.setUnitsStyleClass(SlomFinUtil.RED_STYLECLASS);
+					trx.setDisplayUnits(trx.getUnits().multiply(new BigDecimal(-1.0)));
+				}
+				
+			}
 			
 		}
 		

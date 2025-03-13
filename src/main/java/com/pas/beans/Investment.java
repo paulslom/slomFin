@@ -30,6 +30,7 @@ public class Investment implements Serializable
 	  
 	//not saved to dynamo - used on report
 	private BigDecimal unitsOwned;
+	private BigDecimal currentValue;
 	
 	@DynamoDbPartitionKey
 	public Integer getiInvestmentID() {
@@ -110,6 +111,16 @@ public class Investment implements Serializable
 	@DynamoDbIgnore
 	public void setUnitsOwned(BigDecimal unitsOwned) {
 		this.unitsOwned = unitsOwned;
+	}
+
+	@DynamoDbIgnore
+	public BigDecimal getCurrentValue() {
+		return currentValue;
+	}
+
+	@DynamoDbIgnore
+	public void setCurrentValue(BigDecimal currentValue) {
+		this.currentValue = currentValue;
 	}
    	
 }

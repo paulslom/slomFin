@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.pas.beans.PortfolioHistory;
-import com.pas.dynamodb.DateToStringConverter;
 
 public class PortfolioHistoryRowMapper implements RowMapper<PortfolioHistory>, Serializable 
 {

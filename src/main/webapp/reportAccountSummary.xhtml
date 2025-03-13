@@ -1,0 +1,38 @@
+<ui:composition template="template.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+     
+    <ui:define name="content">
+    
+        <p:dataTable id="tableID" value="#{pc_SlomFinMain.activeAccountsList}" rowIndexVar="rowIndex"
+			var="actacc" scrollable="true" scrollHeight="950" styleClass="dataTableStyle">						
+						   
+		   <p:column style="width:3%" headerText="Num">												
+			  <h:outputText value="#{rowIndex + 1}"/>															
+		   </p:column>
+						  
+		   <p:column style="width:30%" headerText="Account Name" sortBy="#{actacc.sAccountName}">												
+			  <h:outputText value="#{actacc.sAccountName}"/>															
+		   </p:column>		
+						  
+		   <p:column style="width:67%" headerText="Current Value" sortBy="#{actacc.currentAccountValue}">												
+			   <h:outputText value="#{actacc.currentAccountValue}">
+			       <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+			  </h:outputText> 
+			  <f:facet name="footer">
+	             <h:outputText value="#{pc_SlomFinMain.portfolioValue}">
+	                <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+			     </h:outputText> 
+	          </f:facet>    														
+		   </p:column>	 				 
+										  
+		</p:dataTable>
+		   
+    </ui:define>
+
+</ui:composition>
+  

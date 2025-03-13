@@ -214,6 +214,27 @@ public class InvestmentDAO implements Serializable
         return this.getFullInvestmentsMap().get(investmentId);
     }
 
+    public List<SelectItem> getAllInvestmentsDropdown()
+    {
+    	List<SelectItem> returnList = new ArrayList<>();
+    	
+    	SelectItem si1 = new SelectItem();
+		si1.setValue(-1);
+		si1.setLabel("--Select--");
+		returnList.add(si1);
+		
+    	for (int i = 0; i < this.getFullInvestmentsList().size(); i++) 
+    	{
+    		Investment inv = this.getFullInvestmentsList().get(i);
+    		SelectItem si = new SelectItem();
+			si.setValue(inv.getiInvestmentID());
+			si.setLabel(inv.getDescription());
+			returnList.add(si);
+		}
+    	
+        return returnList;
+    }
+    
     public List<SelectItem> getInvestmentsByInvestmentTypeID(int investmentTypeId)
     {
     	List<Investment> invList = this.getInvestmentsMapByInvestmentTypeID().get(investmentTypeId);

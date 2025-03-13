@@ -55,9 +55,11 @@ public class DynamoTransaction implements Serializable
     private BigDecimal currentBalance;
     private String trxStyleClass;
     private String balanceStyleClass;
+    private String unitsStyleClass;
     private Integer investmentTypeID;
     private String investmentTypeDescription;
     private Integer transferAccountID;
+    private BigDecimal displayUnits;
      
     public DynamoTransaction() 
     {		
@@ -402,6 +404,26 @@ public class DynamoTransaction implements Serializable
 	@DynamoDbIgnore
 	public void setTransferAccountID(Integer transferAccountID) {
 		this.transferAccountID = transferAccountID;
+	}
+
+	@DynamoDbIgnore
+	public String getUnitsStyleClass() {
+		return unitsStyleClass;
+	}
+
+	@DynamoDbIgnore
+	public void setUnitsStyleClass(String unitsStyleClass) {
+		this.unitsStyleClass = unitsStyleClass;
+	}
+
+	@DynamoDbIgnore
+	public BigDecimal getDisplayUnits() {
+		return displayUnits;
+	}
+
+	@DynamoDbIgnore
+	public void setDisplayUnits(BigDecimal displayUnits) {
+		this.displayUnits = displayUnits;
 	}
   
 

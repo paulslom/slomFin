@@ -55,7 +55,7 @@
                                 </p:commandLink>
                           </p:column>
                           
-                          <p:column style="width:4%" headerText="Trx ID" sortBy="#{trx.transactionID}">												
+                          <p:column style="width:3%" headerText="Trx ID" sortBy="#{trx.transactionID}">												
 							  <h:outputText value="#{trx.transactionID}"/>															
 						  </p:column>
 						   						   
@@ -71,7 +71,7 @@
 							  </h:outputText>														
 						  </p:column>
 						       	 				       				  
-						  <p:column style="width:15%" headerText="Investment" sortBy="#{trx.investmentDescription}">												
+						  <p:column style="width:13%" headerText="Investment" sortBy="#{trx.investmentDescription}">												
 							  <h:outputText value="#{trx.investmentDescription}"/>															
 						  </p:column>
 						  
@@ -85,7 +85,14 @@
 							  </h:outputText>   														
 						  </p:column>
 						  
-						  <p:column style="width:20%" headerText="Description" sortBy="#{trx.transactionDescription}">												
+						  <p:column style="width:7%" headerText="Units" sortBy="#{trx.displayUnits}">												
+							  <h:outputText value="#{trx.displayUnits}" styleClass="#{trx.unitsStyleClass}"/>	
+							  <f:facet name="footer">
+					             <h:outputText value="#{pc_SlomFinMain.unitsTotal}"/>							     
+					          </f:facet>  														
+						  </p:column>
+						  
+						  <p:column style="width:16%" headerText="Description" sortBy="#{trx.transactionDescription}">												
 							  <h:outputText value="#{trx.transactionDescription}"/>															
 						  </p:column>	
 						  

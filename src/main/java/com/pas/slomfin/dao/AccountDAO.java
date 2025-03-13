@@ -260,6 +260,27 @@ public class AccountDAO implements Serializable
 		
 	}
 
+	public List<SelectItem> getAllAccountsDropdown()
+    {
+    	List<SelectItem> returnList = new ArrayList<>();
+    	
+    	SelectItem si1 = new SelectItem();
+		si1.setValue(-1);
+		si1.setLabel("--Select--");
+		returnList.add(si1);
+		
+    	for (int i = 0; i < this.getFullAccountsList().size(); i++) 
+    	{
+    		Account acc = this.getFullAccountsList().get(i);
+    		SelectItem si = new SelectItem();
+			si.setValue(acc.getiAccountID());
+			si.setLabel(acc.getsAccountName());
+			returnList.add(si);
+		}
+    	
+        return returnList;
+    }
+	 
 	public void deleteAccount(Account account) throws Exception 
 	{
 		Key key = Key.builder().partitionValue(account.getiAccountID()).build();

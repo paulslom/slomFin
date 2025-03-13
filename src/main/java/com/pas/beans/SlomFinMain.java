@@ -21,7 +21,7 @@ import com.pas.dynamodb.DateToStringConverter;
 import com.pas.dynamodb.DynamoClients;
 import com.pas.dynamodb.DynamoTransaction;
 import com.pas.dynamodb.DynamoUtil;
-
+import com.pas.pojo.AccountPosition;
 import com.pas.slomfin.dao.AccountDAO;
 import com.pas.slomfin.dao.InvestmentDAO;
 import com.pas.slomfin.dao.PortfolioHistoryDAO;
@@ -74,6 +74,9 @@ public class SlomFinMain implements Serializable
 	private String paydayAcidSetting;
 	private Payday selectedPayday;
 	
+	private Integer selectedInvestmentID;
+	private Integer selectedAccountID;
+	
 	private boolean renderTransactionUpdateFields = false;
 	private boolean renderTransactionId = false;	
 	
@@ -117,6 +120,11 @@ public class SlomFinMain implements Serializable
 	private List<Payday> paydayList = new ArrayList<>();
 	private List<Investment> reportUnitsOwnedList = new ArrayList<>();
 	private List<PortfolioHistory> portfolioHistoryList = new ArrayList<>();
+	private List<Account> activeAccountsList = new ArrayList<>();
+	private List<AccountPosition> accountPositionsList = new ArrayList<>();
+	
+	private BigDecimal portfolioValue;
+	private BigDecimal unitsTotal;
 	
 	private List<String> reportDividendsYearsList = new ArrayList<>();
 	private List<DynamoTransaction> dividendTransactionsList = new ArrayList<>();
@@ -251,6 +259,30 @@ public class SlomFinMain implements Serializable
 		this.setTrxList(transactionDAO.searchTransactions(searchTerm));
 	}
 	
+	private void refreshTrxList(Integer selectedInvestmentID, Integer selectedAccountID) 
+	{		
+		this.getTrxList().clear();
+		
+		List<DynamoTransaction> trxListByAccount = new ArrayList<>(transactionDAO.getFullTransactionsMapByAccountID().get(selectedAccountID));
+		
+		for (int i = 0; i < trxListByAccount.size(); i++)
+		{
+			DynamoTransaction trx = trxListByAccount.get(i);
+			
+			/*
+			if (trx.getInvestmentID().intValue() == 157)
+			{
+				logger.info("investment id is 157");
+			}
+			*/
+			
+			if (trx.getInvestmentID().intValue() == selectedInvestmentID.intValue())
+			{
+				this.getTrxList().add(trx);
+			}
+		}
+	}
+
 	public void accountTransactionsSelection(ActionEvent event) 
 	{
 		try 
@@ -346,6 +378,74 @@ public class SlomFinMain implements Serializable
 		try 
         {		    
 		    logger.info("Account Positions report selected from menu");
+		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+
+		    this.setActiveAccountsList(new ArrayList<>(this.getActiveTaxableAccountsList()));
+			this.getActiveAccountsList().addAll(this.getActiveRetirementAccountsList());
+			
+			Map<Integer, List<Investment>> activeAccountsMap = SlomFinUtil.getActiveAccountValues(this.getActiveAccountsList(), transactionDAO.getFullTransactionsList(), investmentDAO.getFullInvestmentsMap(), getCashInvestmentID()); 
+			
+			this.getAccountPositionsList().clear();
+			this.setPortfolioValue(new BigDecimal(0.0));				
+			
+			for (Integer accountID : activeAccountsMap.keySet()) 
+			{			    
+				Account acct = accountDAO.getAccountByAccountID(accountID);					
+						
+				List<Investment> investmentList = activeAccountsMap.get(accountID);
+	            
+				BigDecimal tempTotal = new BigDecimal(0.0);
+				BigDecimal accountSubTotal = new BigDecimal(0.0);
+				
+				for (int i = 0; i < investmentList.size(); i++) 
+				{
+					Investment inv = investmentList.get(i);
+					
+					AccountPosition acctPos = new AccountPosition();
+					
+					acctPos.setAccountID(accountID);
+					acctPos.setAccountName(acct.getsAccountName());					    
+					acctPos.setInvestmentID(inv.getiInvestmentID());
+					acctPos.setInvestmentName(inv.getDescription());
+					acctPos.setInvestmentPrice(inv.getCurrentPrice());
+					acctPos.setUnitsOwned(inv.getUnitsOwned());
+					
+					if (inv.getiInvestmentID() == getCashInvestmentID())
+					{					
+						tempTotal = inv.getCurrentValue();			
+					}
+					else //units owned; need to multiply current price to get current value
+					{
+						tempTotal = inv.getUnitsOwned().multiply(inv.getCurrentPrice()); 
+					}
+					
+					accountSubTotal = accountSubTotal.add(tempTotal);
+					
+					acctPos.setPositionValue(tempTotal);
+					
+					this.getAccountPositionsList().add(acctPos);
+				}
+				
+				//this is to subtotal by account
+				AccountPosition acctPos1 = new AccountPosition();
+				this.getAccountPositionsList().add(acctPos1);
+				
+				AccountPosition acctPos2 = new AccountPosition();
+				acctPos2.setAccountName(acct.getsAccountName());
+				acctPos2.setInvestmentName("Total Account Value");
+				acctPos2.setPositionValue(accountSubTotal);
+				this.getAccountPositionsList().add(acctPos2);
+				
+				AccountPosition acctPos3 = new AccountPosition();
+				this.getAccountPositionsList().add(acctPos3);
+				
+				portfolioValue = portfolioValue.add(accountSubTotal);				
+	        }
+			
+            String targetURL = SlomFinUtil.getContextRoot() + "/reportAccountPositions.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
         } 
         catch (Exception e) 
         {
@@ -360,6 +460,41 @@ public class SlomFinMain implements Serializable
 		try 
         {		    
 		    logger.info("Account Summary report selected from menu");
+		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+
+		    this.setActiveAccountsList(new ArrayList<>(this.getActiveTaxableAccountsList()));
+			this.getActiveAccountsList().addAll(this.getActiveRetirementAccountsList());
+			
+			Map<Integer, List<Investment>> activeAccountsMap = SlomFinUtil.getActiveAccountValues(this.getActiveAccountsList(), transactionDAO.getFullTransactionsList(), investmentDAO.getFullInvestmentsMap(), getCashInvestmentID()); 
+			
+			this.getActiveAccountsList().clear();
+			this.setPortfolioValue(new BigDecimal(0.0));
+			
+			for (Integer accountID : activeAccountsMap.keySet()) 
+			{
+				Account acct = accountDAO.getAccountByAccountID(accountID);
+				
+				List<Investment> investmentList = activeAccountsMap.get(accountID);
+	            
+				BigDecimal tempTotal = new BigDecimal(0.0);
+				
+				for (int i = 0; i < investmentList.size(); i++) 
+				{
+					Investment inv = investmentList.get(i);
+					tempTotal = tempTotal.add(inv.getCurrentValue());
+				}
+				
+				acct.setCurrentAccountValue(tempTotal);
+				
+				portfolioValue = portfolioValue.add(tempTotal);
+				
+				this.getActiveAccountsList().add(acct);
+	        }
+			
+            String targetURL = SlomFinUtil.getContextRoot() + "/reportAccountSummary.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
         } 
         catch (Exception e) 
         {
@@ -517,7 +652,7 @@ public class SlomFinMain implements Serializable
 	{
 		try 
         {		    
-		    logger.info("units owned report selected from menu");
+		    logger.info("Portfolio By Asset Class report selected from menu");
         } 
         catch (Exception e) 
         {
@@ -546,6 +681,17 @@ public class SlomFinMain implements Serializable
 		try 
         {		    
 		    logger.info("Trx By Investment report selected from menu");
+		    
+		    this.getInvestmentDropdownList().clear();
+		    this.setInvestmentDropdownList(investmentDAO.getAllInvestmentsDropdown());
+		    
+		    this.getAccountDropdownList().clear();
+		    this.setAccountDropdownList(accountDAO.getAllAccountsDropdown());
+		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+		    String targetURL = SlomFinUtil.getContextRoot() + "/transactionByInvestmentSelection.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
         } 
         catch (Exception e) 
         {
@@ -1492,11 +1638,15 @@ public class SlomFinMain implements Serializable
 		    	
 		    	this.getInvestmentTypeDropdownList().clear();
 		    	this.setInvestmentTypeDropdownList(SlomFinUtil.getValidInvTypesForAccountTypes(acct.getiAccountTypeID()));
+		    	
+		    	if (this.getSelectedTransaction().getTransactionTypeDescription() != null)
+		    	{
+		    		enableTrxUpdateFields(this.getSelectedTransaction().getTransactionTypeDescription());	
+		    	}
 		    }
 		    
 		    setRenderTransactionViewAddUpdateDelete(); 
-		    enableTrxUpdateFields(this.getSelectedTransaction().getTransactionTypeDescription());	
-		    
+		   
 		    String targetURL = SlomFinUtil.getContextRoot() + "/transactionAddUpdate.xhtml";
 		    ec.redirect(targetURL);
             logger.info("successfully redirected to: " + targetURL + " with operation: " + acid);
@@ -1848,6 +1998,55 @@ public class SlomFinMain implements Serializable
 				
 		return "";	
 	}
+	
+	public String trxByInvestmentSelection()
+	{
+		try 
+        {		    
+		    logger.info("finding transactions by investment and account selection");
+		    
+		    refreshTrxList(this.getSelectedInvestmentID(), this.getSelectedAccountID());
+		    
+		    this.setUnitsTotal(new BigDecimal(0.0));
+		    
+		    for (int i = 0; i < this.getTrxList().size(); i++) 
+		    {
+				DynamoTransaction trx = this.getTrxList().get(i);
+				
+				if (trx.getUnits() != null)
+				{
+					if (trx.getTransactionTypeDescription().equalsIgnoreCase("Buy")
+					|| 	trx.getTransactionTypeDescription().equalsIgnoreCase("Reinvest")
+					||	trx.getTransactionTypeDescription().equalsIgnoreCase("Split"))
+					{	
+						trx.setUnitsStyleClass(SlomFinUtil.GREEN_STYLECLASS);
+						trx.setDisplayUnits(trx.getUnits());
+					}
+					else if (trx.getTransactionTypeDescription().equalsIgnoreCase("Sell"))
+					{
+						trx.setUnitsStyleClass(SlomFinUtil.RED_STYLECLASS);
+						trx.setDisplayUnits(trx.getUnits().multiply(new BigDecimal(-1.0)));
+					}
+					
+				}
+				
+				if (trx.getDisplayUnits() != null)
+				{
+					unitsTotal = unitsTotal.add(trx.getDisplayUnits());
+				}
+			}
+		    
+            logger.info("successfully found " + this.getTrxList().size() + " items");
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+		
+		return "/transactionList.xhtml";
+	}	
 	
 	public String addChangePayday()
 	{
@@ -2416,6 +2615,54 @@ public class SlomFinMain implements Serializable
 
 	public void setDividendsTotal(BigDecimal dividendsTotal) {
 		this.dividendsTotal = dividendsTotal;
+	}
+
+	public List<Account> getActiveAccountsList() {
+		return activeAccountsList;
+	}
+
+	public void setActiveAccountsList(List<Account> activeAccountsList) {
+		this.activeAccountsList = activeAccountsList;
+	}
+
+	public BigDecimal getPortfolioValue() {
+		return portfolioValue;
+	}
+
+	public void setPortfolioValue(BigDecimal portfolioValue) {
+		this.portfolioValue = portfolioValue;
+	}
+
+	public List<AccountPosition> getAccountPositionsList() {
+		return accountPositionsList;
+	}
+
+	public void setAccountPositionsList(List<AccountPosition> accountPositionsList) {
+		this.accountPositionsList = accountPositionsList;
+	}
+
+	public Integer getSelectedInvestmentID() {
+		return selectedInvestmentID;
+	}
+
+	public void setSelectedInvestmentID(Integer selectedInvestmentID) {
+		this.selectedInvestmentID = selectedInvestmentID;
+	}
+
+	public Integer getSelectedAccountID() {
+		return selectedAccountID;
+	}
+
+	public void setSelectedAccountID(Integer selectedAccountID) {
+		this.selectedAccountID = selectedAccountID;
+	}
+
+	public BigDecimal getUnitsTotal() {
+		return unitsTotal;
+	}
+
+	public void setUnitsTotal(BigDecimal unitsTotal) {
+		this.unitsTotal = unitsTotal;
 	}
 
 }

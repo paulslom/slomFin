@@ -19,6 +19,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.pas.beans.Account;
+import com.pas.beans.Investment;
 import com.pas.dynamodb.DynamoTransaction;
 import com.pas.slomfin.constants.IAppConstants;
 
@@ -523,7 +525,7 @@ public class SlomFinUtil
 	    	{
 	            trx.setBalanceStyleClass(RED_STYLECLASS);
 	            
-	            if (trx.getFinalTrxOfBillingCycle())
+	            if (trx.getFinalTrxOfBillingCycle() != null && trx.getFinalTrxOfBillingCycle())
 	            {
 	            	trx.setBalanceStyleClass(BIGREDBOLD_STYLECLASS);
 	            }
@@ -566,6 +568,157 @@ public class SlomFinUtil
 		return returnMap;
 	}
 	
+	//Returns a map keyed by account ID (Integer) and a list of investments making up that account's stuff, including current values
+	public static Map<Integer, List<Investment>> getActiveAccountValues(List<Account> activeAccounts, List<DynamoTransaction> transactionsList, Map<Integer,Investment> investmentsMap, Integer cashInvestmentID) 
+	{
+		List<Integer> activeAccountIDsList = new ArrayList<>();
+		
+		for (int i = 0; i < activeAccounts.size(); i++) 
+		{
+			Account activeAccount = activeAccounts.get(i);
+			activeAccountIDsList.add(activeAccount.getiAccountID());
+		}
+		
+		//Key = accountID, Value = (Key = investmentID, Value = totalInvestmentHolding) (not value yet; do that later)
+		Map<Integer, Map<Integer, BigDecimal>> accountsMap = new HashMap<>();		
+		
+		for (int i = 0; i < transactionsList.size(); i++)
+	    {
+	    	DynamoTransaction trx = transactionsList.get(i);
+	    	
+	    	if (!activeAccountIDsList.contains(trx.getAccountID()))
+	    	{
+	    		continue; //don't care about inactive account transactions
+	    	}
+	    	
+	    	if (accountsMap.containsKey(trx.getAccountID()))
+			{
+	    		//PositionsMap is keyed by investmentID, with a value of either the units owned, or the cash amount owned
+	    		Map<Integer, BigDecimal> positionsMap = accountsMap.get(trx.getAccountID());
+				
+	    		if (trx.getUnits() != null
+		    	&&  trx.getUnits().compareTo(BigDecimal.ZERO) != 0)
+		    	{
+	    	   		if (positionsMap.containsKey(trx.getInvestmentID()))
+					{
+		    			BigDecimal currentUnitsOwned = positionsMap.get(trx.getInvestmentID());
+						BigDecimal newTrxUnits = transactAnAmount(trx, currentUnitsOwned, "units");
+						positionsMap.replace(trx.getInvestmentID(), newTrxUnits);
+					}
+					else
+					{
+						BigDecimal newTrxUnits = transactAnAmount(trx, new BigDecimal(0.0), "units");
+						positionsMap.put(trx.getInvestmentID(), newTrxUnits);
+					}
+		    		
+		    		if (trx.getCostProceeds() != null && trx.getCostProceeds().compareTo(BigDecimal.ZERO) != 0)
+		    		{
+		    			if (positionsMap.containsKey(cashInvestmentID))
+						{
+			    			BigDecimal currentCashBalance = positionsMap.get(cashInvestmentID);
+							BigDecimal newAmount = transactAnAmount(trx, currentCashBalance, "amount");
+							positionsMap.replace(cashInvestmentID, newAmount);
+						}
+						else
+						{
+							BigDecimal newAmount = transactAnAmount(trx, new BigDecimal(0.0), "amount");
+							positionsMap.put(cashInvestmentID, newAmount);
+						}		
+		    		}
+		    	}
+	    		else //this is cash
+	    		{
+	    			if (positionsMap.containsKey(cashInvestmentID))
+					{
+		    			BigDecimal currentCashBalance = positionsMap.get(cashInvestmentID);
+						BigDecimal newAmount = transactAnAmount(trx, currentCashBalance, "amount");
+						positionsMap.replace(cashInvestmentID, newAmount);
+					}
+					else
+					{
+						BigDecimal newAmount = transactAnAmount(trx, new BigDecimal(0.0), "amount");
+						positionsMap.put(cashInvestmentID, newAmount);
+					}		
+	    		}
+				
+				accountsMap.replace(trx.getAccountID(), positionsMap);
+			}
+			else //first entry for this account
+			{
+				Map<Integer, BigDecimal> positionsMap = new HashMap<>();
+				
+				if (trx.getUnits() != null
+		    	&&  trx.getUnits().compareTo(BigDecimal.ZERO) != 0)
+		    	{
+		    		BigDecimal newTrxUnits = transactAnAmount(trx, new BigDecimal(0.0), "units");
+					positionsMap.put(trx.getInvestmentID(), newTrxUnits);
+					
+					if (trx.getCostProceeds() != null && trx.getCostProceeds().compareTo(BigDecimal.ZERO) != 0)
+		    		{
+		    			BigDecimal newAmount = transactAnAmount(trx, new BigDecimal(0.0), "amount");
+						positionsMap.put(cashInvestmentID, newAmount);								
+		    		}
+		    	}
+	    		else //this is cash
+	    		{
+	    			BigDecimal newAmount = transactAnAmount(trx, new BigDecimal(0.0), "amount");
+					positionsMap.put(trx.getInvestmentID(), newAmount);					
+	    		} 
+				
+				accountsMap.put(trx.getAccountID(), positionsMap);
+			}    			
+	    		    	
+		}
+	    
+		Map<Integer, List<Investment>> returnMap = new HashMap<>();
+		
+		//now let's put some values to the entries
+		
+		for (Integer accountID : accountsMap.keySet()) 
+		{
+			Map<Integer, BigDecimal> positionsMap = accountsMap.get(accountID);
+            
+			List<Investment> investmentList = new ArrayList<>();
+			
+			for (Integer investmentID : positionsMap.keySet()) 
+			{				
+				BigDecimal tempBD = positionsMap.get(investmentID);
+				
+				if (tempBD.compareTo(BigDecimal.ZERO) == 0)
+				{
+					continue;
+				}
+				
+				Investment investment = investmentsMap.get(investmentID);
+				
+				Investment inv = new Investment();
+				inv.setiInvestmentID(investmentID);
+				
+				if (investmentID == cashInvestmentID)
+				{				
+					inv.setDescription("Cash");
+					inv.setCurrentValue(tempBD);
+					
+				}
+				else //units owned; need to multiply current price to get current value
+				{					
+					inv.setDescription(investment.getDescription());
+					inv.setUnitsOwned(tempBD);
+					inv.setCurrentPrice(investment.getCurrentPrice());
+					BigDecimal investmentValue = inv.getUnitsOwned().multiply(investment.getCurrentPrice()); 
+					inv.setCurrentValue(investmentValue);
+				}
+				
+				investmentList.add(inv);
+				
+			}
+			
+			returnMap.put(accountID, investmentList);           
+        }
+		
+		return returnMap;
+	}
+		
 	public static BigDecimal transactAnAmount(DynamoTransaction trx, BigDecimal inputAmount, String amountOrUnits)
 	{
 		BigDecimal returnAmount = null;

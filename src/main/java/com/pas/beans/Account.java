@@ -1,8 +1,10 @@
 package com.pas.beans;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbIgnore;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 
 @DynamoDbBean
@@ -21,6 +23,9 @@ public class Account implements Serializable
     private String sPortfolioName;
     private Boolean bTaxableInd;
     private String sAccountType;
+    
+    //not to be saved to Dynamo
+    private BigDecimal currentAccountValue;
     
     public String toString()
     {
@@ -98,6 +103,16 @@ public class Account implements Serializable
 
 	public void setsAccountType(String sAccountType) {
 		this.sAccountType = sAccountType;
+	}
+
+	@DynamoDbIgnore
+	public BigDecimal getCurrentAccountValue() {
+		return currentAccountValue;
+	}
+
+	@DynamoDbIgnore
+	public void setCurrentAccountValue(BigDecimal currentAccountValue) {
+		this.currentAccountValue = currentAccountValue;
 	}
 
 	
