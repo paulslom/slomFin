@@ -32,9 +32,7 @@ public class Create_Security_Dynamo_Table
     		 DynamoClients dynamoClients = DynamoUtil.getDynamoClients();
     
     		 loadTable(dynamoClients);
-	       	
-	    	 DynamoUtil.stopDynamoServer();
-	    	
+    		 
 			 logger.debug("**********  END of program ***********");
          }
     	 catch (Exception e)

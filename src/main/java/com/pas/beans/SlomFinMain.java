@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +23,8 @@ import com.pas.dynamodb.DynamoClients;
 import com.pas.dynamodb.DynamoTransaction;
 import com.pas.dynamodb.DynamoUtil;
 import com.pas.pojo.AccountPosition;
+import com.pas.pojo.CapitalGain;
+import com.pas.slomfin.constants.AppConstants;
 import com.pas.slomfin.dao.AccountDAO;
 import com.pas.slomfin.dao.InvestmentDAO;
 import com.pas.slomfin.dao.PortfolioHistoryDAO;
@@ -30,6 +33,7 @@ import com.pas.slomfin.dao.PaydayDAO;
 
 import com.pas.util.SlomFinUtil;
 import com.pas.util.TransactionTypeComparator;
+import com.pas.util.CapitalGainComparator;
 import com.pas.util.InvestmentComparator;
 import com.pas.util.RetrieveStockQuotesService;
 
@@ -126,10 +130,16 @@ public class SlomFinMain implements Serializable
 	private BigDecimal portfolioValue;
 	private BigDecimal unitsTotal;
 	
-	private List<String> reportDividendsYearsList = new ArrayList<>();
+	private List<String> reportYearsList = new ArrayList<>();
+	private List<String> reportDividendYearsList = new ArrayList<>();
 	private List<DynamoTransaction> dividendTransactionsList = new ArrayList<>();
 	private String reportDividendsTitle;
 	private BigDecimal dividendsTotal;
+	
+	private List<CapitalGain> capitalGainsTransactionsList = new ArrayList<>();
+	private String reportCapitalGainsTitle;
+	private BigDecimal capitalGainsTotal = new BigDecimal(0.0);
+	private String capitalGainsTotalStyleClass;
 	
 	private Integer citiDoubleCashAccountID;
 	private Integer sofiCheckingAccountID;
@@ -144,7 +154,8 @@ public class SlomFinMain implements Serializable
 		
 		this.setAccountTypesDropdownList(SlomFinUtil.getAccountTypesDropdownList());
 		this.setAssetClassesDropdownList(SlomFinUtil.getAssetClassesDropdownList());
-		this.setReportDividendsYearsList(SlomFinUtil.getRecentYearsList(true));
+		this.setReportYearsList(SlomFinUtil.getRecentYearsList(false));
+		this.setReportDividendYearsList(SlomFinUtil.getRecentYearsList(true));
 		
 		try 
 		{
@@ -381,67 +392,8 @@ public class SlomFinMain implements Serializable
 		    
 		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
 
-		    this.setActiveAccountsList(new ArrayList<>(this.getActiveTaxableAccountsList()));
-			this.getActiveAccountsList().addAll(this.getActiveRetirementAccountsList());
-			
-			Map<Integer, List<Investment>> activeAccountsMap = SlomFinUtil.getActiveAccountValues(this.getActiveAccountsList(), transactionDAO.getFullTransactionsList(), investmentDAO.getFullInvestmentsMap(), getCashInvestmentID()); 
-			
-			this.getAccountPositionsList().clear();
-			this.setPortfolioValue(new BigDecimal(0.0));				
-			
-			for (Integer accountID : activeAccountsMap.keySet()) 
-			{			    
-				Account acct = accountDAO.getAccountByAccountID(accountID);					
-						
-				List<Investment> investmentList = activeAccountsMap.get(accountID);
-	            
-				BigDecimal tempTotal = new BigDecimal(0.0);
-				BigDecimal accountSubTotal = new BigDecimal(0.0);
-				
-				for (int i = 0; i < investmentList.size(); i++) 
-				{
-					Investment inv = investmentList.get(i);
-					
-					AccountPosition acctPos = new AccountPosition();
-					
-					acctPos.setAccountID(accountID);
-					acctPos.setAccountName(acct.getsAccountName());					    
-					acctPos.setInvestmentID(inv.getiInvestmentID());
-					acctPos.setInvestmentName(inv.getDescription());
-					acctPos.setInvestmentPrice(inv.getCurrentPrice());
-					acctPos.setUnitsOwned(inv.getUnitsOwned());
-					
-					if (inv.getiInvestmentID() == getCashInvestmentID())
-					{					
-						tempTotal = inv.getCurrentValue();			
-					}
-					else //units owned; need to multiply current price to get current value
-					{
-						tempTotal = inv.getUnitsOwned().multiply(inv.getCurrentPrice()); 
-					}
-					
-					accountSubTotal = accountSubTotal.add(tempTotal);
-					
-					acctPos.setPositionValue(tempTotal);
-					
-					this.getAccountPositionsList().add(acctPos);
-				}
-				
-				//this is to subtotal by account
-				AccountPosition acctPos1 = new AccountPosition();
-				this.getAccountPositionsList().add(acctPos1);
-				
-				AccountPosition acctPos2 = new AccountPosition();
-				acctPos2.setAccountName(acct.getsAccountName());
-				acctPos2.setInvestmentName("Total Account Value");
-				acctPos2.setPositionValue(accountSubTotal);
-				this.getAccountPositionsList().add(acctPos2);
-				
-				AccountPosition acctPos3 = new AccountPosition();
-				this.getAccountPositionsList().add(acctPos3);
-				
-				portfolioValue = portfolioValue.add(accountSubTotal);				
-	        }
+		    boolean doSubtotals = true;
+		    calculateAccountPositions(doSubtotals);	    
 			
             String targetURL = SlomFinUtil.getContextRoot() + "/reportAccountPositions.xhtml";
 		    ec.redirect(targetURL);
@@ -455,6 +407,75 @@ public class SlomFinMain implements Serializable
         }
 	}
 	
+	private void calculateAccountPositions(boolean doSubtotals) 
+	{
+		this.setActiveAccountsList(new ArrayList<>(this.getActiveTaxableAccountsList()));
+		this.getActiveAccountsList().addAll(this.getActiveRetirementAccountsList());
+		
+		Map<Integer, List<Investment>> activeAccountsMap = SlomFinUtil.getActiveAccountValues(this.getActiveAccountsList(), transactionDAO.getFullTransactionsList(), investmentDAO.getFullInvestmentsMap(), getCashInvestmentID()); 
+		
+		this.getAccountPositionsList().clear();
+		this.setPortfolioValue(new BigDecimal(0.0));				
+		
+		for (Integer accountID : activeAccountsMap.keySet()) 
+		{			    
+			Account acct = accountDAO.getAccountByAccountID(accountID);					
+					
+			List<Investment> investmentList = activeAccountsMap.get(accountID);
+            
+			BigDecimal tempTotal = new BigDecimal(0.0);
+			BigDecimal accountSubTotal = new BigDecimal(0.0);
+			
+			for (int i = 0; i < investmentList.size(); i++) 
+			{
+				Investment inv = investmentList.get(i);
+				
+				AccountPosition acctPos = new AccountPosition();
+				
+				acctPos.setAccountID(accountID);
+				acctPos.setAccountName(acct.getsAccountName());					    
+				acctPos.setInvestmentID(inv.getiInvestmentID());
+				acctPos.setInvestmentName(inv.getDescription());
+				acctPos.setInvestmentPrice(inv.getCurrentPrice());
+				acctPos.setUnitsOwned(inv.getUnitsOwned());
+				
+				if (inv.getiInvestmentID() == getCashInvestmentID())
+				{					
+					tempTotal = inv.getCurrentValue();			
+				}
+				else //units owned; need to multiply current price to get current value
+				{
+					tempTotal = inv.getUnitsOwned().multiply(inv.getCurrentPrice()); 
+				}
+				
+				accountSubTotal = accountSubTotal.add(tempTotal);
+				
+				acctPos.setPositionValue(tempTotal);
+				
+				this.getAccountPositionsList().add(acctPos);
+			}
+			
+			//this is to subtotal by account
+			if (doSubtotals)
+			{
+				AccountPosition acctPos1 = new AccountPosition();
+				this.getAccountPositionsList().add(acctPos1);
+				
+				AccountPosition acctPos2 = new AccountPosition();
+				acctPos2.setAccountName(acct.getsAccountName());
+				acctPos2.setInvestmentName("Total Account Value");
+				acctPos2.setPositionValue(accountSubTotal);
+				this.getAccountPositionsList().add(acctPos2);
+				
+				AccountPosition acctPos3 = new AccountPosition();
+				this.getAccountPositionsList().add(acctPos3);	
+			}
+						
+			portfolioValue = portfolioValue.add(accountSubTotal);				
+        }
+		
+	}
+
 	public void reportAccountSummary(ActionEvent event) 
 	{
 		try 
@@ -508,7 +529,23 @@ public class SlomFinMain implements Serializable
 	{
 		try 
         {		    
-		    logger.info("Capital Gains report selected from menu");
+		    logger.info("Capital gains report selected from menu");
+		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+		    String yearSelection = ec.getRequestParameterMap().get("yearSel");		    
+		    logger.info("Capital gains report selection: " + yearSelection);
+
+		    Integer taxYear = Integer.parseInt(yearSelection);
+		    
+			this.setReportCapitalGainsTitle("Capital Gains: " + yearSelection);
+			
+			this.setCapitalGainsTransactionsList(getCapitalGains(taxYear));
+			
+			Collections.sort(this.getCapitalGainsTransactionsList(), new CapitalGainComparator());
+			
+            String targetURL = SlomFinUtil.getContextRoot() + "/reportCapitalGains.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
         } 
         catch (Exception e) 
         {
@@ -615,6 +652,337 @@ public class SlomFinMain implements Serializable
 		}
 		return returnList;
 	}
+	
+	private List<CapitalGain> getCapitalGains(Integer taxYear) throws Exception 
+	{
+		this.setCapitalGainsTotal(new BigDecimal(0.0));			
+		
+		//establish sales transactions
+		List<CapitalGain> capitalGainsTrxList = new ArrayList<>();
+		List<CapitalGain> capitalGainsTrxListAdditions = new ArrayList<>();
+		
+		for (int i = 0; i < transactionDAO.getFullTransactionsList().size(); i++) 
+		{
+			DynamoTransaction trx = transactionDAO.getFullTransactionsList().get(i);
+			
+			Account acct = accountDAO.getFullAccountsMap().get(trx.getAccountID());
+			
+			if (trx.getTransactionTypeID() != null 
+			&& (trx.getTransactionTypeID() == SlomFinUtil.Sell)
+			&&  acct.getbTaxableInd())
+			{	
+				logger.debug("capital gain trx id: " + trx.getTransactionID());
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(trx.getPostedDateJava());
+				int trxyear = cal.get(Calendar.YEAR);
+				
+				if (trxyear == taxYear.intValue())
+				{
+					CapitalGain cg = new CapitalGain();
+					
+					cg.setSaleTransactionID(trx.getTransactionID());
+					cg.setAccountID(trx.getAccountID());
+					cg.setAccountName(trx.getAccountName());
+					cg.setSalePrice(trx.getPrice());
+					cg.setInvestmentID(trx.getInvestmentID());
+					
+					Investment inv = investmentDAO.getFullInvestmentsMap().get(trx.getInvestmentID());
+					cg.setSaleInvestmentTypeID(inv.getiInvestmentTypeID());
+					
+					cg.setInvestmentName(trx.getInvestmentDescription());
+					cg.setSaleDate(trx.getPostedDateJava());
+					cg.setUnitsSold(trx.getUnits());
+					cg.setSaleProceeds(trx.getCostProceeds());
+					
+					capitalGainsTrxList.add(cg);							
+				}
+				
+			}
+		}
+		
+		for (int i = 0; i < capitalGainsTrxList.size(); i++) 
+		{			
+			CapitalGain cg = capitalGainsTrxList.get(i);
+			
+			BigDecimal saleUnits = new BigDecimal(cg.getUnitsSold().toString());
+			BigDecimal saleProceeds = new BigDecimal(cg.getSaleProceeds().toString());
+			//BigDecimal salePrice = new BigDecimal(cg.getSalePrice().toString());
+			
+			logger.info("working on capital gain for trx id: " + cg.getSaleTransactionID() + " investment: " + cg.getInvestmentName() + " sale date: " + cg.getSaleDate());
+			
+			//for this sale, get all the transactions that have this investment id.  Must be from taxable accounts
+			List<DynamoTransaction> investmentTransactionsList = transactionDAO.getAllTrxByInvestmentID(cg.getInvestmentID());
+			
+			//Remove any trx that are from retirement accounts; capital gains don't matter on these.
+			List<DynamoTransaction> removalTrxList = new ArrayList<>();
+			
+			for (int j = 0; j < investmentTransactionsList.size(); j++) 
+			{
+				DynamoTransaction dt = investmentTransactionsList.get(j);
+				Account acct = accountDAO.getAccountByAccountID(dt.getAccountID());
+				if (!acct.getbTaxableInd())
+				{
+					removalTrxList.add(dt);
+				}
+			}
+			
+			investmentTransactionsList.removeAll(removalTrxList);			
+			
+		    //need to remove all transactions from investmenttransactionsList that have already been accounted for either in prior years or this year; 
+			
+		    //First task - identify the sales and units associated
+		
+			BigDecimal totalUnitsFromSales = new BigDecimal(0.0);
+			totalUnitsFromSales = totalUnitsFromSales.setScale(4, java.math.RoundingMode.HALF_UP); 
+			
+			List<DynamoTransaction> salesToRemoveList = new ArrayList<>();
+			
+			logger.debug("removing Sales trx and tallying units from those sales.  Also removing cash dividends as those don't have units");
+			
+			for (int j = 0; j < investmentTransactionsList.size(); j++)
+			{
+				DynamoTransaction invTrx = investmentTransactionsList.get(j);
+			
+				Account acct = accountDAO.getAccountByAccountID(invTrx.getAccountID());
+			
+				if (invTrx.getTransactionTypeID() != null 
+				&& (invTrx.getTransactionTypeID() == SlomFinUtil.CashDividend)
+				&&  acct.getbTaxableInd())
+				{
+					salesToRemoveList.add(invTrx);
+				}	
+				
+				if (invTrx.getTransactionTypeID() != null 
+				&& (invTrx.getTransactionTypeID() == SlomFinUtil.Sell)
+				&&  acct.getbTaxableInd())
+				{
+					if (invTrx.getPostedDateJava().getTime() < cg.getSaleDate().getTime())
+				    {
+					   totalUnitsFromSales = totalUnitsFromSales.add(invTrx.getUnits());
+					   salesToRemoveList.add(invTrx);
+					   logger.debug("found a sale to remove");
+					   logger.debug("Trx number = " + (j+1));
+					   logger.debug("Trx Date = " + invTrx.getPostedDateJava());
+					   logger.debug("Trx Type = " + invTrx.getTransactionTypeDescription());
+					   logger.debug("Units = " + invTrx.getUnits());
+				    }
+				}	
+			}
+		
+			investmentTransactionsList.removeAll(salesToRemoveList);
+			logger.info("total transactions for " + cg.getInvestmentName() + " after removing sales trx = " + investmentTransactionsList.size());
+		
+			if (totalUnitsFromSales.compareTo(new BigDecimal(0.0)) > 0) //if nothing to remove, skip this part
+			{	
+				BigDecimal unitsRemovalTally = new BigDecimal(0.0);		
+				unitsRemovalTally = unitsRemovalTally.setScale(4, java.math.RoundingMode.HALF_UP); 
+			
+				List<DynamoTransaction> trxToRemoveList = new ArrayList<>();
+				
+				logger.debug("removing buy and reinvest trx");
+				logger.debug("need to find " + totalUnitsFromSales + " units to remove");
+				
+				BigDecimal unitsAdjustment = new BigDecimal(0.0);
+				BigDecimal newUnits =  new BigDecimal(0.0);
+				
+				for (int j = 0; j < investmentTransactionsList.size(); j++)
+				{
+					DynamoTransaction purchTrx = investmentTransactionsList.get(j);
+					
+					unitsRemovalTally = unitsRemovalTally.add(purchTrx.getUnits());
+					
+					logger.debug("Trx number = " + (j+1));
+					logger.debug("Trx Date = " + purchTrx.getPostedDateJava());
+					logger.debug("Trx Type = " + purchTrx.getTransactionTypeDescription());
+					logger.debug("Units = " + purchTrx.getUnits());
+					logger.debug("Units removal tally = " + unitsRemovalTally);	
+					
+					if (unitsRemovalTally.compareTo(totalUnitsFromSales) < 0) //simple removal, haven't reached total
+					{
+						trxToRemoveList.add(purchTrx);
+					}
+					else if (unitsRemovalTally.compareTo(totalUnitsFromSales) == 0) //remove and leave loop; reached total
+					{
+						trxToRemoveList.add(purchTrx);
+						break;
+					}
+					else //adjust the list item 
+					{
+						unitsAdjustment = unitsAdjustment.subtract(totalUnitsFromSales);
+						newUnits = unitsRemovalTally.subtract(totalUnitsFromSales);
+						
+						purchTrx.setUnits(newUnits);
+						purchTrx.setCostProceeds(newUnits.multiply(purchTrx.getPrice()));
+						
+						investmentTransactionsList.set(j, purchTrx);
+						
+						logger.debug("new Units = " + purchTrx.getUnits());
+						logger.debug("new Cost/Proceeds = " + purchTrx.getCostProceeds());				
+						
+						break;
+					}		
+					
+				}
+				
+				if (trxToRemoveList.size() > 0)
+				{
+					investmentTransactionsList.removeAll(trxToRemoveList);
+					logger.debug("total transactions for " + cg.getInvestmentName() + " after removing buy and reinvest trx = " + investmentTransactionsList.size());
+				}
+			}
+			
+			
+			//finally execute loop to determine cap gains/losses
+			BigDecimal unitsTally = new BigDecimal(0.0);
+			BigDecimal costBasisTally = new BigDecimal(0.0);
+			BigDecimal gainOrLoss = new BigDecimal(0.0);
+			String holdingPeriod = "";
+			
+			long holdingPeriodDiffInDays = 0;
+			
+			for (int j = 0; j < investmentTransactionsList.size(); j++)
+			{
+				DynamoTransaction cgTrx = investmentTransactionsList.get(j);
+								
+				unitsTally = unitsTally.add(cgTrx.getUnits());
+				
+				holdingPeriodDiffInDays = SlomFinUtil.getDaysDifference(cg.getSaleDate(), cgTrx.getPostedDateJava());
+				
+				BigDecimal tempCostProceeds = new BigDecimal(0.0);
+				
+				if (cgTrx.getCostProceeds() != null)
+				{
+					tempCostProceeds = cgTrx.getCostProceeds();
+				}
+				
+				String oldHoldingPeriod = holdingPeriod;
+				holdingPeriod = SlomFinUtil.setHoldingPeriod(oldHoldingPeriod,holdingPeriodDiffInDays);
+								
+				if (unitsTally.compareTo(cg.getUnitsSold()) < 0) //haven't reached total
+				{
+					if (oldHoldingPeriod.contains(AppConstants.LONG_TERM) && holdingPeriod.contains(AppConstants.SHORT_TERM))
+					{
+						//This means you have to record the long-term row now, the short term one later.
+						
+						BigDecimal tempUnitsTally = unitsTally.subtract(cgTrx.getUnits()); 
+						BigDecimal itemizedSaleProceeds = tempUnitsTally.multiply(cg.getSalePrice());
+						gainOrLoss = itemizedSaleProceeds.subtract(costBasisTally);
+						
+						CapitalGain cg2 = new CapitalGain();
+						
+						cg2.setSaleTransactionID(cg.getSaleTransactionID());
+						cg2.setAccountID(cg.getAccountID());
+						cg2.setAccountName(cg.getAccountName());
+						cg2.setSalePrice(cg.getSalePrice());
+						cg2.setInvestmentID(cg.getInvestmentID());
+						cg2.setSaleInvestmentTypeID(cg.getSaleInvestmentTypeID());
+						cg2.setInvestmentName(cg.getInvestmentName());
+						cg2.setSaleDate(cg.getSaleDate());
+						cg2.setUnitsSold(tempUnitsTally);
+						cg2.setSaleProceeds(itemizedSaleProceeds);
+						cg2.setGainOrLoss(gainOrLoss);
+						cg2.setHoldingPeriod(oldHoldingPeriod);
+						cg2.setCostBasis(costBasisTally);
+						
+						if (gainOrLoss.compareTo(BigDecimal.ZERO) > 0)
+						{
+							cg2.setCgStyleClass(SlomFinUtil.GREEN_STYLECLASS);						
+						}
+						else if (gainOrLoss.compareTo(BigDecimal.ZERO) < 0)
+						{
+							cg2.setCgStyleClass(SlomFinUtil.RED_STYLECLASS);						
+						}
+					
+						capitalGainsTrxListAdditions.add(cg2);		
+						
+						capitalGainsTotal = capitalGainsTotal.add(gainOrLoss);		
+						
+						//reset these now for short-term row later..
+						costBasisTally = tempCostProceeds; 
+						unitsTally = cgTrx.getUnits();
+						saleUnits = saleUnits.subtract(tempUnitsTally);
+						saleProceeds = saleProceeds.subtract(itemizedSaleProceeds); 										
+					}
+					else //not transitioning, just keep going...
+					{
+						costBasisTally = costBasisTally.add(tempCostProceeds);
+					}
+					continue;
+				}				
+				else if (unitsTally.compareTo(cg.getUnitsSold()) == 0) //reached total exactly
+				{				
+					costBasisTally = costBasisTally.add(tempCostProceeds);
+					gainOrLoss = saleProceeds.subtract(costBasisTally);
+					
+					cg.setGainOrLoss(gainOrLoss);
+					cg.setHoldingPeriod(holdingPeriod);
+					cg.setCostBasis(costBasisTally);
+					
+					if (gainOrLoss.compareTo(BigDecimal.ZERO) > 0)
+					{
+						cg.setCgStyleClass(SlomFinUtil.GREEN_STYLECLASS);						
+					}
+					else if (gainOrLoss.compareTo(BigDecimal.ZERO) < 0)
+					{
+						cg.setCgStyleClass(SlomFinUtil.RED_STYLECLASS);						
+					}
+					
+					capitalGainsTotal = capitalGainsTotal.add(gainOrLoss);				
+				}
+				else //you're over...take the part of the trx you need....
+				{
+					//how much did we need?
+					unitsTally = unitsTally.subtract(cgTrx.getUnits()); //reset now that we know we're over
+					BigDecimal neededUnits = saleUnits.subtract(unitsTally);
+					BigDecimal partialCostBasis = neededUnits.multiply(cgTrx.getPrice());
+					costBasisTally = costBasisTally.add(partialCostBasis);
+					gainOrLoss = saleProceeds.subtract(costBasisTally);
+					
+					cg.setGainOrLoss(gainOrLoss);
+					
+					if (gainOrLoss.compareTo(BigDecimal.ZERO) > 0)
+					{
+						cg.setCgStyleClass(SlomFinUtil.GREEN_STYLECLASS);						
+					}
+					else if (gainOrLoss.compareTo(BigDecimal.ZERO) < 0)
+					{
+						cg.setCgStyleClass(SlomFinUtil.RED_STYLECLASS);						
+					}
+					
+					cg.setHoldingPeriod(holdingPeriod);
+					cg.setCostBasis(costBasisTally);
+					
+					cg.setSaleProceeds(saleProceeds);
+					cg.setUnitsSold(saleUnits);
+					
+					capitalGainsTotal = capitalGainsTotal.add(gainOrLoss);			
+				}
+				
+				//jump out on real estate trx >= 2 years - no cap gains on those
+				if (cg.getSaleInvestmentTypeID() == SlomFinUtil.REALESTATE
+				&&  holdingPeriodDiffInDays >= AppConstants.CAPITAL_GAIN_LONG_TERM_REALESTATE)
+				{	
+					break;
+				}
+						
+				break;
+			}	        
+		}
+		
+		if (capitalGainsTotal.compareTo(BigDecimal.ZERO) > 0)
+		{
+			this.setCapitalGainsTotalStyleClass(SlomFinUtil.GREEN_STYLECLASS);						
+		}
+		else if (capitalGainsTotal.compareTo(BigDecimal.ZERO) < 0)
+		{
+			this.setCapitalGainsTotalStyleClass(SlomFinUtil.RED_STYLECLASS);					
+		}
+		
+		capitalGainsTrxList.addAll(capitalGainsTrxListAdditions);
+		
+		return capitalGainsTrxList;
+	}
+	
 	public void reportGoals(ActionEvent event) 
 	{
 		try 
@@ -634,6 +1002,69 @@ public class SlomFinMain implements Serializable
 		try 
         {		    
 		    logger.info("Portfolio History report selected from menu");
+		    
+		    portfolioHistoryDAO.sortFullPhListDateAsc();
+		    
+		    BigDecimal yearlyGainLossSubTotal = new BigDecimal(0.0);
+			BigDecimal firstYearlyAmount = new BigDecimal(0.0);
+			BigDecimal percentGainLoss = new BigDecimal(0.0);
+			BigDecimal oneHundred = new BigDecimal(100.00);	
+			
+			oneHundred = oneHundred.setScale(4, java.math.RoundingMode.HALF_UP); 
+			
+			int previousYear = 1900;
+			int phYear = 0;
+			int i;
+			
+			for (i = 0; i < this.getPortfolioHistoryList().size(); i++) 
+		    {
+				PortfolioHistory ph = this.getPortfolioHistoryList().get(i);
+				
+				Calendar tempCal = Calendar.getInstance();
+				
+				tempCal.setTimeInMillis(ph.getHistoryDateJava().getTime());
+								
+				phYear = tempCal.get(Calendar.YEAR);
+				
+				if (phYear != previousYear) //set list items then reset total
+				{
+					if (i != 0) //don't want to do anything first time through
+					{
+						PortfolioHistory ph2 = this.getPortfolioHistoryList().get(i-1); //This is the previous entry
+						yearlyGainLossSubTotal = yearlyGainLossSubTotal.add(ph2.getTotalValue().subtract(firstYearlyAmount));
+						ph2.setThisYearsDollars(yearlyGainLossSubTotal);						
+						percentGainLoss = percentGainLoss.multiply(yearlyGainLossSubTotal.divide(firstYearlyAmount,4,java.math.RoundingMode.HALF_UP));
+						ph2.setThisYearsPercent(percentGainLoss);
+						String pctStr = percentGainLoss.toPlainString();
+						pctStr = pctStr.substring(0, 6) + "%";
+						ph2.setThisYearsPercentDisplay(pctStr);
+						ph2.setRenderThisYearsStuff(true);
+						this.getPortfolioHistoryList().set(i-1, ph2);
+					}
+					
+					firstYearlyAmount = firstYearlyAmount.subtract(firstYearlyAmount);
+					firstYearlyAmount = firstYearlyAmount.add(ph.getTotalValue());
+					yearlyGainLossSubTotal = yearlyGainLossSubTotal.subtract(yearlyGainLossSubTotal);
+					percentGainLoss = percentGainLoss.subtract(percentGainLoss);
+					percentGainLoss = percentGainLoss.add(oneHundred);
+					previousYear = phYear;					
+				}												
+			}
+			
+			//this is for the last item in the list
+			
+			PortfolioHistory ph2 = this.getPortfolioHistoryList().get(i-1); //This is the previous entry
+			yearlyGainLossSubTotal = yearlyGainLossSubTotal.add(ph2.getTotalValue().subtract(firstYearlyAmount));
+			ph2.setThisYearsDollars(yearlyGainLossSubTotal);						
+			percentGainLoss = percentGainLoss.multiply(yearlyGainLossSubTotal.divide(firstYearlyAmount,4,java.math.RoundingMode.HALF_UP));
+			ph2.setThisYearsPercent(percentGainLoss);
+			String pctStr = percentGainLoss.toPlainString();
+			pctStr = pctStr.substring(0, 6) + "%";
+			ph2.setThisYearsPercentDisplay(pctStr);
+			ph2.setRenderThisYearsStuff(true);
+			this.getPortfolioHistoryList().set(i-1, ph2);
+					
+		    portfolioHistoryDAO.sortFullPhListDateDesc();
 		    
 		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
 		    String targetURL = SlomFinUtil.getContextRoot() + "/reportPortfolioHistory.xhtml";
@@ -664,9 +1095,19 @@ public class SlomFinMain implements Serializable
 	
 	public void reportPortfolioSummary(ActionEvent event) 
 	{
+		//need to do total taxable, and total retirement, as well as do not list the account name in every row, only the first one
 		try 
         {		    
 		    logger.info("Portfolio Summary report selected from menu");
+		 	    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+
+		    boolean doSubtotals = false;
+		    calculateAccountPositions(doSubtotals);	    
+			
+            String targetURL = SlomFinUtil.getContextRoot() + "/reportPortfolioSummary.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
         } 
         catch (Exception e) 
         {
@@ -799,9 +1240,13 @@ public class SlomFinMain implements Serializable
 		{
 			DynamoTransaction trx = transactionDAO.getFullTransactionsList().get(i);
 			Account acct = accountDAO.getAccountByAccountID(trx.getAccountID());
+				
 			if (!acct.getbClosed())
 			{
-				balance = SlomFinUtil.transactAnAmount(trx, balance, "amount");
+				if (trx.getCostProceeds() != null)
+				{
+					balance = SlomFinUtil.transactAnAmount(trx, balance, "amount");						
+				}
 			}
 		}
 		return balance;
@@ -816,11 +1261,15 @@ public class SlomFinMain implements Serializable
 			for (int i = 0; i < this.getReportUnitsOwnedList().size(); i++) 
 			{
 				Investment inv = this.getReportUnitsOwnedList().get(i);
-				investmentDAO.updateInvestment(inv);				
-				portfolioHistoryBalance = portfolioHistoryBalance.add(inv.getCurrentPrice().multiply(inv.getUnitsOwned()));
+				investmentDAO.updateInvestment(inv);	
+				BigDecimal investmentValue = inv.getCurrentPrice().multiply(inv.getUnitsOwned());
+				portfolioHistoryBalance = portfolioHistoryBalance.add(investmentValue);
+				logger.info("calcing portfolio history... investment: " + inv.getDescription() + " value: " + investmentValue + " new porthistory total: " + portfolioHistoryBalance);
 			}
 			
-			portfolioHistoryBalance = portfolioHistoryBalance.add(getTotalCashBalanceAllAccounts());
+			BigDecimal cashBalances = getTotalCashBalanceAllAccounts();			
+			portfolioHistoryBalance = portfolioHistoryBalance.add(cashBalances);
+			logger.info("calcing portfolio history... cash balances in all accounts: " + cashBalances + " new porthistory total: " + portfolioHistoryBalance);
 			
 			PortfolioHistory ph = new PortfolioHistory();
 			ph.setHistoryDate(DateToStringConverter.convertDateToDynamoStringFormat(new Date()));
@@ -909,6 +1358,27 @@ public class SlomFinMain implements Serializable
         }
 	}  	
 	
+	public List<String> autoCompleteTrxDescription(String searchTerm) 
+	{
+        List<String> returnList = new ArrayList<>();
+        List<DynamoTransaction> searchList = transactionDAO.searchTransactions(searchTerm);
+        
+        Map<String, String> tempMap = new HashMap<>();
+        for (int i = 0; i < searchList.size(); i++) 
+        {
+        	DynamoTransaction trx = searchList.get(i);
+        	if (!tempMap.containsKey(trx.getTransactionDescription()))
+			{
+        		tempMap.put(trx.getTransactionDescription(), searchTerm);
+        		returnList.add(trx.getTransactionDescription());
+			}
+		}
+        
+        Collections.sort(returnList);
+        
+        return returnList;
+    }
+
 	public void addPaycheckShowForm(ActionEvent event) 
 	{
 		try 
@@ -2585,14 +3055,6 @@ public class SlomFinMain implements Serializable
 		this.portfolioHistoryList = portfolioHistoryList;
 	}
 
-	public List<String> getReportDividendsYearsList() {
-		return reportDividendsYearsList;
-	}
-
-	public void setReportDividendsYearsList(List<String> reportDividendsYearsList) {
-		this.reportDividendsYearsList = reportDividendsYearsList;
-	}
-
 	public List<DynamoTransaction> getDividendTransactionsList() {
 		return dividendTransactionsList;
 	}
@@ -2663,6 +3125,53 @@ public class SlomFinMain implements Serializable
 
 	public void setUnitsTotal(BigDecimal unitsTotal) {
 		this.unitsTotal = unitsTotal;
+	}
+
+	public List<String> getReportYearsList() {
+		return reportYearsList;
+	}
+
+	public void setReportYearsList(List<String> reportYearsList) {
+		this.reportYearsList = reportYearsList;
+	}
+	public String getReportCapitalGainsTitle() {
+		return reportCapitalGainsTitle;
+	}
+
+	public void setReportCapitalGainsTitle(String reportCapitalGainsTitle) {
+		this.reportCapitalGainsTitle = reportCapitalGainsTitle;
+	}
+
+	public BigDecimal getCapitalGainsTotal() {
+		return capitalGainsTotal;
+	}
+
+	public void setCapitalGainsTotal(BigDecimal capitalGainsTotal) {
+		this.capitalGainsTotal = capitalGainsTotal;
+	}
+
+	public List<String> getReportDividendYearsList() {
+		return reportDividendYearsList;
+	}
+
+	public void setReportDividendYearsList(List<String> reportDividendYearsList) {
+		this.reportDividendYearsList = reportDividendYearsList;
+	}
+
+	public List<CapitalGain> getCapitalGainsTransactionsList() {
+		return capitalGainsTransactionsList;
+	}
+
+	public void setCapitalGainsTransactionsList(List<CapitalGain> capitalGainsTransactionsList) {
+		this.capitalGainsTransactionsList = capitalGainsTransactionsList;
+	}
+
+	public String getCapitalGainsTotalStyleClass() {
+		return capitalGainsTotalStyleClass;
+	}
+
+	public void setCapitalGainsTotalStyleClass(String capitalGainsTotalStyleClass) {
+		this.capitalGainsTotalStyleClass = capitalGainsTotalStyleClass;
 	}
 
 }

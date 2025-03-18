@@ -74,19 +74,7 @@
         <artifactId>url-connection-client</artifactId>
         <version>2.23.12</version>
     </dependency>
-   
-    <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>DynamoDBLocal</artifactId>
-        <version>2.2.1</version>
-        <exclusions>
-	      	<exclusion>
-	      		<groupId>org.eclipse.jetty.toolchain</groupId>
-	      		<artifactId>jetty-jakarta-servlet-api</artifactId>
-	      	</exclusion>
-	    </exclusions>
-    </dependency>
-    
+       
     <dependency>
 	  <groupId>org.springframework</groupId>
 	  <artifactId>spring-webflux</artifactId>
@@ -133,17 +121,29 @@
 	</dependency>
 
 	<dependency>
+	    <groupId>org.apache.poi</groupId>
+	    <artifactId>poi</artifactId>
+	    <version>5.4.0</version>
+	</dependency>
+	
+	<dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+        <version>5.4.0</version>
+    </dependency>
+    
+    <dependency>
+	    <groupId>commons-io</groupId>
+	    <artifactId>commons-io</artifactId>
+	    <version>2.18.0</version>
+	</dependency>
+    
+	<dependency>
 	    <groupId>commons-fileupload</groupId>
 	    <artifactId>commons-fileupload</artifactId>
 	    <version>1.3.3</version>
 	</dependency>
-	
-	<dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>2.6</version>
-    </dependency>
-   
+	   
    <dependency>
 	    <groupId>mysql</groupId>
 	    <artifactId>mysql-connector-java</artifactId>

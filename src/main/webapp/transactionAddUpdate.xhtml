@@ -330,10 +330,13 @@
 		           </td>
 				 
 		           <td align="left">
-		               <p:inputText id="trxDescID" size="50" value="#{pc_SlomFinMain.selectedTransaction.transactionDescription}" required="true" 
-		                            rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxCashDescription}"/>
-		               <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.transactionDescription}" 
-		                    rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxCashDescription}"/>		
+		           
+		           	   <p:autoComplete id="trxDescID" size="50" value="#{pc_SlomFinMain.selectedTransaction.transactionDescription}"
+                                completeMethod="#{pc_SlomFinMain.autoCompleteTrxDescription}" scrollHeight="250"/>
+                       
+                       <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.transactionDescription}" 
+		                    rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxCashDescription}"/>
+		                    		
 		            </td>
 		            
 		       </tr>

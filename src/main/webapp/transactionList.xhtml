@@ -19,6 +19,20 @@
 			   		  <h:outputText value="#{pc_SlomFinMain.trxListTitle}" styleClass="pageSectionTitle"/>
 			   	  </td>
 			   </tr>
+			   
+			   <tr>
+			      <td align="center">
+			   		  <p:commandLink ajax="false">
+	                     <p:graphicImage url="/images/excel.png" width="24"/>
+	                     <p:dataExporter type="xls" target="trxTableID" fileName="trx" />
+	                  </p:commandLink>
+	 
+	                  <p:commandLink ajax="false">
+	                     <p:graphicImage url="/images/pdf.png" width="24"/>
+	                     <p:dataExporter type="pdf" target="trxTableID" fileName="trx"/>
+	                  </p:commandLink>	
+			   	  </td>
+			   </tr>
 		    
 	          <tr>
 	          

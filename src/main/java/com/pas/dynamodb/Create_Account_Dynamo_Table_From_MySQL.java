@@ -39,8 +39,6 @@ public class Create_Account_Dynamo_Table_From_MySQL
     
     		 List<Account> teamsList = getTeamsFromMySQLDB();	
     		 loadTable(dynamoClients, teamsList);
-	       	
-	    	 DynamoUtil.stopDynamoServer();
 	    	
 			 logger.debug("**********  END of program ***********");
          }

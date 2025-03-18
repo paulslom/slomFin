@@ -9,7 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.pas.slomfin.constants.IAppConstants;
+import com.pas.slomfin.constants.AppConstants;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -51,7 +51,7 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
             	session.setAttribute("currentUserisUser", false);
             }
             
-            session.setAttribute(IAppConstants.CONTEXT_ROOT, springBean.getContextRoot());
+            session.setAttribute(AppConstants.CONTEXT_ROOT, springBean.getContextRoot());
             
         }       
         

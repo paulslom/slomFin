@@ -196,6 +196,26 @@ public class TransactionDAO implements Serializable
 				
 			}
 			
+			if (trx.getCostProceeds() != null)
+			{
+				if (trx.getTransactionTypeDescription().equalsIgnoreCase("Sell")
+				||	trx.getTransactionTypeDescription().equalsIgnoreCase("Transfer In")
+				||	trx.getTransactionTypeDescription().equalsIgnoreCase("Cash Deposit")
+				||	trx.getTransactionTypeDescription().equalsIgnoreCase("Interest Earned")
+				||	trx.getTransactionTypeDescription().equalsIgnoreCase("Split"))
+				{	
+					trx.setTrxStyleClass(SlomFinUtil.GREEN_STYLECLASS);
+				}
+				else if (trx.getTransactionTypeDescription().equalsIgnoreCase("Buy")
+					 ||	 trx.getTransactionTypeDescription().equalsIgnoreCase("Check Withdrawal")
+					 ||	 trx.getTransactionTypeDescription().equalsIgnoreCase("Cash Withdrawal")
+					 ||	 trx.getTransactionTypeDescription().equalsIgnoreCase("Transfer Out"))
+				{
+					trx.setTrxStyleClass(SlomFinUtil.RED_STYLECLASS);
+				}
+				
+			}
+			
 		}
 		
 		this.setWdCategoryMap(SlomFinUtil.sortHashMapByValues(this.getWdCategoryMap()));
@@ -268,9 +288,26 @@ public class TransactionDAO implements Serializable
 			}
 		}
 		return returnList;
+	}	
+
+	public List<DynamoTransaction> getAllTrxByInvestmentID(Integer selectedInvestmentID) 
+	{		
+		List<DynamoTransaction> returnList = new ArrayList<>();
+			
+		for (int i = 0; i < this.getFullTransactionsList().size(); i++)
+		{
+			DynamoTransaction trx = this.getFullTransactionsList().get(i);
+						
+			if (trx.getInvestmentID().intValue() == selectedInvestmentID.intValue())
+			{
+				returnList.add(trx);
+				logger.debug("trx by investment id " + selectedInvestmentID + " : " + trx.toString());
+			}
+		}
+		
+		return returnList;
 	}
 	
-
 	/*
 	public void readTransactionsWithin2YearsFromDB() throws Exception 
     {

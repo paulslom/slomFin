@@ -101,6 +101,15 @@ public class PortfolioHistoryDAO implements Serializable
         sortFullPhListDateDesc();
     }
 
+    public void sortFullPhListDateAsc()
+    {
+    	this.getFullPortfolioHistoryList().sort(new Comparator<PortfolioHistory>() {
+            public int compare(PortfolioHistory o1, PortfolioHistory o2) {
+                return o1.getHistoryDate().compareTo(o2.getHistoryDate());
+            }
+        });
+    }
+    
     public void sortFullPhListDateDesc()
     {
     	this.getFullPortfolioHistoryList().sort(new Comparator<PortfolioHistory>() {
@@ -130,12 +139,7 @@ public class PortfolioHistoryDAO implements Serializable
         Collection<PortfolioHistory> values = this.getFullPortfolioHistoryMap().values();
         this.setFullPortfolioHistoryList(new ArrayList<>(values));
 
-        this.getFullPortfolioHistoryList().sort(new Comparator<PortfolioHistory>() {
-            public int compare(PortfolioHistory o1, PortfolioHistory o2) {
-                return o1.getiPortfolioHistoryID().compareTo(o2.getiPortfolioHistoryID());
-            }
-        });
-
+        sortFullPhListDateAsc();
     }
 
     public List<PortfolioHistory> getFullPortfolioHistoryList()

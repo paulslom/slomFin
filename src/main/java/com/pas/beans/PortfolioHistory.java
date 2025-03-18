@@ -28,6 +28,10 @@ public class PortfolioHistory implements Serializable
     
     //not stored to DB
     private Date historyDateJava;
+    private BigDecimal thisYearsDollars;
+    private BigDecimal thisYearsPercent;
+    private String thisYearsPercentDisplay;
+    private boolean renderThisYearsStuff = false;
     
     public String toString()
     {
@@ -69,6 +73,42 @@ public class PortfolioHistory implements Serializable
 	@DynamoDbIgnore
 	public void setHistoryDateJava(Date historyDateJava) {
 		this.historyDateJava = historyDateJava;
+	}
+
+	@DynamoDbIgnore
+	public BigDecimal getThisYearsDollars() {
+		return thisYearsDollars;
+	}
+
+	@DynamoDbIgnore
+	public void setThisYearsDollars(BigDecimal thisYearsDollars) {
+		this.thisYearsDollars = thisYearsDollars;
+	}
+
+	@DynamoDbIgnore
+	public BigDecimal getThisYearsPercent() {
+		return thisYearsPercent;
+	}
+
+	@DynamoDbIgnore
+	public void setThisYearsPercent(BigDecimal thisYearsPercent) {
+		this.thisYearsPercent = thisYearsPercent;
+	}
+
+	public boolean isRenderThisYearsStuff() {
+		return renderThisYearsStuff;
+	}
+
+	public void setRenderThisYearsStuff(boolean renderThisYearsStuff) {
+		this.renderThisYearsStuff = renderThisYearsStuff;
+	}
+
+	public String getThisYearsPercentDisplay() {
+		return thisYearsPercentDisplay;
+	}
+
+	public void setThisYearsPercentDisplay(String thisYearsPercentDisplay) {
+		this.thisYearsPercentDisplay = thisYearsPercentDisplay;
 	}
 
     

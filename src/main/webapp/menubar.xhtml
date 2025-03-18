@@ -109,11 +109,24 @@
 									update="menuForm">
 							</p:menuitem>	
 							
-							<p:menuitem value="Capital Gains" actionListener="#{pc_SlomFinMain.reportCapitalGains}"
-									onclick="PF('blockWidgetVar').show()" 
-	                                oncomplete="PF('blockWidgetVar').hide()"		  
-									update="menuForm">
-							</p:menuitem>	
+							<p:submenu label="Capital Gains">
+			    							
+								<c:forEach items="#{pc_SlomFinMain.reportYearsList}" var="yearSelection">
+							      	
+						        	<p:menuitem id="cgMenuId" value="#{yearSelection}"
+						        	    ajax="false" 
+						        	    actionListener="#{pc_SlomFinMain.reportCapitalGains}"
+										onclick="PF('blockWidgetVar').show()" 
+		                                oncomplete="PF('blockWidgetVar').hide()"		  
+										update="menuForm">
+						        	   <f:param name="yearSel" value="#{yearSelection}"/>
+						        	</p:menuitem>  
+							        					        
+							        <p:separator/>
+							        						        							        
+				    			</c:forEach>
+				    			
+				    		</p:submenu>
 							
 							<p:menuitem value="Cost Basis" actionListener="#{pc_SlomFinMain.reportCostBasis}"
 									onclick="PF('blockWidgetVar').show()" 
@@ -123,7 +136,7 @@
 							
 							<p:submenu label="Dividends">
 			    							
-								<c:forEach items="#{pc_SlomFinMain.reportDividendsYearsList}" var="yearSelection">
+								<c:forEach items="#{pc_SlomFinMain.reportDividendYearsList}" var="yearSelection">
 							      	
 						        	<p:menuitem id="dividendMenuId" value="#{yearSelection}"
 						        	    ajax="false" 

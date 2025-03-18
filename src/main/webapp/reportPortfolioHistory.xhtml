@@ -14,18 +14,33 @@
 		   <p:column style="width:3%" headerText="Num">												
 			  <h:outputText value="#{rowIndex + 1}"/>															
 		   </p:column>
-						  
-		   <p:column style="width:30%" headerText="Date" sortBy="#{ph.historyDateJava}">												
+			
+		   <p:column style="width:5%" headerText="ID" sortBy="#{ph.iPortfolioHistoryID}">												
+			  <h:outputText value="#{ph.iPortfolioHistoryID}">
+			  </h:outputText>															
+		   </p:column>	
+		   			  
+		   <p:column style="width:8%" headerText="Date" sortBy="#{ph.historyDateJava}">												
 			  <h:outputText value="#{ph.historyDateJava}">
 			     <f:convertDateTime type="date" pattern="yyyy-MM-dd"/>			
 			  </h:outputText>															
 		   </p:column>		
 						  
-		   <p:column style="width:67%" headerText="Net Worth">												
+		   <p:column style="width:28%" headerText="Net Worth">												
 			  <h:outputText value="#{ph.totalValue}">
 			     <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
 			  </h:outputText>   														
-		   </p:column>	 				 
+		   </p:column>	
+		   
+		   <p:column style="width:28%" headerText="This Year Dollars">												
+			  <h:outputText value="#{ph.thisYearsDollars}" rendered="#{ph.renderThisYearsStuff}">
+			     <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+			  </h:outputText>   														
+		   </p:column>	 
+		   
+		   <p:column style="width:28%" headerText="This Year Percent">												
+			  <h:outputText value="#{ph.thisYearsPercentDisplay}" rendered="#{ph.renderThisYearsStuff}"/>
+		   </p:column>	  				 
 										  
 		</p:dataTable>
 		   

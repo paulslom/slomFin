@@ -3,6 +3,9 @@ package com.pas.util;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -22,7 +25,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.pas.beans.Account;
 import com.pas.beans.Investment;
 import com.pas.dynamodb.DynamoTransaction;
-import com.pas.slomfin.constants.IAppConstants;
+import com.pas.slomfin.constants.AppConstants;
 
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
@@ -481,7 +484,7 @@ public class SlomFinUtil
 		{
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 	    	HttpSession httpSession = request.getSession();	
-	        contextRoot = (String) httpSession.getAttribute(IAppConstants.CONTEXT_ROOT);
+	        contextRoot = (String) httpSession.getAttribute(AppConstants.CONTEXT_ROOT);
 		}
 		catch (Exception e)
 		{			
@@ -722,7 +725,7 @@ public class SlomFinUtil
 	public static BigDecimal transactAnAmount(DynamoTransaction trx, BigDecimal inputAmount, String amountOrUnits)
 	{
 		BigDecimal returnAmount = null;
-		
+			
 		if (trx.getTransactionTypeDescription().equalsIgnoreCase("Buy"))
 		{	
 			if (amountOrUnits.equalsIgnoreCase("amount"))
@@ -778,7 +781,10 @@ public class SlomFinUtil
     	{		    		
     		if (amountOrUnits.equalsIgnoreCase("amount"))
     		{
-				returnAmount = inputAmount.subtract(trx.getCostProceeds());
+    			if (trx.getCostProceeds() != null)
+    			{
+    				returnAmount = inputAmount.subtract(trx.getCostProceeds());
+    			}				
     		}
 			else
 			{
@@ -789,7 +795,46 @@ public class SlomFinUtil
 		return returnAmount;
 		
 	}
+		
+	public static String setHoldingPeriod(String oldHoldingPeriod, long holdingPeriodDiffInDays)
+	{
+		//note: we are always moving from long-term to short term in the loop, so no need to worry about if it was short-term now it is long term...just the reverse.
+		
+		StringBuffer hp = new StringBuffer();
+		
+		if (holdingPeriodDiffInDays >= AppConstants.CAPITAL_GAIN_LONG_TERM_STOCKS)
+		{
+			if (oldHoldingPeriod.contains(AppConstants.LONG_TERM)) 
+			{
+				hp.append(AppConstants.VARIOUS + AppConstants.LONG_TERM); //means various dates				
+			}
+			else //must be empty; first time in
+			{
+				hp.append(AppConstants.LONG_TERM); 
+			}
+		}
+		else //short term (less than 365 days held_
+		{
+			if (oldHoldingPeriod.contains(AppConstants.SHORT_TERM)) 
+			{
+				hp.append(AppConstants.VARIOUS + AppConstants.SHORT_TERM); //means various dates				
+			}			
+			else //nothing was there previously, just make it short term.
+			{	
+				hp.append(AppConstants.SHORT_TERM); //means various dates
+			}
+		}
+		
+		return hp.toString();
+	}
 
+	public static long getDaysDifference(Date date1, Date date2) 
+	{
+		LocalDate localDate1 = LocalDate.ofInstant(date1.toInstant(), ZoneId.systemDefault());
+		LocalDate localDate2 = LocalDate.ofInstant(date2.toInstant(), ZoneId.systemDefault());
+        return Math.abs(ChronoUnit.DAYS.between(localDate1, localDate2));
+    }
+	
 	public static Map<Integer, String> getAccountTypesMap() {
 		return accountTypesMap;
 	}
@@ -805,7 +850,7 @@ public class SlomFinUtil
 	public static void setTrxTypesMap(Map<Integer, String> trxTypesMap) {
 		SlomFinUtil.trxTypesMap = trxTypesMap;
 	}
-	
+
 	
 	
 }
