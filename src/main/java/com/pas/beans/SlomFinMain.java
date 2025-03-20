@@ -128,6 +128,8 @@ public class SlomFinMain implements Serializable
 	private List<AccountPosition> accountPositionsList = new ArrayList<>();
 	
 	private BigDecimal portfolioValue;
+	private BigDecimal taxableValue;
+	private BigDecimal retirementValue;
 	private BigDecimal unitsTotal;
 	
 	private List<String> reportYearsList = new ArrayList<>();
@@ -416,6 +418,8 @@ public class SlomFinMain implements Serializable
 		
 		this.getAccountPositionsList().clear();
 		this.setPortfolioValue(new BigDecimal(0.0));				
+		this.setTaxableValue(new BigDecimal(0.0));		
+		this.setRetirementValue(new BigDecimal(0.0));		
 		
 		for (Integer accountID : activeAccountsMap.keySet()) 
 		{			    
@@ -433,11 +437,28 @@ public class SlomFinMain implements Serializable
 				AccountPosition acctPos = new AccountPosition();
 				
 				acctPos.setAccountID(accountID);
-				acctPos.setAccountName(acct.getsAccountName());					    
+				
+				if (doSubtotals)
+				{
+					acctPos.setAccountName(acct.getsAccountName());					   
+				}
+				else
+				{
+					if (i == 0)
+					{
+						acctPos.setAccountName(acct.getsAccountName());				
+					}
+					else
+					{
+						acctPos.setAccountName("");
+					}
+				}
+				
 				acctPos.setInvestmentID(inv.getiInvestmentID());
 				acctPos.setInvestmentName(inv.getDescription());
 				acctPos.setInvestmentPrice(inv.getCurrentPrice());
 				acctPos.setUnitsOwned(inv.getUnitsOwned());
+				acctPos.setTaxableAccount(acct.getbTaxableInd());
 				
 				if (inv.getiInvestmentID() == getCashInvestmentID())
 				{					
@@ -471,7 +492,16 @@ public class SlomFinMain implements Serializable
 				this.getAccountPositionsList().add(acctPos3);	
 			}
 						
-			portfolioValue = portfolioValue.add(accountSubTotal);				
+			portfolioValue = portfolioValue.add(accountSubTotal);
+			
+			if (acct.getbTaxableInd())
+			{
+				taxableValue = taxableValue.add(accountSubTotal);	
+			}
+			else
+			{
+				retirementValue = retirementValue.add(accountSubTotal);	
+			}
         }
 		
 	}
@@ -3172,6 +3202,22 @@ public class SlomFinMain implements Serializable
 
 	public void setCapitalGainsTotalStyleClass(String capitalGainsTotalStyleClass) {
 		this.capitalGainsTotalStyleClass = capitalGainsTotalStyleClass;
+	}
+
+	public BigDecimal getTaxableValue() {
+		return taxableValue;
+	}
+
+	public void setTaxableValue(BigDecimal taxableValue) {
+		this.taxableValue = taxableValue;
+	}
+
+	public BigDecimal getRetirementValue() {
+		return retirementValue;
+	}
+
+	public void setRetirementValue(BigDecimal retirementValue) {
+		this.retirementValue = retirementValue;
 	}
 
 }

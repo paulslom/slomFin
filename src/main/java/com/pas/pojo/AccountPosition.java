@@ -16,6 +16,7 @@ public class AccountPosition implements Serializable
     private BigDecimal investmentPrice;
     private BigDecimal unitsOwned;
     private BigDecimal positionValue;
+    private Boolean taxableAccount;
     
 	public Integer getAccountID() {
 		return accountID;
@@ -58,5 +59,11 @@ public class AccountPosition implements Serializable
 	}
 	public void setPositionValue(BigDecimal positionValue) {
 		this.positionValue = positionValue;
+	}
+	public Boolean getTaxableAccount() {
+		return taxableAccount;
+	}
+	public void setTaxableAccount(Boolean taxableAccount) {
+		this.taxableAccount = taxableAccount;
 	}
 }

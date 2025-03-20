@@ -8,44 +8,76 @@
      
     <ui:define name="content">
     
-        <p:dataTable id="tableID" value="#{pc_SlomFinMain.accountPositionsList}" rowIndexVar="rowIndex"
-			var="acctPos" scrollable="true" scrollHeight="950" styleClass="dataTableStyle">						
-						   
-		   <p:column style="width:3%" headerText="Num">												
-			  <h:outputText value="#{rowIndex + 1}"/>															
-		   </p:column>	
-		   
-		   <p:column style="width:25%" headerText="Account" sortBy="#{acctPos.accountName}">												
-			  <h:outputText value="#{acctPos.accountName}"/>															
-		   </p:column>		
-			
-		   <p:column style="width:25%" headerText="Investment" sortBy="#{acctPos.investmentName}">												
-			  <h:outputText value="#{acctPos.investmentName}"/>															
-		   </p:column>	
-		   
-		   <p:column style="width:15%" headerText="Units Owned" sortBy="#{acctPos.unitsOwned}">												
-			   <h:outputText value="#{acctPos.unitsOwned}"/>
-		   </p:column>	
-		   
-           <p:column style="width:15%" headerText="Current Price" sortBy="#{acctPos.investmentPrice}">												
-			   <h:outputText value="#{acctPos.investmentPrice}">
-			       <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
-			  </h:outputText> 												
-		   </p:column>	
-		   		  
-		   <p:column style="width:20%" headerText="Position Value" sortBy="#{acctPos.positionValue}">												
-			   <h:outputText value="#{acctPos.positionValue}">
-			       <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
-			  </h:outputText> 
-			  <f:facet name="footer">
-	             <h:outputText value="#{pc_SlomFinMain.portfolioValue}">
-	                <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
-			     </h:outputText> 
-	          </f:facet>    														
-		   </p:column>	 				 
-										  
-		</p:dataTable>
-		   
+    	<table>
+    		
+    		<tr>
+    			<td>
+    			
+    			    <p:outputLabel value="Taxable value" styleClass="pageSectionTitle"/>  &#xA0;&#xA0;
+		          	<h:outputText value="#{pc_SlomFinMain.taxableValue}" styleClass="pageSectionTitle">
+		          	    <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+		          	</h:outputText>  &#xA0;&#xA0;
+		          		
+					<p:outputLabel value="Retirement value" styleClass="pageSectionTitle"/>  &#xA0;&#xA0;
+		          	<h:outputText value="#{pc_SlomFinMain.retirementValue}" styleClass="pageSectionTitle">
+		          		<f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+		          	</h:outputText> &#xA0;&#xA0;	
+		          	
+		          	<p:outputLabel value="Total Portfolio value" styleClass="pageSectionTitle"/>  &#xA0;&#xA0;
+		          	<h:outputText value="#{pc_SlomFinMain.portfolioValue}" styleClass="pageSectionTitle">
+		          		<f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+		          	</h:outputText>	
+		          			
+    			</td>
+    		</tr>
+    			
+    		<tr>
+    		
+    			<td>
+    	
+			        <p:dataTable id="tableID" value="#{pc_SlomFinMain.accountPositionsList}" rowIndexVar="rowIndex"
+						var="acctPos" scrollable="true" scrollHeight="950" styleClass="dataTableStyle">						
+									   
+					   <p:column style="width:3%" headerText="Num">												
+						  <h:outputText value="#{rowIndex + 1}"/>															
+					   </p:column>	
+					   
+					   <p:column style="width:25%" headerText="Account" sortBy="#{acctPos.accountName}">												
+						  <h:outputText value="#{acctPos.accountName}"/>															
+					   </p:column>		
+						
+					   <p:column style="width:25%" headerText="Investment" sortBy="#{acctPos.investmentName}">												
+						  <h:outputText value="#{acctPos.investmentName}"/>															
+					   </p:column>	
+					   
+					   <p:column style="width:15%" headerText="Units Owned" sortBy="#{acctPos.unitsOwned}">												
+						   <h:outputText value="#{acctPos.unitsOwned}"/>
+					   </p:column>	
+					   
+			           <p:column style="width:15%" headerText="Current Price" sortBy="#{acctPos.investmentPrice}">												
+						   <h:outputText value="#{acctPos.investmentPrice}">
+						       <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+						  </h:outputText> 												
+					   </p:column>	
+					   		  
+					   <p:column style="width:20%" headerText="Position Value" sortBy="#{acctPos.positionValue}">												
+						   <h:outputText value="#{acctPos.positionValue}">
+						       <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+						  </h:outputText> 
+						  <f:facet name="footer">
+				             <h:outputText value="#{pc_SlomFinMain.portfolioValue}">
+				                <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+						     </h:outputText> 
+				          </f:facet>    														
+					   </p:column>	 				 
+												  
+					</p:dataTable>
+					
+				</td>
+				
+			</tr>		
+		
+		</table>   
     </ui:define>
 
 </ui:composition>
