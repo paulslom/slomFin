@@ -1,4 +1,4 @@
-package com.pas.dynamodb;
+package com.pas.dynamodb.archived;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,6 +12,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
+import com.pas.dynamodb.DynamoClients;
+import com.pas.dynamodb.DynamoTransaction;
+import com.pas.dynamodb.DynamoUtil;
 import com.pas.slomfin.dao.TransactionsRowMapper;
 
 import software.amazon.awssdk.core.internal.waiters.ResponseOrException;

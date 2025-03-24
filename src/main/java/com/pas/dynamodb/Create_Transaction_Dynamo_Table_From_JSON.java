@@ -2,7 +2,13 @@ package com.pas.dynamodb;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -10,24 +16,26 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import com.google.gson.Gson;
 import com.mysql.cj.jdbc.MysqlDataSource;
-import com.pas.beans.PortfolioHistory;
-import com.pas.slomfin.dao.PortfolioHistoryRowMapper;
+import com.pas.slomfin.dao.TransactionsRowMapper;
 
 import software.amazon.awssdk.core.internal.waiters.ResponseOrException;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.EnhancedGlobalSecondaryIndex;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.DescribeTableResponse;
+import software.amazon.awssdk.services.dynamodb.model.ProjectionType;
 import software.amazon.awssdk.services.dynamodb.model.ResourceInUseException;
 import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
 
-public class Create_PortfolioHistory_Dynamo_Table_From_MySQL
+public class Create_Transaction_Dynamo_Table_From_JSON
 {
-	private static Logger logger = LogManager.getLogger(Create_PortfolioHistory_Dynamo_Table_From_MySQL.class); //log4j for Logging 
+	private static Logger logger = LogManager.getLogger(Create_Transaction_Dynamo_Table_From_JSON.class); //log4j for Logging 
 	
-	private static String AWS_TABLE_NAME = "slomFinPortfolioHistory";
+	private static String AWS_TABLE_NAME = "slomFinTransactions";
 		
     public static void main(String[] args) throws Exception
     { 
@@ -37,28 +45,30 @@ public class Create_PortfolioHistory_Dynamo_Table_From_MySQL
          {
     		 DynamoClients dynamoClients = DynamoUtil.getDynamoClients();
     
-    		 List<PortfolioHistory> phList = getFromMySQLDB();	
-    		 loadTable(dynamoClients, phList);       	
+    		 List<DynamoTransaction> trxList = getTransactionsFromJSON();	
+    		 loadTable(dynamoClients, trxList);       	
 	    	
 			 logger.debug("**********  END of program ***********");
          }
     	 catch (Exception e)
     	 {
-    		 logger.error("Exception in Create_PortfolioHistory_Dynamo_Table_From_MySQL " + e.getMessage(), e);
+    		 logger.error("Exception in Create_Transaction_Dynamo_Table_From_JSON " + e.getMessage(), e);
     	 }
 		System.exit(1);
 	}
 
-    private static List<PortfolioHistory> getFromMySQLDB() 
+    private static List<DynamoTransaction> getTransactionsFromJSON() throws FileNotFoundException 
 	{
-		MysqlDataSource ds = getMySQLDatasource();
-    	JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);    
-    	String sql = "SELECT DATE_FORMAT(H.dhistoryDate, \"%Y-%m-%dT%H:%i:%S\") as dhistoryDate, SUM(H.mvalue) as totalValue FROM Tblportfoliohistory H GROUP BY H.dhistoryDate ORDER BY H.dhistoryDate";		 
-    	List<PortfolioHistory> phList = jdbcTemplate.query(sql, new PortfolioHistoryRowMapper());
-		return phList;
+    	String jsonFilePath = "C:\\Paul\\GitHub\\slomFin\\src\\main\\resources\\data\\transactions.json";
+        File jsonFile = new File(jsonFilePath);                    
+        InputStream inputStream = new FileInputStream(jsonFile);
+        Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+        DynamoTransaction[] trxArray = new Gson().fromJson(reader, DynamoTransaction[].class);
+       	List<DynamoTransaction> transactionsList = Arrays.asList(trxArray);
+		return transactionsList;
 	}
    
-    private static void loadTable(DynamoClients dynamoClients, List<PortfolioHistory> phList) throws Exception 
+    private static void loadTable(DynamoClients dynamoClients, List<DynamoTransaction> transactionsList) throws Exception 
     {
         //Delete the table in DynamoDB Local if it exists.  If not, just catch the exception and move on
         try
@@ -71,42 +81,50 @@ public class Create_PortfolioHistory_Dynamo_Table_From_MySQL
         }
         
         // Create a table in DynamoDB Local
-        DynamoDbTable<PortfolioHistory> phTable = createTable(dynamoClients.getDynamoDbEnhancedClient(), dynamoClients.getDdbClient());           
+        DynamoDbTable<DynamoTransaction> trxTable = createTable(dynamoClients.getDynamoDbEnhancedClient(), dynamoClients.getDdbClient());           
 
         // Insert data into the table
     	logger.info("Inserting data into the table:" + AWS_TABLE_NAME);
         
     	int putCount = 0;
     	
-        if (phList == null)
+        if (transactionsList == null)
         {
-        	logger.error("games list is Empty - can't do anything more so exiting");
+        	logger.error("trx list is Empty - can't do anything more so exiting");
         }
         else
         {
-        	logger.info("About to try to put " + phList.size() + " rows into table " + AWS_TABLE_NAME);
+        	logger.info("About to try to put " + transactionsList.size() + " rows into table " + AWS_TABLE_NAME);
         	
-        	for (int i = 0; i < phList.size(); i++) 
+        	for (int i = 0; i < transactionsList.size(); i++) 
         	{
-        		PortfolioHistory ph = phList.get(i);
-        		phTable.putItem(ph); 
+        		DynamoTransaction trx = transactionsList.get(i);
+        		trxTable.putItem(trx); 
 				putCount++;
-				logger.info(AWS_TABLE_NAME + " Put portfolioHistory row count: " + putCount);
+				logger.info(AWS_TABLE_NAME + " Put row count: " + putCount);
 			} 
         	
         	logger.info("FINISHED inserting " + putCount + " rows into the table:" + AWS_TABLE_NAME);
         }        
 	}
    
-    private static DynamoDbTable<PortfolioHistory> createTable(DynamoDbEnhancedClient ddbEnhancedClient, DynamoDbClient ddbClient) 
+    private static DynamoDbTable<DynamoTransaction> createTable(DynamoDbEnhancedClient ddbEnhancedClient, DynamoDbClient ddbClient) 
     {
-        DynamoDbTable<PortfolioHistory> phTable = ddbEnhancedClient.table(AWS_TABLE_NAME, TableSchema.fromBean(PortfolioHistory.class));
+        DynamoDbTable<DynamoTransaction> gamesTable = ddbEnhancedClient.table(AWS_TABLE_NAME, TableSchema.fromBean(DynamoTransaction.class));
         
         // Create the DynamoDB table.  If it exists, it'll throw an exception
         
         try
         {        	
-          	phTable.createTable(builder -> builder.build());
+          	ArrayList<EnhancedGlobalSecondaryIndex> gsindices = new ArrayList<>();
+            	
+        	EnhancedGlobalSecondaryIndex gsi1 = EnhancedGlobalSecondaryIndex.builder()
+        			.indexName("gsi_AccountID")
+        			.projection(p -> p.projectionType(ProjectionType.ALL))
+        			.build();
+        	gsindices.add(gsi1);
+        	            	  	
+        	gamesTable.createTable(r -> r.globalSecondaryIndices(gsindices).build());
         }
         catch (ResourceInUseException riue)
         {
@@ -130,50 +148,14 @@ public class Create_PortfolioHistory_Dynamo_Table_From_MySQL
             logger.info(AWS_TABLE_NAME + " table was created.");
         }        
         
-        return phTable;
+        return gamesTable;
     }    
     
     private static void deleteTable(DynamoDbEnhancedClient ddbEnhancedClient) throws Exception
     {
-    	DynamoDbTable<PortfolioHistory> portHistTable = ddbEnhancedClient.table(AWS_TABLE_NAME, TableSchema.fromBean(PortfolioHistory.class));
-       	portHistTable.deleteTable();		
+    	DynamoDbTable<DynamoTransaction> trxTable = ddbEnhancedClient.table(AWS_TABLE_NAME, TableSchema.fromBean(DynamoTransaction.class));
+       	trxTable.deleteTable();		
 	}
 
-    private static MysqlDataSource getMySQLDatasource()
-	{
-		MysqlDataSource ds = null;
-		
-		Properties prop = new Properties();
-		
-	    try 
-	    {
-	    	//Use the prior project for these properties - they don't exist in this one
-	    	InputStream stream = new FileInputStream(new File("C:\\Program Files (x86)\\Apache Software Foundation\\Tomcat 9.0\\conf/catalina.properties"));
-	    	prop.load(stream);   		
-		
-	    	ds = new MysqlDataSource();
-	    		    			
-		    String dbName = prop.getProperty("PORTFOLIO_DB_NAME");
-		    String userName = prop.getProperty("PORTFOLIO_USERNAME");
-		    String password = prop.getProperty("PORTFOLIO_PASSWORD");
-		    String hostname = prop.getProperty("PORTFOLIO_HOSTNAME");
-		    String port = prop.getProperty("PORTFOLIO_PORT");
-		    String jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
-		    
-		    //logger.info("jdbcUrl for datasource: " + jdbcUrl);
-		    
-		    ds.setURL(jdbcUrl);
-		    ds.setPassword(password);
-		    ds.setUser(userName);
-		    
-		 }
-		 catch (Exception e) 
-	     { 
-		    logger.error(e.toString(), e);
-		 }     		
-       	
-       	return ds;
-	}
-		
 		
 }

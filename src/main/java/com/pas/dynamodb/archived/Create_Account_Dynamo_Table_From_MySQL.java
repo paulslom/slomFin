@@ -1,4 +1,4 @@
-package com.pas.dynamodb;
+package com.pas.dynamodb.archived;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,8 +11,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
-import com.pas.beans.Investment;
-import com.pas.slomfin.dao.InvestmentsRowMapper;
+import com.pas.beans.Account;
+import com.pas.dynamodb.DynamoClients;
+import com.pas.dynamodb.DynamoUtil;
+import com.pas.slomfin.dao.AccountsRowMapper;
 
 import software.amazon.awssdk.core.internal.waiters.ResponseOrException;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
@@ -23,12 +25,12 @@ import software.amazon.awssdk.services.dynamodb.model.DescribeTableResponse;
 import software.amazon.awssdk.services.dynamodb.model.ResourceInUseException;
 import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
 
-public class Create_Investment_Dynamo_Table_From_MySQL
+public class Create_Account_Dynamo_Table_From_MySQL
 {
-	private static Logger logger = LogManager.getLogger(Create_Investment_Dynamo_Table_From_MySQL.class); //log4j for Logging 
+	private static Logger logger = LogManager.getLogger(Create_Account_Dynamo_Table_From_MySQL.class); //log4j for Logging 
 	
-	private static String AWS_TABLE_NAME = "slomFinInvestments";
-		
+	private static String AWS_TABLE_NAME = "slomFinAccounts";
+	
     public static void main(String[] args) throws Exception
     { 
     	logger.debug("**********  START of program ***********");   	
@@ -37,32 +39,32 @@ public class Create_Investment_Dynamo_Table_From_MySQL
          {
     		 DynamoClients dynamoClients = DynamoUtil.getDynamoClients();
     
-    		 List<Investment> investmentsList = getInvestmentsFromMySQLDB();	
-    		 loadTable(dynamoClients, investmentsList);       	
+    		 List<Account> teamsList = getTeamsFromMySQLDB();	
+    		 loadTable(dynamoClients, teamsList);
 	    	
 			 logger.debug("**********  END of program ***********");
          }
     	 catch (Exception e)
     	 {
-    		 logger.error("Exception in Create_Investment_Dynamo_Table_From_MySQL " + e.getMessage(), e);
+    		 logger.error("Exception in Create_All_Dynamo_Tables " + e.getMessage(), e);
     	 }
 		System.exit(1);
 	}
 
-    private static List<Investment> getInvestmentsFromMySQLDB() 
+    private static List<Account> getTeamsFromMySQLDB() 
 	{
 		MysqlDataSource ds = getMySQLDatasource();
     	JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);    
-    	String sql = " select inv.iInvestmentID, inv.iInvestmentTypeID, inv.sTickerSymbol, inv.sDescription,"
-    			+ "       inv.mCurrentPrice, inv.iAssetClassID, invtype.sDescription as investmentTypeDescription,"
-    			+ "       asscl.sAssetClass"
-    			+ " from tblinvestment inv inner join tblinvestmenttype invtype on inv.iInvestmentTypeID = invtype.iInvestmentTypeID"
-    			+ "  inner join tblassetclass asscl on inv.iAssetClassID = asscl.iAssetClassID";		 
-    	List<Investment> investmentsList = jdbcTemplate.query(sql, new InvestmentsRowMapper());
-		return investmentsList;
+    	String sql = "select acc.iAccountID, acc.iPortfolioID, acc.iAccountTypeID, acc.sAccountName, acc.sAccountNameAbbr,"
+    			+ "   acc.bClosed, port.sPortfolioName, port.bTaxableInd, accTyp.sAccountType"
+    			+ " from tblaccount acc inner join tblportfolio port on acc.iPortfolioID = port.iPortfolioID"
+    			+ " inner join tblaccounttype acctyp on acc.iAccountTypeID = acctyp.iAccountTypeID"
+    			+ " where port.iInvestorID = 1";		 
+    	List<Account> teamsList = jdbcTemplate.query(sql, new AccountsRowMapper());
+		return teamsList;
 	}
    
-    private static void loadTable(DynamoClients dynamoClients, List<Investment> investmentsList) throws Exception 
+    private static void loadTable(DynamoClients dynamoClients, List<Account> accountsList) throws Exception 
     {
         //Delete the table in DynamoDB Local if it exists.  If not, just catch the exception and move on
         try
@@ -75,42 +77,34 @@ public class Create_Investment_Dynamo_Table_From_MySQL
         }
         
         // Create a table in DynamoDB Local
-        DynamoDbTable<Investment> investmentsTable = createTable(dynamoClients.getDynamoDbEnhancedClient(), dynamoClients.getDdbClient());           
+        DynamoDbTable<Account> accountsTable = createTable(dynamoClients.getDynamoDbEnhancedClient(), dynamoClients.getDdbClient());           
 
         // Insert data into the table
     	logger.info("Inserting data into the table:" + AWS_TABLE_NAME);
-        
-    	int putCount = 0;
-    	
-        if (investmentsList == null)
+         
+        if (accountsList == null)
         {
-        	logger.error("investments list is Empty - can't do anything more so exiting");
+        	logger.error("accounts list is Empty - can't do anything more so exiting");
         }
         else
         {
-        	logger.info("About to try to put " + investmentsList.size() + " rows into table " + AWS_TABLE_NAME);
-        	
-        	for (int i = 0; i < investmentsList.size(); i++) 
+        	for (int i = 0; i < accountsList.size(); i++) 
         	{
-        		Investment investment = investmentsList.get(i);
-        		investmentsTable.putItem(investment); 
-				putCount++;
-				logger.info(AWS_TABLE_NAME + " row count: " + putCount);
-			} 
-        	
-        	logger.info("FINISHED inserting " + putCount + " rows into the table:" + AWS_TABLE_NAME);
+        		Account account = accountsList.get(i);
+				accountsTable.putItem(account); 
+			}           
         }        
 	}
    
-    private static DynamoDbTable<Investment> createTable(DynamoDbEnhancedClient ddbEnhancedClient, DynamoDbClient ddbClient) 
+    private static DynamoDbTable<Account> createTable(DynamoDbEnhancedClient ddbEnhancedClient, DynamoDbClient ddbClient) 
     {
-        DynamoDbTable<Investment> investmentsTable = ddbEnhancedClient.table(AWS_TABLE_NAME, TableSchema.fromBean(Investment.class));
+        DynamoDbTable<Account> accountTable = ddbEnhancedClient.table(AWS_TABLE_NAME, TableSchema.fromBean(Account.class));
         
         // Create the DynamoDB table.  If it exists, it'll throw an exception
         
         try
-        {        	
-        	investmentsTable.createTable(builder -> builder.build());
+        {
+	        accountTable.createTable(builder -> builder.build());
         }
         catch (ResourceInUseException riue)
         {
@@ -134,12 +128,12 @@ public class Create_Investment_Dynamo_Table_From_MySQL
             logger.info(AWS_TABLE_NAME + " table was created.");
         }        
         
-        return investmentsTable;
+        return accountTable;
     }    
     
     private static void deleteTable(DynamoDbEnhancedClient ddbEnhancedClient) throws Exception
     {
-    	DynamoDbTable<Investment> teamTable = ddbEnhancedClient.table(AWS_TABLE_NAME, TableSchema.fromBean(Investment.class));
+    	DynamoDbTable<Account> teamTable = ddbEnhancedClient.table(AWS_TABLE_NAME, TableSchema.fromBean(Account.class));
        	teamTable.deleteTable();		
 	}
 

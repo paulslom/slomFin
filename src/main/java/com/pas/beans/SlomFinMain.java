@@ -68,6 +68,8 @@ public class SlomFinMain implements Serializable
 	private Investment selectedInvestment;
 	private boolean renderInvestmentUpdateFields;
 	
+	private String localePattern;
+	
 	private String transactionAcidSetting;
 	private DynamoTransaction selectedTransaction;
 	
@@ -1699,6 +1701,7 @@ public class SlomFinMain implements Serializable
 				setRenderTrxUnits(true);
 				
 				if (this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strBuy)
+				||	this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strReinvest)
 				||	this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strSell))
 				{
 					setRenderTrxAmount(true);
@@ -2324,12 +2327,16 @@ public class SlomFinMain implements Serializable
 				this.getSelectedTransaction().setTransactionDate(DateToStringConverter.convertDateToDynamoStringFormat(this.getSelectedTransaction().getEntryDateJava()));
 				this.getSelectedTransaction().setTransactionEntryDate(DateToStringConverter.convertDateToDynamoStringFormat(this.getSelectedTransaction().getEntryDateJava()));
 				
-				//Leave posted date field alone on an update - it is a sort key and cannot be updated - if modified it'll create a new entry
-				if (transactionAcidSetting.equalsIgnoreCase("Add"))
-				{
-					this.getSelectedTransaction().setTransactionPostedDate(DateToStringConverter.convertDateToDynamoStringFormat(this.getSelectedTransaction().getPostedDateJava()));
-				}
-				
+				Calendar calNow = Calendar.getInstance();
+				Calendar calEntered = Calendar.getInstance();
+					
+				calEntered.setTime(this.getSelectedTransaction().getPostedDateJava());
+				calEntered.set(Calendar.HOUR_OF_DAY, calNow.get(Calendar.HOUR_OF_DAY));
+				calEntered.set(Calendar.MINUTE, calNow.get(Calendar.MINUTE));
+				calEntered.set(Calendar.SECOND, calNow.get(Calendar.SECOND));
+					
+				this.getSelectedTransaction().setTransactionPostedDate(DateToStringConverter.convertDateToDynamoStringFormat(calEntered.getTime()));
+								
 				if (this.getSelectedTransaction().getInvestmentID() == null || this.getSelectedTransaction().getInvestmentID() == 0)
 				{
 					this.getSelectedTransaction().setInvestmentID(getCashInvestmentID());			    	
@@ -3218,6 +3225,16 @@ public class SlomFinMain implements Serializable
 
 	public void setRetirementValue(BigDecimal retirementValue) {
 		this.retirementValue = retirementValue;
+	}
+
+	public String getLocalePattern() 
+	{
+		this.setLocalePattern("MM-dd-yyyy");
+		return localePattern;
+	}
+
+	public void setLocalePattern(String localePattern) {
+		this.localePattern = localePattern;
 	}
 
 }

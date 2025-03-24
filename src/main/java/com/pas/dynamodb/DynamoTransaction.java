@@ -11,7 +11,6 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbIgnore;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
 @DynamoDbBean
 public class DynamoTransaction implements Serializable
@@ -180,8 +179,7 @@ public class DynamoTransaction implements Serializable
 	public void setTransactionEntryDate(String transactionEntryDate) {
 		this.transactionEntryDate = transactionEntryDate;
 	}
-
-	@DynamoDbSortKey
+	
 	public String getTransactionPostedDate() {
 		return transactionPostedDate;
 	}

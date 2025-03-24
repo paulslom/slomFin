@@ -164,9 +164,10 @@
 			       	        size="23"
 			       	        required="true"
 			       	        rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxPostedDate}"
-			       	        readonlyInput="false" 
+			       	        readonlyInput="false"
+			       	        pattern="#{pc_SlomFinMain.localePattern}" 
 			       	        value="#{pc_SlomFinMain.selectedTransaction.postedDateJava}"
-			       			mode="popup" showOn="both" pattern="MM-dd-yyyy HH:mm:ss" yearRange="c-50:c">						        									            			
+			       			mode="popup" showOn="both" yearRange="c-50:c">						        									            			
 			       	    </p:calendar>
 			       	    <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.postedDateJava}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields}"/>
 		            </td>
@@ -331,8 +332,9 @@
 				 
 		           <td align="left">
 		           
-		           	   <p:autoComplete id="trxDescID" size="50" value="#{pc_SlomFinMain.selectedTransaction.transactionDescription}"
-                                completeMethod="#{pc_SlomFinMain.autoCompleteTrxDescription}" scrollHeight="250"/>
+		           	   <p:autoComplete id="trxDescID" size="50" value="#{pc_SlomFinMain.selectedTransaction.transactionDescription}" required="true"
+                                completeMethod="#{pc_SlomFinMain.autoCompleteTrxDescription}" scrollHeight="250"
+                                rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxCashDescription}"/>
                        
                        <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.transactionDescription}" 
 		                    rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxCashDescription}"/>

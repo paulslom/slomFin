@@ -1,4 +1,4 @@
-package com.pas.dynamodb;
+package com.pas.dynamodb.archived;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,8 +11,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
-import com.pas.beans.Account;
-import com.pas.slomfin.dao.AccountsRowMapper;
+import com.pas.beans.PortfolioHistory;
+import com.pas.dynamodb.DynamoClients;
+import com.pas.dynamodb.DynamoUtil;
+import com.pas.slomfin.dao.PortfolioHistoryRowMapper;
 
 import software.amazon.awssdk.core.internal.waiters.ResponseOrException;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
@@ -23,12 +25,12 @@ import software.amazon.awssdk.services.dynamodb.model.DescribeTableResponse;
 import software.amazon.awssdk.services.dynamodb.model.ResourceInUseException;
 import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
 
-public class Create_Account_Dynamo_Table_From_MySQL
+public class Create_PortfolioHistory_Dynamo_Table_From_MySQL
 {
-	private static Logger logger = LogManager.getLogger(Create_Account_Dynamo_Table_From_MySQL.class); //log4j for Logging 
+	private static Logger logger = LogManager.getLogger(Create_PortfolioHistory_Dynamo_Table_From_MySQL.class); //log4j for Logging 
 	
-	private static String AWS_TABLE_NAME = "slomFinAccounts";
-	
+	private static String AWS_TABLE_NAME = "slomFinPortfolioHistory";
+		
     public static void main(String[] args) throws Exception
     { 
     	logger.debug("**********  START of program ***********");   	
@@ -37,32 +39,28 @@ public class Create_Account_Dynamo_Table_From_MySQL
          {
     		 DynamoClients dynamoClients = DynamoUtil.getDynamoClients();
     
-    		 List<Account> teamsList = getTeamsFromMySQLDB();	
-    		 loadTable(dynamoClients, teamsList);
+    		 List<PortfolioHistory> phList = getFromMySQLDB();	
+    		 loadTable(dynamoClients, phList);       	
 	    	
 			 logger.debug("**********  END of program ***********");
          }
     	 catch (Exception e)
     	 {
-    		 logger.error("Exception in Create_All_Dynamo_Tables " + e.getMessage(), e);
+    		 logger.error("Exception in Create_PortfolioHistory_Dynamo_Table_From_MySQL " + e.getMessage(), e);
     	 }
 		System.exit(1);
 	}
 
-    private static List<Account> getTeamsFromMySQLDB() 
+    private static List<PortfolioHistory> getFromMySQLDB() 
 	{
 		MysqlDataSource ds = getMySQLDatasource();
     	JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);    
-    	String sql = "select acc.iAccountID, acc.iPortfolioID, acc.iAccountTypeID, acc.sAccountName, acc.sAccountNameAbbr,"
-    			+ "   acc.bClosed, port.sPortfolioName, port.bTaxableInd, accTyp.sAccountType"
-    			+ " from tblaccount acc inner join tblportfolio port on acc.iPortfolioID = port.iPortfolioID"
-    			+ " inner join tblaccounttype acctyp on acc.iAccountTypeID = acctyp.iAccountTypeID"
-    			+ " where port.iInvestorID = 1";		 
-    	List<Account> teamsList = jdbcTemplate.query(sql, new AccountsRowMapper());
-		return teamsList;
+    	String sql = "SELECT DATE_FORMAT(H.dhistoryDate, \"%Y-%m-%dT%H:%i:%S\") as dhistoryDate, SUM(H.mvalue) as totalValue FROM Tblportfoliohistory H GROUP BY H.dhistoryDate ORDER BY H.dhistoryDate";		 
+    	List<PortfolioHistory> phList = jdbcTemplate.query(sql, new PortfolioHistoryRowMapper());
+		return phList;
 	}
    
-    private static void loadTable(DynamoClients dynamoClients, List<Account> accountsList) throws Exception 
+    private static void loadTable(DynamoClients dynamoClients, List<PortfolioHistory> phList) throws Exception 
     {
         //Delete the table in DynamoDB Local if it exists.  If not, just catch the exception and move on
         try
@@ -75,34 +73,42 @@ public class Create_Account_Dynamo_Table_From_MySQL
         }
         
         // Create a table in DynamoDB Local
-        DynamoDbTable<Account> accountsTable = createTable(dynamoClients.getDynamoDbEnhancedClient(), dynamoClients.getDdbClient());           
+        DynamoDbTable<PortfolioHistory> phTable = createTable(dynamoClients.getDynamoDbEnhancedClient(), dynamoClients.getDdbClient());           
 
         // Insert data into the table
     	logger.info("Inserting data into the table:" + AWS_TABLE_NAME);
-         
-        if (accountsList == null)
+        
+    	int putCount = 0;
+    	
+        if (phList == null)
         {
-        	logger.error("accounts list is Empty - can't do anything more so exiting");
+        	logger.error("games list is Empty - can't do anything more so exiting");
         }
         else
         {
-        	for (int i = 0; i < accountsList.size(); i++) 
+        	logger.info("About to try to put " + phList.size() + " rows into table " + AWS_TABLE_NAME);
+        	
+        	for (int i = 0; i < phList.size(); i++) 
         	{
-        		Account account = accountsList.get(i);
-				accountsTable.putItem(account); 
-			}           
+        		PortfolioHistory ph = phList.get(i);
+        		phTable.putItem(ph); 
+				putCount++;
+				logger.info(AWS_TABLE_NAME + " Put portfolioHistory row count: " + putCount);
+			} 
+        	
+        	logger.info("FINISHED inserting " + putCount + " rows into the table:" + AWS_TABLE_NAME);
         }        
 	}
    
-    private static DynamoDbTable<Account> createTable(DynamoDbEnhancedClient ddbEnhancedClient, DynamoDbClient ddbClient) 
+    private static DynamoDbTable<PortfolioHistory> createTable(DynamoDbEnhancedClient ddbEnhancedClient, DynamoDbClient ddbClient) 
     {
-        DynamoDbTable<Account> accountTable = ddbEnhancedClient.table(AWS_TABLE_NAME, TableSchema.fromBean(Account.class));
+        DynamoDbTable<PortfolioHistory> phTable = ddbEnhancedClient.table(AWS_TABLE_NAME, TableSchema.fromBean(PortfolioHistory.class));
         
         // Create the DynamoDB table.  If it exists, it'll throw an exception
         
         try
-        {
-	        accountTable.createTable(builder -> builder.build());
+        {        	
+          	phTable.createTable(builder -> builder.build());
         }
         catch (ResourceInUseException riue)
         {
@@ -126,13 +132,13 @@ public class Create_Account_Dynamo_Table_From_MySQL
             logger.info(AWS_TABLE_NAME + " table was created.");
         }        
         
-        return accountTable;
+        return phTable;
     }    
     
     private static void deleteTable(DynamoDbEnhancedClient ddbEnhancedClient) throws Exception
     {
-    	DynamoDbTable<Account> teamTable = ddbEnhancedClient.table(AWS_TABLE_NAME, TableSchema.fromBean(Account.class));
-       	teamTable.deleteTable();		
+    	DynamoDbTable<PortfolioHistory> portHistTable = ddbEnhancedClient.table(AWS_TABLE_NAME, TableSchema.fromBean(PortfolioHistory.class));
+       	portHistTable.deleteTable();		
 	}
 
     private static MysqlDataSource getMySQLDatasource()
@@ -170,5 +176,6 @@ public class Create_Account_Dynamo_Table_From_MySQL
        	
        	return ds;
 	}
+		
 		
 }
