@@ -1452,7 +1452,7 @@ public class SlomFinMain implements Serializable
 					}
 				}
 				
-				if (pd.getXferAccountID() != null && pd.getXferAccountID() != 0)
+				if (pd.getXferAccountID() != null && pd.getXferAccountID() > 0)
 				{
 					Account xferAccount = accountDAO.getAccountByAccountID(pd.getXferAccountID());
 					pd.setXferAccountName(xferAccount.getsAccountName());

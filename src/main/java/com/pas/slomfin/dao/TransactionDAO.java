@@ -124,7 +124,7 @@ public class TransactionDAO implements Serializable
 	
 	public void deleteTransaction(DynamoTransaction dynamoTransaction) throws Exception 
 	{
-		Key key = Key.builder().partitionValue(dynamoTransaction.getTransactionID()).sortValue(dynamoTransaction.getTransactionPostedDate()).build();
+		Key key = Key.builder().partitionValue(dynamoTransaction.getTransactionID()).build();
 		DeleteItemEnhancedRequest deleteItemEnhancedRequest = DeleteItemEnhancedRequest.builder().key(key).build();
 		transactionsTable.deleteItem(deleteItemEnhancedRequest);
 		
