@@ -32,6 +32,7 @@ import com.pas.slomfin.dao.TransactionDAO;
 import com.pas.slomfin.dao.PaydayDAO;
 
 import com.pas.util.SlomFinUtil;
+import com.pas.util.SortSelectItemList;
 import com.pas.util.TransactionTypeComparator;
 import com.pas.util.CapitalGainComparator;
 import com.pas.util.InvestmentComparator;
@@ -86,6 +87,7 @@ public class SlomFinMain implements Serializable
 	private boolean renderTransactionUpdateFields = false;
 	private boolean renderTransactionId = false;	
 	
+	private boolean renderTrxAddAnother = false;
 	private boolean renderTrxPostedDate = false;
 	private boolean renderTrxAmount = true;
 	private boolean renderTrxUnits = false;
@@ -146,7 +148,7 @@ public class SlomFinMain implements Serializable
 	private String capitalGainsTotalStyleClass;
 	
 	private Integer citiDoubleCashAccountID;
-	private Integer sofiCheckingAccountID;
+	private Integer checkingAccountID;
 	
 	private String trxListTitle;
 	
@@ -174,7 +176,7 @@ public class SlomFinMain implements Serializable
 				loadTransactions(dynamoClients);
 				loadPaydays(dynamoClients);
 				
-				this.setSofiCheckingAccountID(accountDAO.getSoFiCheckingAccountID());
+				this.setCheckingAccountID(accountDAO.getCheckingAccountID());
 				this.setCitiDoubleCashAccountID(accountDAO.getCitiDoubleCashAccountID());
 			}
 		} 
@@ -1535,7 +1537,7 @@ public class SlomFinMain implements Serializable
 		}
 		else
 		{
-			refreshTrxList(accountDAO.getSoFiCheckingAccountID());
+			refreshTrxList(accountDAO.getCheckingAccountID());
 			return "/transactionList.xhtml";
 		}
 	}
@@ -1605,6 +1607,8 @@ public class SlomFinMain implements Serializable
 				logger.info("user un-checked that they want only owned investments in the dropdown");
 				this.setInvestmentDropdownList(investmentDAO.getInvestmentsByInvestmentTypeID(this.getSelectedTransaction().getInvestmentTypeID()));
 			}
+			
+			SortSelectItemList.sortSelectItemList(this.getInvestmentDropdownList(), "label", true);
         } 
         catch (Exception e) 
         {
@@ -2105,6 +2109,8 @@ public class SlomFinMain implements Serializable
 		    logger.info("Transaction operation setup for add-change-inquire-delete.  Function is: " + acid);
 		    logger.info("transaction id selected: " + transactionId);
 		    
+		    this.setRenderTrxAddAnother(false);
+		    
 		    if (acid.equalsIgnoreCase("add"))
 		    {
 		    	DynamoTransaction dynamoTrx = new DynamoTransaction();
@@ -2115,6 +2121,11 @@ public class SlomFinMain implements Serializable
 		    	dynamoTrx.setAccountName(acct.getsAccountName());
 		    	
 		    	String accountType = SlomFinUtil.accountTypesMap.get(acct.getiAccountTypeID());
+		    	
+		    	if (accountDAO.getCitiDoubleCashAccountID() == Integer.parseInt(accountId))
+		    	{
+		    		this.setRenderTrxAddAnother(true);
+		    	}
 		    	
 		    	if (accountType != null 
 		    	&& (accountType.equalsIgnoreCase(SlomFinUtil.strCreditCard) || accountType.equalsIgnoreCase(SlomFinUtil.strChecking)))
@@ -2302,7 +2313,23 @@ public class SlomFinMain implements Serializable
 			return "";
 		}
 	}	
+	
+	public String addThenAddAnother()
+	{
+		logger.info("entering addThenAddAnother for operation: " + transactionAcidSetting);
 		
+		String result = prepTrxAndUpsertDatabase();
+		
+		if (result.equalsIgnoreCase("success"))
+		{
+			return selectTransactionAcid();
+		}
+		else
+		{
+			return "";
+		}
+	}	
+	
 	private String prepTrxAndUpsertDatabase() 
 	{
 		String returnString = "";
@@ -3010,12 +3037,12 @@ public class SlomFinMain implements Serializable
 		this.citiDoubleCashAccountID = citiDoubleCashAccountID;
 	}
 
-	public Integer getSofiCheckingAccountID() {
-		return sofiCheckingAccountID;
+	public Integer getCheckingAccountID() {
+		return checkingAccountID;
 	}
 
-	public void setSofiCheckingAccountID(Integer sofiCheckingAccountID) {
-		this.sofiCheckingAccountID = sofiCheckingAccountID;
+	public void setCheckingAccountID(Integer checkingAccountID) {
+		this.checkingAccountID = checkingAccountID;
 	}
 
 	public String getPaydayAcidSetting() {
@@ -3235,6 +3262,14 @@ public class SlomFinMain implements Serializable
 
 	public void setLocalePattern(String localePattern) {
 		this.localePattern = localePattern;
+	}
+
+	public boolean isRenderTrxAddAnother() {
+		return renderTrxAddAnother;
+	}
+
+	public void setRenderTrxAddAnother(boolean renderTrxAddAnother) {
+		this.renderTrxAddAnother = renderTrxAddAnother;
 	}
 
 }

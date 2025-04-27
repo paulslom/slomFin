@@ -44,6 +44,17 @@
 						    update="transactionAddUpdateForm">
 					  </p:commandButton>
 					  
+					  <p:commandButton id="UpdateId4" 				   
+						    value="Add then Add Another" 	
+						    rendered="#{pc_SlomFinMain.renderTrxAddAnother}"
+						    action="#{pc_SlomFinMain.addThenAddAnother}"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"
+						    update="transactionAddUpdateForm">
+						   <f:param name="operation" value="Add" />
+			        	   <f:param name="accountId" value="#{pc_SlomFinMain.citiDoubleCashAccountID}"/>
+					  </p:commandButton>
+					  
 					  <p:commandButton id="UpdateId2" 				   
 						    value="Update" 	
 						    rendered="#{pc_SlomFinMain.transactionAcidSetting eq 'Update'}"

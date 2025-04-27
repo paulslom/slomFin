@@ -294,14 +294,14 @@ public class AccountDAO implements Serializable
 		logger.info("delete account complete");	
 	}
 
-	public Integer getSoFiCheckingAccountID() 
+	public Integer getCheckingAccountID() 
 	{
 		Integer acctID = 0;
 		
 		for (int i = 0; i < fullAccountsList.size(); i++) 
 		{
 			Account acct = fullAccountsList.get(i);
-			if (acct.getsAccountName().contains("SoFi Checking"))
+			if (acct.getsAccountName().contains("Fidelity Cash"))
 			{
 				acctID = acct.getiAccountID();
 				break;

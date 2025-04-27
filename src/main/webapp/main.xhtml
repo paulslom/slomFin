@@ -71,28 +71,28 @@
 			      
 			      <td align="center">
 			      
-			   		  <p:commandButton id="sofiID1" 				   
-						   value="SoFi checking trx" 	
+			   		  <p:commandButton id="bankID1" 				   
+						   value="Fidelity checking trx" 	
 						   actionListener="#{pc_SlomFinMain.selectTransactionAcid}"
 			        	   onclick="PF('blockWidgetVar').show()" 
 			        	   oncomplete="PF('blockWidgetVar').hide()" 
 			        	   update="mainForm">
 			        	   <f:param name="operation" value="Add" />
-			        	   <f:param name="accountId" value="#{pc_SlomFinMain.sofiCheckingAccountID}"/>
+			        	   <f:param name="accountId" value="#{pc_SlomFinMain.checkingAccountID}"/>
 					  </p:commandButton>
 					  
 				  </td>
 				  
 				  <td align="center">
 			      
-			   		  <p:commandButton id="sofiID2" 				   
-						   value="SoFi checking List" 	
+			   		  <p:commandButton id="bankID2" 				   
+						   value="Fidelity checking List" 	
 						   ajax="false" 
 			        	   actionListener="#{pc_SlomFinMain.accountTransactionsSelection}"
 			        	   onclick="PF('blockWidgetVar').show()" 
 			        	   oncomplete="PF('blockWidgetVar').hide()" 
 			        	   update="menuForm">
-			        	   <f:param name="accountid" value="#{pc_SlomFinMain.sofiCheckingAccountID}"/>
+			        	   <f:param name="accountid" value="#{pc_SlomFinMain.checkingAccountID}"/>
 					  </p:commandButton>
 					  
 				  </td>
