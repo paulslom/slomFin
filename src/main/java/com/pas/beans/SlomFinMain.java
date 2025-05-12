@@ -1704,7 +1704,13 @@ public class SlomFinMain implements Serializable
 				setRenderTrxInvestment(true);
 				setRenderTrxUnits(true);
 				
-				if (this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strBuy)
+				if (this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strCashDividend))
+				{
+					setRenderTrxInvestment(true);
+					setRenderTrxUnits(false);
+					setRenderTrxAmount(true);
+				}
+				else if (this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strBuy)
 				||	this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strReinvest)
 				||	this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strSell))
 				{
