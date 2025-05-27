@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -828,6 +829,20 @@ public class SlomFinUtil
 		return hp.toString();
 	}
 
+	public static BigDecimal getDaysLeftThisYear() 
+	{
+		Calendar calOne = Calendar.getInstance();
+	    Integer todayInt = calOne.get(Calendar.DAY_OF_YEAR);
+	    int year = calOne.get(Calendar.YEAR);
+	    Calendar calTwo = new GregorianCalendar(year, 11, 31); //last day of this year
+	    Integer endOfYearDayInt = calTwo.get(Calendar.DAY_OF_YEAR);
+	    
+	    Integer totalDaysLeftThisYear = endOfYearDayInt - todayInt;
+	    
+	    return new BigDecimal(String.valueOf(totalDaysLeftThisYear));
+	}
+	
+    
 	public static long getDaysDifference(Date date1, Date date2) 
 	{
 		LocalDate localDate1 = LocalDate.ofInstant(date1.toInstant(), ZoneId.systemDefault());

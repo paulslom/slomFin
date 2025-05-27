@@ -131,6 +131,9 @@ public class SlomFinMain implements Serializable
 	private List<Account> activeAccountsList = new ArrayList<>();
 	private List<AccountPosition> accountPositionsList = new ArrayList<>();
 	
+	private List<Account> goalsCurrentList = new ArrayList<>();
+	private List<Account> goalsProjectedList = new ArrayList<>();
+	
 	private BigDecimal portfolioValue;
 	private BigDecimal taxableValue;
 	private BigDecimal retirementValue;
@@ -1017,11 +1020,140 @@ public class SlomFinMain implements Serializable
 		return capitalGainsTrxList;
 	}
 	
+	public String goalsProjection()
+	{
+		try
+		{
+			this.getGoalsProjectedList().clear();
+			
+			int thisYear = Calendar.getInstance().get(Calendar.YEAR);
+			int finalYear = thisYear + 15;
+			
+			BigDecimal daysLeftThisYear = SlomFinUtil.getDaysLeftThisYear();
+			BigDecimal thisYearRemainingPercent = daysLeftThisYear.divide(new BigDecimal(365.0));
+			
+			//Create a map from the current goals list so we can re-use the map values as we project through the years
+			Map<Integer, Account> accountProjectionsMap = new HashMap<>();
+			for (int i = 0; i < this.getGoalsCurrentList().size(); i++) 
+			{
+				Account acct = new Account();
+				Account loopAcct = this.getGoalsCurrentList().get(i);
+				acct.setsAccountName(loopAcct.getsAccountName());
+				acct.setiAccountID(loopAcct.getiAccountID());
+				acct.setCurrentAccountValue(loopAcct.getCurrentAccountValue());
+				acct.setPercentReturn(loopAcct.getPercentReturn());
+				acct.setYearlyContribution(loopAcct.getYearlyContribution());
+				accountProjectionsMap.put(loopAcct.getiAccountID(), acct);
+			} 
+			
+			//Project out 15 years
+			for (int j = thisYear; j <= finalYear; j++) 
+			{
+				Account acct = new Account();
+				BigDecimal yearlyTotal = new BigDecimal(0.0);
+				
+				acct.setProjectionYear(j);			
+				
+				for (Map.Entry<Integer, Account> entry : accountProjectionsMap.entrySet()) 
+				{
+					Account tempAccount = entry.getValue();
+					
+					BigDecimal totalNewMoney = new BigDecimal(0.0);
+					BigDecimal projectedContribution = new BigDecimal(0.0);
+					BigDecimal tempPercent = tempAccount.getPercentReturn().multiply(new BigDecimal(0.01));
+					BigDecimal remainderOfYearReturnRate = thisYearRemainingPercent.multiply(tempPercent);
+					BigDecimal currentAmount = new BigDecimal(tempAccount.getCurrentAccountValue().toString());
+					
+					if (j == thisYear) //this is different because we have to project for the remainder of this year
+					{					
+						projectedContribution = tempAccount.getYearlyContribution().multiply(thisYearRemainingPercent);						
+						BigDecimal projectedReturn = currentAmount.multiply(remainderOfYearReturnRate);
+						totalNewMoney = projectedContribution.add(projectedReturn);
+					}
+					else //future year
+					{
+						projectedContribution = tempAccount.getYearlyContribution();
+						BigDecimal projectedReturn = currentAmount.multiply(tempPercent);
+						totalNewMoney = projectedContribution.add(projectedReturn);
+					}
+					
+					tempAccount.setCurrentAccountValue(tempAccount.getCurrentAccountValue().add(totalNewMoney));
+					yearlyTotal = yearlyTotal.add(tempAccount.getCurrentAccountValue());
+				}
+				
+				acct.setCurrentAccountValue(yearlyTotal);
+				this.getGoalsProjectedList().add(acct);
+				
+			}		
+		}
+		catch (Exception e)
+		{
+			logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+		}
+		
+		return "";
+	}
+	
 	public void reportGoals(ActionEvent event) 
 	{
 		try 
         {		    
 		    logger.info("Goals report selected from menu");
+		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+
+		    this.setGoalsCurrentList(new ArrayList<>(this.getActiveTaxableAccountsList()));
+			this.getGoalsCurrentList().addAll(this.getActiveRetirementAccountsList());
+			
+			Map<Integer, List<Investment>> activeAccountsMap = SlomFinUtil.getActiveAccountValues(this.getGoalsCurrentList(), transactionDAO.getFullTransactionsList(), investmentDAO.getFullInvestmentsMap(), getCashInvestmentID()); 
+			
+			this.getGoalsCurrentList().clear();
+			this.setPortfolioValue(new BigDecimal(0.0));
+				        
+			for (Integer accountID : activeAccountsMap.keySet()) 
+			{
+				Account acct = accountDAO.getAccountByAccountID(accountID);
+					
+				//skip non-brokerage accounts for goals.
+				if (acct.getsAccountType().equalsIgnoreCase(SlomFinUtil.strSavings)
+				||  acct.getsAccountType().equalsIgnoreCase(SlomFinUtil.strChecking)
+				||  acct.getsAccountType().equalsIgnoreCase(SlomFinUtil.strRealEstate)
+				||  acct.getsAccountType().equalsIgnoreCase(SlomFinUtil.str529)
+				||  acct.getsAccountType().equalsIgnoreCase(SlomFinUtil.strCreditCard)
+				||  acct.getsAccountType().equalsIgnoreCase(SlomFinUtil.strCash)
+				||  acct.getsAccountType().equalsIgnoreCase(SlomFinUtil.strMoneyMarketNoChk)
+				||  acct.getsAccountType().equalsIgnoreCase(SlomFinUtil.strMoneyMarketwChk)
+				||  acct.getsAccountType().equalsIgnoreCase(SlomFinUtil.strMortgage)
+				||  acct.getsAccountType().equalsIgnoreCase(SlomFinUtil.strHsa))
+				{
+					continue;
+				}
+				
+				List<Investment> investmentList = activeAccountsMap.get(accountID);
+	            
+				BigDecimal tempTotal = new BigDecimal(0.0);
+				
+				for (int i = 0; i < investmentList.size(); i++) 
+				{
+					Investment inv = investmentList.get(i);
+					tempTotal = tempTotal.add(inv.getCurrentValue());
+				}
+				
+				acct.setCurrentAccountValue(tempTotal);
+				
+				portfolioValue = portfolioValue.add(tempTotal);
+				
+				if (tempTotal.compareTo(new BigDecimal(0.0)) > 0) 
+				{
+					this.getGoalsCurrentList().add(acct);
+				}
+	        }
+			
+            String targetURL = SlomFinUtil.getContextRoot() + "/reportGoals.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
         } 
         catch (Exception e) 
         {
@@ -3276,6 +3408,22 @@ public class SlomFinMain implements Serializable
 
 	public void setRenderTrxAddAnother(boolean renderTrxAddAnother) {
 		this.renderTrxAddAnother = renderTrxAddAnother;
+	}
+
+	public List<Account> getGoalsCurrentList() {
+		return goalsCurrentList;
+	}
+
+	public void setGoalsCurrentList(List<Account> goalsCurrentList) {
+		this.goalsCurrentList = goalsCurrentList;
+	}
+
+	public List<Account> getGoalsProjectedList() {
+		return goalsProjectedList;
+	}
+
+	public void setGoalsProjectedList(List<Account> goalsProjectedList) {
+		this.goalsProjectedList = goalsProjectedList;
 	}
 
 }
