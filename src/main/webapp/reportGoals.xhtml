@@ -20,11 +20,19 @@
    		
 			<tr>
 			   
-			   <td>
+			   <td align="center">
 			   	  <h:outputText value="Goals" styleClass="pageSectionTitle"/>
 			   </td>
 			   	  
 			</tr>			   
+			
+			<tr>
+			   
+			   <td align="center">
+			   	  Projected return Pct <p:inputNumber id="pctRetId" maxValue="99" decimalPlaces="0" size="4" value="#{pc_SlomFinMain.percentReturnProjection}" symbol="%" symbolPosition="s" emptyValue="zero" required="true"/>											
+			   </td>
+			   	  
+			</tr>							  
 			
 		    <tr>
 		
@@ -55,11 +63,7 @@
 				   <p:column style="width:15%; align:left;" headerText="Yearly contribution">
 				       <p:inputNumber id="yrlyContrId" value="#{goalCurr.yearlyContribution}" required="true"/>
 				   </p:column>		
-								  
-				   <p:column style="width:15%; align:left;" headerText="Percent return">											
-					   <p:inputNumber id="pctRetId" maxValue="99" decimalPlaces="0" size="2" value="#{goalCurr.percentReturn}" symbol="%" symbolPosition="s" emptyValue="zero" required="true"/>											
-				   </p:column>		
-								  							  
+			
 				</p:dataTable>
 				
 			  </td>

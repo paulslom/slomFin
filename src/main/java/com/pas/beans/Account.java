@@ -27,7 +27,6 @@ public class Account implements Serializable
     //not to be saved to Dynamo
     private BigDecimal currentAccountValue;
     private BigDecimal yearlyContribution = new BigDecimal(0.0); //default to zero
-    private BigDecimal percentReturn = new BigDecimal(5.0); //default to 5%
     private Integer projectionYear;
     
     public String toString()
@@ -126,16 +125,6 @@ public class Account implements Serializable
 	@DynamoDbIgnore
 	public void setYearlyContribution(BigDecimal yearlyContribution) {
 		this.yearlyContribution = yearlyContribution;
-	}
-
-	@DynamoDbIgnore
-	public BigDecimal getPercentReturn() {
-		return percentReturn;
-	}
-
-	@DynamoDbIgnore
-	public void setPercentReturn(BigDecimal percentReturn) {
-		this.percentReturn = percentReturn;
 	}
 
 	@DynamoDbIgnore

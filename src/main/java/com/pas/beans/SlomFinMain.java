@@ -2,6 +2,7 @@ package com.pas.beans;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -133,6 +134,7 @@ public class SlomFinMain implements Serializable
 	
 	private List<Account> goalsCurrentList = new ArrayList<>();
 	private List<Account> goalsProjectedList = new ArrayList<>();
+	private BigDecimal percentReturnProjection = new BigDecimal(5.0); //default to 5%
 	
 	private BigDecimal portfolioValue;
 	private BigDecimal taxableValue;
@@ -1030,7 +1032,7 @@ public class SlomFinMain implements Serializable
 			int finalYear = thisYear + 15;
 			
 			BigDecimal daysLeftThisYear = SlomFinUtil.getDaysLeftThisYear();
-			BigDecimal thisYearRemainingPercent = daysLeftThisYear.divide(new BigDecimal(365.0));
+			BigDecimal thisYearRemainingPercent = daysLeftThisYear.divide(new BigDecimal(365.0), 2, RoundingMode.HALF_UP);
 			
 			//Create a map from the current goals list so we can re-use the map values as we project through the years
 			Map<Integer, Account> accountProjectionsMap = new HashMap<>();
@@ -1041,7 +1043,6 @@ public class SlomFinMain implements Serializable
 				acct.setsAccountName(loopAcct.getsAccountName());
 				acct.setiAccountID(loopAcct.getiAccountID());
 				acct.setCurrentAccountValue(loopAcct.getCurrentAccountValue());
-				acct.setPercentReturn(loopAcct.getPercentReturn());
 				acct.setYearlyContribution(loopAcct.getYearlyContribution());
 				accountProjectionsMap.put(loopAcct.getiAccountID(), acct);
 			} 
@@ -1060,7 +1061,7 @@ public class SlomFinMain implements Serializable
 					
 					BigDecimal totalNewMoney = new BigDecimal(0.0);
 					BigDecimal projectedContribution = new BigDecimal(0.0);
-					BigDecimal tempPercent = tempAccount.getPercentReturn().multiply(new BigDecimal(0.01));
+					BigDecimal tempPercent = this.getPercentReturnProjection().multiply(new BigDecimal(0.01));
 					BigDecimal remainderOfYearReturnRate = thisYearRemainingPercent.multiply(tempPercent);
 					BigDecimal currentAmount = new BigDecimal(tempAccount.getCurrentAccountValue().toString());
 					
@@ -3424,6 +3425,14 @@ public class SlomFinMain implements Serializable
 
 	public void setGoalsProjectedList(List<Account> goalsProjectedList) {
 		this.goalsProjectedList = goalsProjectedList;
+	}
+
+	public BigDecimal getPercentReturnProjection() {
+		return percentReturnProjection;
+	}
+
+	public void setPercentReturnProjection(BigDecimal percentReturnProjection) {
+		this.percentReturnProjection = percentReturnProjection;
 	}
 
 }
