@@ -49,7 +49,7 @@ public class MyWebAppInitializer implements ServletContextInitializer
             sc.setInitParameter("jakarta.faces.ENABLE_CDI_RESOLVER_CHAIN","true");
             sc.setInitParameter("jakarta.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE", "true");
             sc.setInitParameter("primefaces.UPLOADER", "commons");
-            sc.setInitParameter("session-timeout", "30");
+            sc.setInitParameter("session-timeout", "0"); //never time out.  If I could ever figure out how to let the user know they timed out, I'd put a value here.
             
             ServletRegistration.Dynamic elResolverInitializer = sc.addServlet("elResolverInit", new ELResolverInitializerServlet());
             elResolverInitializer.setLoadOnStartup(2);
