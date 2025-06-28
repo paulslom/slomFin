@@ -1471,6 +1471,20 @@ public class SlomFinMain implements Serializable
 			int stocksCounter = Integer.parseInt(strAttempts);
 			String marketCloseDate = rqsReturnArray[1];
 			
+			int totalStocksOwned = 0;
+			
+			for (int i = 0; i < this.getReportUnitsOwnedList().size(); i++) 
+			{
+				Investment inv = this.getReportUnitsOwnedList().get(i);
+				
+				if (inv.getInvestmentTypeDescription().equalsIgnoreCase("Stock"))
+				{
+					totalStocksOwned++;
+				}
+			}
+			
+			int myStocksCounter = 0;
+			
 			for (int i = 0; i < this.getReportUnitsOwnedList().size(); i++) 
 			{
 				Investment inv = this.getReportUnitsOwnedList().get(i);
@@ -1478,16 +1492,26 @@ public class SlomFinMain implements Serializable
 				if (inv.getInvestmentTypeDescription().equalsIgnoreCase("Stock"))
 				{
 					stocksCounter++;
+					myStocksCounter++;
 					
 					logger.info("quoting stock: " + inv.getTickerSymbol() + " - count = " + stocksCounter);
 					BigDecimal stockprice = rqs.getStockQuote(inv.getTickerSymbol(), marketCloseDate);
 					inv.setCurrentPrice(stockprice);
 					
-					//can only do 5 api calls per minute (under their free plan) so need to sleep for a bit before resuming this...
-					if (stocksCounter % 5 == 0)
+					if (myStocksCounter == totalStocksOwned)
 					{
-						TimeUnit.SECONDS.sleep(70);					
+						logger.info("finished quoting all stocks!");
+						break;
 					}
+					else
+					{
+						//can only do 5 api calls per minute (under their free plan) so need to sleep for a bit before resuming this...
+						if (stocksCounter % 5 == 0)
+						{
+							TimeUnit.SECONDS.sleep(70);					
+						}
+					}
+					
 				}
 			}
 			
