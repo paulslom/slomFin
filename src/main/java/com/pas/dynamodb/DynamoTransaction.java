@@ -47,6 +47,7 @@ public class DynamoTransaction implements Serializable
     private BigDecimal units;
     private Integer wdCategoryID;
     private String wdCategoryDescription;
+    private BigDecimal costBasis;
     
     //dynamodbignore fields
     private Date entryDateJava;
@@ -422,6 +423,14 @@ public class DynamoTransaction implements Serializable
 	@DynamoDbIgnore
 	public void setDisplayUnits(BigDecimal displayUnits) {
 		this.displayUnits = displayUnits;
+	}
+
+	public BigDecimal getCostBasis() {
+		return costBasis;
+	}
+
+	public void setCostBasis(BigDecimal costBasis) {
+		this.costBasis = costBasis;
 	}
   
 

@@ -156,6 +156,11 @@ public class TransactionDAO implements Serializable
 			
 			logger.debug("looping transaction: " + i);
 			
+			if (trx.getTransactionID() == 32102)
+			{
+				logger.info("transaction id is 32102 - tmdx xfer into roth");
+			}
+			
 			if (this.getFullTransactionsMapByAccountID().containsKey(trx.getAccountID()))
 			{
 				List<DynamoTransaction> tempList = this.getFullTransactionsMapByAccountID().get(trx.getAccountID());
@@ -215,7 +220,7 @@ public class TransactionDAO implements Serializable
 				}
 				
 			}
-			
+						
 		}
 		
 		this.setWdCategoryMap(SlomFinUtil.sortHashMapByValues(this.getWdCategoryMap()));
@@ -469,6 +474,24 @@ public class TransactionDAO implements Serializable
 
 	public void setFullTransactionsMapByAccountID(Map<Integer, List<DynamoTransaction>> fullTransactionsMapByAccountID) {
 		this.fullTransactionsMapByAccountID = fullTransactionsMapByAccountID;
+	}
+
+	public List<DynamoTransaction> getChecksWritten(int accountId) 
+	{
+		List<DynamoTransaction> checkTransactionsList = new ArrayList<>();
+		
+		List<DynamoTransaction> accountTrx = fullTransactionsMapByAccountID.get(accountId);
+		for (int i = 0; i < accountTrx.size(); i++) 
+		{
+			DynamoTransaction trx = accountTrx.get(i);
+			
+			if (trx.getCheckNo() != null && trx.getCheckNo() > 0)
+			{
+				checkTransactionsList.add(trx);
+			}
+		}
+		
+		return checkTransactionsList;
 	}
 
 	

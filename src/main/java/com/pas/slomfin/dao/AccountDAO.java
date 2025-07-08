@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.pas.beans.Account;
 import com.pas.dynamodb.DynamoClients;
+import com.pas.util.SlomFinUtil;
 
 import jakarta.faces.model.SelectItem;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -175,6 +176,34 @@ public class AccountDAO implements Serializable
 		return this.getFullAccountsMap().get(accountId);
 	}
 
+	public List<Account> getActiveCheckingAccountsList()
+	{
+		List<Account> activeCheckingAccountsList = new ArrayList<>();
+		for (int i = 0; i < this.getFullAccountsList().size(); i++)
+		{
+			Account account = this.getFullAccountsList().get(i);
+			if (account.getsAccountType().equalsIgnoreCase(SlomFinUtil.strChecking) && !account.getbClosed())
+			{
+				activeCheckingAccountsList.add(account);
+			}
+		} 
+		return activeCheckingAccountsList;
+	}
+	
+	public List<Account> getClosedCheckingAccountsList()
+	{
+		List<Account> closedCheckingAccountsList = new ArrayList<>();
+		for (int i = 0; i < this.getFullAccountsList().size(); i++)
+		{
+			Account account = this.getFullAccountsList().get(i);
+			if (account.getsAccountType().equalsIgnoreCase(SlomFinUtil.strChecking) && account.getbClosed())
+			{
+				closedCheckingAccountsList.add(account);
+			}
+		} 
+		return closedCheckingAccountsList;
+	}
+	
 	public List<Account> getActiveTaxableAccountsList()
 	{
 		List<Account> activeTaxableAccountsList = new ArrayList<>();
@@ -326,6 +355,35 @@ public class AccountDAO implements Serializable
 		}
 		
 		return acctID;
+	}
+
+	public List<Account> getActiveBrokerageAccountsList() 
+	{
+		List<Account> activeBrokerageAccountsList = new ArrayList<>();
+		for (int i = 0; i < this.getFullAccountsList().size(); i++)
+		{
+			Account account = this.getFullAccountsList().get(i);
+			if (!account.getbClosed() && isBrokerageAccount(account))
+			{
+				activeBrokerageAccountsList.add(account);
+			}
+		} 
+		return activeBrokerageAccountsList;
+	}
+
+	private boolean isBrokerageAccount(Account account) 
+	{
+		boolean isBrokerage = false;
+		
+		if (account.getsAccountType().equalsIgnoreCase(SlomFinUtil.strTaxableBrokerage)
+		||  account.getsAccountType().equalsIgnoreCase(SlomFinUtil.str401k)
+		||  account.getsAccountType().equalsIgnoreCase(SlomFinUtil.strRothIRA)
+		||  account.getsAccountType().equalsIgnoreCase(SlomFinUtil.strTraditionalIRA))
+		{
+			isBrokerage = true;
+		}
+			
+		return isBrokerage;
 	}
 
 }

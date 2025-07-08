@@ -128,12 +128,63 @@
 				    			
 				    		</p:submenu>
 							
-							<p:menuitem value="Cost Basis" actionListener="#{pc_SlomFinMain.reportCostBasis}"
-									onclick="PF('blockWidgetVar').show()" 
-	                                oncomplete="PF('blockWidgetVar').hide()"		  
-									update="menuForm">
-							</p:menuitem>	
-							
+							<p:submenu label="Checks-Active accts">
+			    							
+								<c:forEach items="#{pc_SlomFinMain.activeCheckingAccountsList}" var="activeCheckingAcct">
+							      	
+						        	<p:menuitem id="menuActiveCkId" value="#{activeCheckingAcct.sAccountName}"
+						        	    ajax="false" 
+						        	    actionListener="#{pc_SlomFinMain.checkRegister}"
+						        	    onclick="PF('blockWidgetVar').show()" 
+						        	    oncomplete="PF('blockWidgetVar').hide()" 
+						        	    update="menuForm">
+						        	   <f:param name="accountid" value="#{activeCheckingAcct.iAccountID}"/>
+						        	</p:menuitem>  
+							        					        
+							        <p:separator/>
+							        						        							        
+				    			</c:forEach>
+				    			
+				    		</p:submenu>
+				    		
+				    		<p:submenu label="Checks-Closed accts">
+			    							
+								<c:forEach items="#{pc_SlomFinMain.closedCheckingAccountsList}" var="closedCheckingAcct">
+							      	
+						        	<p:menuitem id="menuClosedCkId" value="#{closedCheckingAcct.sAccountName}"
+						        	    ajax="false" 
+						        	    actionListener="#{pc_SlomFinMain.checkRegister}"
+						        	    onclick="PF('blockWidgetVar').show()" 
+						        	    oncomplete="PF('blockWidgetVar').hide()" 
+						        	    update="menuForm">
+						        	   <f:param name="accountid" value="#{closedCheckingAcct.iAccountID}"/>
+						        	</p:menuitem>  
+							        					        
+							        <p:separator/>
+							        						        							        
+				    			</c:forEach>
+				    			
+				    		</p:submenu>
+				    		
+							<p:submenu label="Cost Basis">	
+										
+								<c:forEach items="#{pc_SlomFinMain.activeBrokerageAccountsList}" var="brkAcct">
+							       	
+							        <p:menuitem id="cbAccts" value="#{brkAcct.sAccountName}"
+						        	    ajax="false" 
+						        	    actionListener="#{pc_SlomFinMain.reportCostBasis}"
+						        	    onclick="PF('blockWidgetVar').show()" 
+						        	    oncomplete="PF('blockWidgetVar').hide()" 
+						        	    update="menuForm">
+						        	   <f:param name="accountid" value="#{brkAcct.iAccountID}"/>
+						        	</p:menuitem> 		        	
+						        	
+							        <p:separator/>						       
+							       						        							        
+				    			</c:forEach>
+				    			
+				    		</p:submenu>
+				    		
 							<p:submenu label="Dividends">
 			    							
 								<c:forEach items="#{pc_SlomFinMain.reportDividendYearsList}" var="yearSelection">
@@ -283,31 +334,93 @@
 				    		</p:submenu>
 				    					    						    	
 							<p:submenu label="Closed Accts">
-				    							
-								<c:forEach items="#{pc_SlomFinMain.closedAccountsList}" var="closedAcct">
-																
-							        <p:submenu label="#{closedAcct.sAccountName}" style="width: 250px;">
-							        
-							            <p:menuitem id="vcdClosed" value="View-Chg-Del" 
-							                ajax="false" 
-							        	    actionListener="#{pc_SlomFinMain.accountTransactionsSelection}"							        	    
-							        	    onclick="PF('blockWidgetVar').show()" 
-							        	    oncomplete="PF('blockWidgetVar').hide()" 
-							        	    update="menuForm">
-							        	   <f:param name="accountid" value="#{closedAcct.iAccountID}"/>
-							        	</p:menuitem>  
-							              	
-							        	<p:menuitem id="updClosed" value="Update Account" 
-							        	    actionListener="#{pc_SlomFinMain.accountUpdate}"
-							        	    onclick="PF('blockWidgetVar').show()" 
-							        	    oncomplete="PF('blockWidgetVar').hide()" 
-							        	    update="menuForm">
-							        	   <f:param name="accountid" value="#{closedAcct.iAccountID}"/>
-							        	   <f:param name="operation" value="Update" />
-							        	</p:menuitem> 					       											
-							        </p:submenu>
-							        							        
-				    			</c:forEach>
+				    			
+				    			<p:submenu label="A-D">	
+				    				
+									<c:forEach items="#{pc_SlomFinMain.closedAccountsList1}" var="closedAcct1">
+																	
+								        <p:submenu label="#{closedAcct1.sAccountName}" style="width: 250px;">
+								        
+								            <p:menuitem id="vcdClosed1" value="View-Chg-Del" 
+								                ajax="false" 
+								        	    actionListener="#{pc_SlomFinMain.accountTransactionsSelection}"							        	    
+								        	    onclick="PF('blockWidgetVar').show()" 
+								        	    oncomplete="PF('blockWidgetVar').hide()" 
+								        	    update="menuForm">
+								        	   <f:param name="accountid" value="#{closedAcct1.iAccountID}"/>
+								        	</p:menuitem>  
+								              	
+								        	<p:menuitem id="updClosed1" value="Update Account" 
+								        	    actionListener="#{pc_SlomFinMain.accountUpdate}"
+								        	    onclick="PF('blockWidgetVar').show()" 
+								        	    oncomplete="PF('blockWidgetVar').hide()" 
+								        	    update="menuForm">
+								        	   <f:param name="accountid" value="#{closedAcct1.iAccountID}"/>
+								        	   <f:param name="operation" value="Update" />
+								        	</p:menuitem> 					       											
+								        </p:submenu>
+								        							        
+					    			</c:forEach>
+					    			
+				    			</p:submenu>
+				    			
+				    			<p:submenu label="E-M">	
+				    			
+					    			<c:forEach items="#{pc_SlomFinMain.closedAccountsList2}" var="closedAcct2">
+																	
+								        <p:submenu label="#{closedAcct2.sAccountName}" style="width: 250px;">
+								        
+								            <p:menuitem id="vcdClosed2" value="View-Chg-Del" 
+								                ajax="false" 
+								        	    actionListener="#{pc_SlomFinMain.accountTransactionsSelection}"							        	    
+								        	    onclick="PF('blockWidgetVar').show()" 
+								        	    oncomplete="PF('blockWidgetVar').hide()" 
+								        	    update="menuForm">
+								        	   <f:param name="accountid" value="#{closedAcct2.iAccountID}"/>
+								        	</p:menuitem>  
+								              	
+								        	<p:menuitem id="updClosed2" value="Update Account" 
+								        	    actionListener="#{pc_SlomFinMain.accountUpdate}"
+								        	    onclick="PF('blockWidgetVar').show()" 
+								        	    oncomplete="PF('blockWidgetVar').hide()" 
+								        	    update="menuForm">
+								        	   <f:param name="accountid" value="#{closedAcct2.iAccountID}"/>
+								        	   <f:param name="operation" value="Update" />
+								        	</p:menuitem> 					       											
+								        </p:submenu>
+								        							        
+					    			</c:forEach>
+					    		
+					    		</p:submenu>
+					    		
+					    		<p:submenu label="N-Z">	
+				    			
+					    			<c:forEach items="#{pc_SlomFinMain.closedAccountsList3}" var="closedAcct3">
+																	
+								        <p:submenu label="#{closedAcct3.sAccountName}" style="width: 250px;">
+								        
+								            <p:menuitem id="vcdClosed3" value="View-Chg-Del" 
+								                ajax="false" 
+								        	    actionListener="#{pc_SlomFinMain.accountTransactionsSelection}"							        	    
+								        	    onclick="PF('blockWidgetVar').show()" 
+								        	    oncomplete="PF('blockWidgetVar').hide()" 
+								        	    update="menuForm">
+								        	   <f:param name="accountid" value="#{closedAcct3.iAccountID}"/>
+								        	</p:menuitem>  
+								              	
+								        	<p:menuitem id="updClosed3" value="Update Account" 
+								        	    actionListener="#{pc_SlomFinMain.accountUpdate}"
+								        	    onclick="PF('blockWidgetVar').show()" 
+								        	    oncomplete="PF('blockWidgetVar').hide()" 
+								        	    update="menuForm">
+								        	   <f:param name="accountid" value="#{closedAcct3.iAccountID}"/>
+								        	   <f:param name="operation" value="Update" />
+								        	</p:menuitem> 					       											
+								        </p:submenu>
+								        							        
+					    			</c:forEach>
+					    			
+					    		</p:submenu>
 				    			
 				    		</p:submenu>	
 				    		

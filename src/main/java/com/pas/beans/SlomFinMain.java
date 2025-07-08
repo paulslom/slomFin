@@ -25,6 +25,7 @@ import com.pas.dynamodb.DynamoTransaction;
 import com.pas.dynamodb.DynamoUtil;
 import com.pas.pojo.AccountPosition;
 import com.pas.pojo.CapitalGain;
+import com.pas.pojo.CostBasis;
 import com.pas.slomfin.constants.AppConstants;
 import com.pas.slomfin.dao.AccountDAO;
 import com.pas.slomfin.dao.InvestmentDAO;
@@ -35,6 +36,7 @@ import com.pas.slomfin.dao.PaydayDAO;
 import com.pas.util.SlomFinUtil;
 import com.pas.util.SortSelectItemList;
 import com.pas.util.TransactionTypeComparator;
+import com.pas.util.TransactionCheckNumberComparator;
 import com.pas.util.CapitalGainComparator;
 import com.pas.util.InvestmentComparator;
 import com.pas.util.RetrieveStockQuotesService;
@@ -131,6 +133,9 @@ public class SlomFinMain implements Serializable
 	private List<PortfolioHistory> portfolioHistoryList = new ArrayList<>();
 	private List<Account> activeAccountsList = new ArrayList<>();
 	private List<AccountPosition> accountPositionsList = new ArrayList<>();
+	private List<Account> activeCheckingAccountsList = new ArrayList<>();
+	private List<Account> closedCheckingAccountsList = new ArrayList<>();
+	private List<DynamoTransaction> checkRegisterList = new ArrayList<>();
 	
 	private List<Account> goalsCurrentList = new ArrayList<>();
 	private List<Account> goalsProjectedList = new ArrayList<>();
@@ -149,13 +154,22 @@ public class SlomFinMain implements Serializable
 	
 	private List<CapitalGain> capitalGainsTransactionsList = new ArrayList<>();
 	private String reportCapitalGainsTitle;
+	private String reportCostBasisTitle;
 	private BigDecimal capitalGainsTotal = new BigDecimal(0.0);
 	private String capitalGainsTotalStyleClass;
+	
+	private List<CostBasis> costBasisList = new ArrayList<>();
+	private BigDecimal costBasisTotal = new BigDecimal(0.0);
+	private String costBasisTotalStyleClass;
 	
 	private Integer citiDoubleCashAccountID;
 	private Integer checkingAccountID;
 	
 	private String trxListTitle;
+	private String trxListTitleAll;
+	
+	private String checkRegisterTitle;
+	
 	
 	public void onStart(@Observes @Initialized(ApplicationScoped.class) Object pointless) 
 	{
@@ -183,6 +197,9 @@ public class SlomFinMain implements Serializable
 				
 				this.setCheckingAccountID(accountDAO.getCheckingAccountID());
 				this.setCitiDoubleCashAccountID(accountDAO.getCitiDoubleCashAccountID());
+				
+				this.setActiveCheckingAccountsList(getActiveCheckingAccountsList());
+				this.setClosedCheckingAccountsList(getClosedCheckingAccountsList());
 			}
 		} 
 		catch (Exception e) 
@@ -271,10 +288,31 @@ public class SlomFinMain implements Serializable
     	{
 	    	DynamoTransaction trx = this.getTrxList().get(0);
     		logger.info("account Name:  " + trx.getAccountName() + " selected to show trx from menu");
-    		this.setTrxListTitle("Transaction List for Account " + trx.getAccountName());
+    		this.setTrxListTitle("2-Year Transaction List for Account " + trx.getAccountName());
+    		this.setTrxListTitleAll("ALL Transactions for Account " + trx.getAccountName());
+    		this.setSelectedAccountID(trx.getAccountID());
     	}
 	}
+	
+	private void refreshTrxList(int accountID, boolean allTransactions) 
+	{
+		if (allTransactions)
+		{
+			this.getTrxList().clear();
+			this.setTrxList(new ArrayList<>(transactionDAO.getFullTransactionsMapByAccountID().get(accountID)));
+					    
+		    if (this.getTrxList() != null && this.getTrxList().size() > 0)
+	    	{
+		    	DynamoTransaction trx = this.getTrxList().get(0);
+	    		logger.info("account Name:  " + trx.getAccountName() + " selected to show trx from menu");
+	    		this.setTrxListTitle("ALL Transaction List for Account " + trx.getAccountName());
+	    		this.setTrxListTitleAll("ALL Transactions for Account " + trx.getAccountName());
+	    		this.setSelectedAccountID(trx.getAccountID());
+	    	}
+		}
 		
+	}
+	
 	private void refreshTrxList(String searchTerm)
 	{
 		this.getTrxList().clear();		
@@ -314,6 +352,30 @@ public class SlomFinMain implements Serializable
 		    logger.info("account ID " + accountid + " selected to show trx from menu");
 		    
 		    refreshTrxList(Integer.parseInt(accountid));
+		    
+            String targetURL = SlomFinUtil.getContextRoot() + "/transactionList.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}  	
+	
+	public void accountTransactionsSelectionAll() 
+	{
+		boolean allTransactions = true;
+		
+		try 
+        {		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+		    String accountid = ec.getRequestParameterMap().get("accountId");		    
+		    logger.info("User wants to see ALL transactions for account ID " + accountid);
+		    
+		    refreshTrxList(Integer.parseInt(accountid), allTransactions);
 		    
             String targetURL = SlomFinUtil.getContextRoot() + "/transactionList.xhtml";
 		    ec.redirect(targetURL);
@@ -564,6 +626,50 @@ public class SlomFinMain implements Serializable
         }
 	}
 	
+	public void checkRegister(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("Check register report selected from menu");
+		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+		    String accountid = ec.getRequestParameterMap().get("accountid");		    
+		    logger.info("account ID " + accountid + " selected to show checks");
+		    
+		    refreshCheckRegisterList(Integer.parseInt(accountid));
+		    
+            String targetURL = SlomFinUtil.getContextRoot() + "/checkRegister.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+        
+	}
+	
+	private void refreshCheckRegisterList(int accountId) 
+	{
+		if (this.getCheckRegisterList() != null)
+		{
+			this.getCheckRegisterList().clear();
+		}
+		
+		this.setCheckRegisterList(transactionDAO.getChecksWritten(accountId));
+		
+		Collections.sort(this.getCheckRegisterList(), new TransactionCheckNumberComparator());
+		
+		if (this.getCheckRegisterList() != null && this.getCheckRegisterList().size() > 0)
+    	{
+	    	DynamoTransaction trx = this.getCheckRegisterList().get(0);
+    		logger.info("account Name:  " + trx.getAccountName() + " selected to show from menu");
+    		this.setCheckRegisterTitle("Check Register for Account " + trx.getAccountName());
+    	}
+	}
+
 	public void reportCapitalGains(ActionEvent event) 
 	{
 		try 
@@ -599,6 +705,20 @@ public class SlomFinMain implements Serializable
 		try 
         {		    
 		    logger.info("Cost Basis report selected from menu");
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+		    String accountid = ec.getRequestParameterMap().get("accountid");		    
+		    
+		    Account acct = accountDAO.getAccountByAccountID(Integer.parseInt(accountid));
+		    
+		    refreshCostBasisList(acct);
+		    
+		    logger.info("Cost basis report account id selection: " + acct.getsAccountName());
+		    
+			this.setReportCostBasisTitle("Cost Basis for positions in account: " + acct.getsAccountName());
+			
+            String targetURL = SlomFinUtil.getContextRoot() + "/reportCostBasis.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
         } 
         catch (Exception e) 
         {
@@ -608,6 +728,125 @@ public class SlomFinMain implements Serializable
         }
 	}
 	
+	private void refreshCostBasisList(Account acct) 
+	{
+		this.setActiveAccountsList(new ArrayList<>(this.getActiveTaxableAccountsList()));
+		this.getActiveAccountsList().addAll(this.getActiveRetirementAccountsList());
+		
+		Map<Integer, List<Investment>> activeAccountsMap = SlomFinUtil.getActiveAccountValues(this.getActiveAccountsList(), transactionDAO.getFullTransactionsList(), investmentDAO.getFullInvestmentsMap(), getCashInvestmentID()); 
+		
+		this.getCostBasisList().clear();
+		this.setCostBasisTotal(new BigDecimal(0.0));
+		
+		List<Investment> investmentList = activeAccountsMap.get(acct.getiAccountID());
+        		
+		for (int i = 0; i < investmentList.size(); i++) 
+		{
+			Investment inv = investmentList.get(i);
+			
+			if (inv.getDescription().equalsIgnoreCase("Cash")
+			|| inv.getDescription().startsWith("SWVXX")) //doesn't make sense to do money markets
+			{
+				continue;
+			}
+			
+			CostBasis cb = new CostBasis();
+		
+			cb.setAccountID(acct.getiAccountID());
+			cb.setAccountName(acct.getsAccountName());
+			cb.setInvestmentID(inv.getiInvestmentID());			
+			cb.setInvestmentName(inv.getDescription());
+			cb.setCurrentValue(inv.getCurrentPrice()); //the price of one share right now; will later be multiplied by units owned.
+			cb.setUnitsOwned(new BigDecimal(0.0));
+			cb.setCostBasis(new BigDecimal(0.0));
+			cb.setGainOrLoss(new BigDecimal(0.0));
+			
+			this.getCostBasisList().add(cb);	
+		}
+		
+		List<DynamoTransaction> trxListByAccount = new ArrayList<>(transactionDAO.getFullTransactionsMapByAccountID().get(acct.getiAccountID()));
+		
+		for (int j = 0; j < this.getCostBasisList().size(); j++) 
+		{
+			CostBasis cb = this.getCostBasisList().get(j);
+			
+			//logger.info("working on cost basis for: " + cb.getInvestmentName() + " in account: " + acct.getsAccountName());
+			
+			BigDecimal unitsOwned = new BigDecimal(0.0);
+			BigDecimal costBasis = new BigDecimal(0.0);
+			
+			for (int i = 0; i < trxListByAccount.size(); i++)
+			{
+				DynamoTransaction trx = trxListByAccount.get(i);
+				
+				if (trx.getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strCashDividend))
+				{
+					continue;
+				}
+				/*
+				logger.info("cost basis trx id : " + trx.getTransactionID() + " which is investment: " + trx.getInvestmentDescription());
+				
+				if (trx.getTransactionID() == 28934)
+				{
+					logger.info("this is 28934");
+				}				
+				*/
+				if (trx.getInvestmentID().intValue() == cb.getInvestmentID().intValue())
+				{
+					unitsOwned = SlomFinUtil.transactAnAmount(trx, unitsOwned, "units");
+					
+					if (trx.getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strTransferIn))
+					{
+						if (trx.getCostBasis() != null)
+						{
+							costBasis = costBasis.add(trx.getCostBasis()); 
+						}
+					}
+					else if (trx.getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strSell))
+					{
+						//calculate current cost basis at the time of the sale.
+						BigDecimal unitsOwnedBeforeSale = unitsOwned.add(trx.getUnits());
+						BigDecimal costBasisPerShareSold = costBasis.divide(unitsOwnedBeforeSale, 2, RoundingMode.HALF_UP);
+						BigDecimal totalCostBasisPerShare = costBasisPerShareSold.multiply(trx.getUnits());
+						costBasis = costBasis.subtract(totalCostBasisPerShare);
+					}
+					else
+					{
+						if (trx.getCostProceeds() != null) //can be null on a split
+						{
+							costBasis = costBasis.add(trx.getCostProceeds());
+						}
+					}
+				}				
+			}
+			
+			cb.setUnitsOwned(unitsOwned);
+			cb.setCurrentValue(cb.getCurrentValue().multiply(unitsOwned));
+			cb.setCostBasis(costBasis);
+			cb.setGainOrLoss(cb.getCurrentValue().subtract(cb.getCostBasis()));
+			
+			costBasisTotal = costBasisTotal.add(cb.getGainOrLoss());
+			
+			if (this.getCostBasisTotal().compareTo(BigDecimal.ZERO) > 0)
+			{
+				this.setCostBasisTotalStyleClass(SlomFinUtil.GREEN_STYLECLASS);
+			}
+			else
+			{
+				this.setCostBasisTotalStyleClass(SlomFinUtil.RED_STYLECLASS);
+			}
+			
+			if (cb.getGainOrLoss().compareTo(BigDecimal.ZERO) > 0)
+			{
+				cb.setCbStyleClass(SlomFinUtil.GREEN_STYLECLASS);
+			}
+			else
+			{
+				cb.setCbStyleClass(SlomFinUtil.RED_STYLECLASS);
+			}
+		}
+	}
+
 	public void reportDividends(ActionEvent event) 
 	{
 		try 
@@ -2902,15 +3141,98 @@ public class SlomFinMain implements Serializable
 	{
 		return accountDAO.getActiveTaxableAccountsList();
 	}
+	
+	public List<Account> getActiveBrokerageAccountsList()
+	{
+		return accountDAO.getActiveBrokerageAccountsList();
+	}
+	
+	public List<Account> getActiveCheckingAccountsList()
+	{
+		activeCheckingAccountsList = accountDAO.getActiveCheckingAccountsList();
+		return activeCheckingAccountsList;
+	}
 
+	public List<Account> getClosedCheckingAccountsList()
+	{
+		closedCheckingAccountsList = accountDAO.getClosedCheckingAccountsList();
+		return closedCheckingAccountsList;
+	}
+	
 	public List<Account> getActiveRetirementAccountsList()
 	{
 		return accountDAO.getActiveRetirementAccountsList();
 	}
 
-	public List<Account> getClosedAccountsList()
+	public List<Account> getClosedAccountsList1()
 	{
-		return accountDAO.getClosedAccountsList();
+		List<Account> returnList = new ArrayList<>();
+		
+		for (int i = 0; i < accountDAO.getClosedAccountsList().size(); i++) 
+		{
+			Account acct = accountDAO.getClosedAccountsList().get(i);
+			
+			if (acct.getsAccountName().startsWith("A")
+			||  acct.getsAccountName().startsWith("B")
+			||  acct.getsAccountName().startsWith("C")
+			||  acct.getsAccountName().startsWith("D"))
+			{
+				returnList.add(acct);
+			}
+		}
+		return returnList;
+	}
+	
+	public List<Account> getClosedAccountsList2()
+	{
+		List<Account> returnList = new ArrayList<>();
+		
+		for (int i = 0; i < accountDAO.getClosedAccountsList().size(); i++) 
+		{
+			Account acct = accountDAO.getClosedAccountsList().get(i);
+			
+			if (acct.getsAccountName().startsWith("E")
+			||  acct.getsAccountName().startsWith("F")
+			||  acct.getsAccountName().startsWith("G")
+			||  acct.getsAccountName().startsWith("H")
+			||  acct.getsAccountName().startsWith("I")
+			||  acct.getsAccountName().startsWith("J")
+			||  acct.getsAccountName().startsWith("K")
+			||  acct.getsAccountName().startsWith("L")
+			||  acct.getsAccountName().startsWith("M"))
+			{
+				returnList.add(acct);
+			}
+		}
+		return returnList;
+	}
+	
+	public List<Account> getClosedAccountsList3()
+	{
+		List<Account> returnList = new ArrayList<>();
+		
+		for (int i = 0; i < accountDAO.getClosedAccountsList().size(); i++) 
+		{
+			Account acct = accountDAO.getClosedAccountsList().get(i);
+			
+			if (acct.getsAccountName().startsWith("N")
+			||  acct.getsAccountName().startsWith("O")
+			||  acct.getsAccountName().startsWith("P")
+			||  acct.getsAccountName().startsWith("Q")
+			||  acct.getsAccountName().startsWith("R")
+			||  acct.getsAccountName().startsWith("S")
+			||  acct.getsAccountName().startsWith("T")
+			||  acct.getsAccountName().startsWith("U")
+			||  acct.getsAccountName().startsWith("V")
+			||  acct.getsAccountName().startsWith("W")
+			||  acct.getsAccountName().startsWith("X")
+			||  acct.getsAccountName().startsWith("Y")
+			||  acct.getsAccountName().startsWith("Z"))
+			{
+				returnList.add(acct);
+			}
+		}
+		return returnList;
 	}
 	
 	public Integer getCashInvestmentID()
@@ -3458,5 +3780,70 @@ public class SlomFinMain implements Serializable
 	public void setPercentReturnProjection(BigDecimal percentReturnProjection) {
 		this.percentReturnProjection = percentReturnProjection;
 	}
+
+	public void setActiveCheckingAccountsList(List<Account> activeCheckingAccountsList) {
+		this.activeCheckingAccountsList = activeCheckingAccountsList;
+	}
+
+	public void setClosedCheckingAccountsList(List<Account> closedCheckingAccountsList) {
+		this.closedCheckingAccountsList = closedCheckingAccountsList;
+	}
+
+	public String getCheckRegisterTitle() {
+		return checkRegisterTitle;
+	}
+
+	public void setCheckRegisterTitle(String checkRegisterTitle) {
+		this.checkRegisterTitle = checkRegisterTitle;
+	}
+
+	public List<DynamoTransaction> getCheckRegisterList() {
+		return checkRegisterList;
+	}
+
+	public void setCheckRegisterList(List<DynamoTransaction> checkRegisterList) {
+		this.checkRegisterList = checkRegisterList;
+	}
+
+	public String getReportCostBasisTitle() {
+		return reportCostBasisTitle;
+	}
+
+	public void setReportCostBasisTitle(String reportCostBasisTitle) {
+		this.reportCostBasisTitle = reportCostBasisTitle;
+	}
+
+	public List<CostBasis> getCostBasisList() {
+		return costBasisList;
+	}
+
+	public void setCostBasisList(List<CostBasis> costBasisList) {
+		this.costBasisList = costBasisList;
+	}
+
+	public BigDecimal getCostBasisTotal() {
+		return costBasisTotal;
+	}
+
+	public void setCostBasisTotal(BigDecimal costBasisTotal) {
+		this.costBasisTotal = costBasisTotal;
+	}
+
+	public String getCostBasisTotalStyleClass() {
+		return costBasisTotalStyleClass;
+	}
+
+	public void setCostBasisTotalStyleClass(String costBasisTotalStyleClass) {
+		this.costBasisTotalStyleClass = costBasisTotalStyleClass;
+	}
+
+	public String getTrxListTitleAll() {
+		return trxListTitleAll;
+	}
+
+	public void setTrxListTitleAll(String trxListTitleAll) {
+		this.trxListTitleAll = trxListTitleAll;
+	}
+
 
 }

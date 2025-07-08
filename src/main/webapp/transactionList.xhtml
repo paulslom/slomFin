@@ -22,6 +22,7 @@
 			   
 			   <tr>
 			      <td align="center">
+			      
 			   		  <p:commandLink ajax="false">
 	                     <p:graphicImage url="/images/excel.png" width="24"/>
 	                     <p:dataExporter type="xls" target="trxTableID" fileName="trx" />
@@ -31,6 +32,16 @@
 	                     <p:graphicImage url="/images/pdf.png" width="24"/>
 	                     <p:dataExporter type="pdf" target="trxTableID" fileName="trx"/>
 	                  </p:commandLink>	
+	                  
+	                  <p:commandButton id="allTrxId" 				   
+						    value="#{pc_SlomFinMain.trxListTitleAll}" 	
+						    action="#{pc_SlomFinMain.accountTransactionsSelectionAll}"
+						    onclick="PF('blockWidgetVar').show()" 
+						    oncomplete="PF('blockWidgetVar').hide()"		
+						    update="transactionListForm">
+						    <f:param name="accountId" value="#{pc_SlomFinMain.selectedAccountID}" />
+					  </p:commandButton>
+					  
 			   	  </td>
 			   </tr>
 		    

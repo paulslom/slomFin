@@ -1,0 +1,77 @@
+<ui:composition template="template.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+     
+    <ui:define name="content">
+    
+         <h:form id="costBasisListForm">                      
+     
+            <p:messages id="facesMessagesID" showDetail="false"/>
+            
+            <table>
+         		
+			   <tr>
+			      <td align="center">
+			   		  <h:outputText value="#{pc_SlomFinMain.reportCostBasisTitle}" styleClass="pageSectionTitle"/>
+			   	  </td>
+			   </tr>
+		    
+	          <tr>
+	          
+	              <td>
+	                    
+			  		 <p:dataTable id="costBasisTableID" value="#{pc_SlomFinMain.costBasisList}" rowIndexVar="rowIndex"
+				          var="costbasis" scrollable="true" scrollHeight="950" styleClass="dataTableStyle">						
+						   
+						  <p:column style="width:5%" headerText="Num">												
+							  <h:outputText value="#{rowIndex + 1}"/>															
+						  </p:column>
+                         						       	 				       				  
+						  <p:column style="width:15%" headerText="Investment" sortBy="#{costbasis.investmentName}">												
+							  <h:outputText value="#{costbasis.investmentName}"/>															
+						  </p:column>
+							  
+						  <p:column style="width:10%" headerText="Units">												
+							   <h:outputText value="#{costbasis.unitsOwned}"/>							
+						  </p:column>
+							
+						  <p:column style="width:10%" headerText="Cost Basis">												
+							   <h:outputText value="#{costbasis.costBasis}">	
+							       <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+							   </h:outputText>						
+						  </p:column>
+						  
+						  <p:column style="width:10%" headerText="Current Value">												
+						      <h:outputText value="#{costbasis.currentValue}">	
+						          <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+						      </h:outputText>						
+						  </p:column>
+						 						  
+						  <p:column style="width:10%" headerText="Gain or Loss" sortBy="#{costbasis.gainOrLoss}">												
+							   <h:outputText value="#{costbasis.gainOrLoss}" styleClass="#{costbasis.cbStyleClass}">
+							      <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+							  </h:outputText> 
+							  <f:facet name="footer">
+					             <h:outputText value="#{pc_SlomFinMain.costBasisTotal}"  styleClass="#{pc_SlomFinMain.costBasisTotalStyleClass}">
+					                <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+							     </h:outputText> 
+					          </f:facet>  														
+						  </p:column>
+						  										  
+				     </p:dataTable>
+				     
+				  </td>
+		     </tr>
+		     
+		    </table>
+	                
+	   </h:form>
+   
+    </ui:define>
+
+</ui:composition>
+  

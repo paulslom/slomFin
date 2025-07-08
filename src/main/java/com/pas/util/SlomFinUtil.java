@@ -775,6 +775,7 @@ public class SlomFinUtil
     		}
 			else
 			{
+				//logger.info("trx id: " + trx.getTransactionID() + " trx date: " + trx.getTransactionPostedDate() + " inv desc: " + trx.getInvestmentDescription());
 				returnAmount = inputAmount.add(trx.getUnits());
 			}
     	}
