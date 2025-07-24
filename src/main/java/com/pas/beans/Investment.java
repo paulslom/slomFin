@@ -31,6 +31,7 @@ public class Investment implements Serializable
 	//not saved to dynamo - used on report
 	private BigDecimal unitsOwned;
 	private BigDecimal currentValue;
+	private BigDecimal holdingPercentage;
 	
 	@DynamoDbPartitionKey
 	public Integer getiInvestmentID() {
@@ -121,6 +122,16 @@ public class Investment implements Serializable
 	@DynamoDbIgnore
 	public void setCurrentValue(BigDecimal currentValue) {
 		this.currentValue = currentValue;
+	}
+
+	@DynamoDbIgnore
+	public BigDecimal getHoldingPercentage() {
+		return holdingPercentage;
+	}
+
+	@DynamoDbIgnore
+	public void setHoldingPercentage(BigDecimal holdingPercentage) {
+		this.holdingPercentage = holdingPercentage;
 	}
    	
 }

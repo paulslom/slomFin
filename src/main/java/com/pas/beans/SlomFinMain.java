@@ -129,6 +129,7 @@ public class SlomFinMain implements Serializable
 	private List<DynamoTransaction> trxList = new ArrayList<>();
 	private List<Investment> investmentsList = new ArrayList<>();	
 	private List<Payday> paydayList = new ArrayList<>();
+	private List<Investment> holdingPercentagesList = new ArrayList<>();
 	private List<Investment> reportUnitsOwnedList = new ArrayList<>();
 	private List<PortfolioHistory> portfolioHistoryList = new ArrayList<>();
 	private List<Account> activeAccountsList = new ArrayList<>();
@@ -1392,6 +1393,68 @@ public class SlomFinMain implements Serializable
 	        }
 			
             String targetURL = SlomFinUtil.getContextRoot() + "/reportGoals.xhtml";
+		    ec.redirect(targetURL);
+            logger.info("successfully redirected to: " + targetURL);
+        } 
+        catch (Exception e) 
+        {
+            logger.error("exception: " + e.getMessage(), e);
+            FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+        }
+	}
+	
+	public void holdingPercentages(ActionEvent event) 
+	{
+		try 
+        {		    
+		    logger.info("Holding Percentages report selected from menu");
+		    
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+		    
+		    this.getHoldingPercentagesList().clear();
+		    
+		    //first get total portfolio value - the portfolioValue variable will have this
+		    boolean doSubtotals = false;
+		    calculateAccountPositions(doSubtotals);	  
+		    
+		    logger.info("Holding Percentages:  total portfolio value is: " + portfolioValue);
+		    
+		    Map<Integer, Investment> holdingPercentagesMap = new HashMap<>();
+		    
+		    for (int i = 0; i < this.getAccountPositionsList().size(); i++) 
+		    {
+				AccountPosition accountPos = this.getAccountPositionsList().get(i);
+				
+				Investment inv = new Investment();
+				inv.setiInvestmentID(accountPos.getInvestmentID());
+				inv.setDescription(accountPos.getInvestmentName());
+				inv.setCurrentValue(accountPos.getPositionValue());
+				
+				if (holdingPercentagesMap.containsKey(accountPos.getInvestmentID()))
+				{
+					Investment hpMapInvestment = holdingPercentagesMap.get(accountPos.getInvestmentID());
+					inv.setCurrentValue(inv.getCurrentValue().add(hpMapInvestment.getCurrentValue()));
+					inv.setHoldingPercentage(inv.getCurrentValue().divide(portfolioValue, 4, RoundingMode.HALF_UP));
+					holdingPercentagesMap.replace(accountPos.getInvestmentID(), inv);
+				}
+				else
+				{
+					inv.setHoldingPercentage(inv.getCurrentValue().divide(portfolioValue, 4, RoundingMode.HALF_UP));
+					holdingPercentagesMap.put(accountPos.getInvestmentID(), inv);
+				}
+				
+			} 
+		   	
+		    for (Map.Entry<Integer, Investment> entry : holdingPercentagesMap.entrySet()) 
+		    {
+                Investment hpInv =  entry.getValue();
+                this.getHoldingPercentagesList().add(hpInv);
+            }
+		     
+		    Collections.sort(this.getHoldingPercentagesList(), new InvestmentComparator());
+		    
+            String targetURL = SlomFinUtil.getContextRoot() + "/holdingPercentages.xhtml";
 		    ec.redirect(targetURL);
             logger.info("successfully redirected to: " + targetURL);
         } 
@@ -3843,6 +3906,14 @@ public class SlomFinMain implements Serializable
 
 	public void setTrxListTitleAll(String trxListTitleAll) {
 		this.trxListTitleAll = trxListTitleAll;
+	}
+
+	public List<Investment> getHoldingPercentagesList() {
+		return holdingPercentagesList;
+	}
+
+	public void setHoldingPercentagesList(List<Investment> holdingPercentagesList) {
+		this.holdingPercentagesList = holdingPercentagesList;
 	}
 
 
