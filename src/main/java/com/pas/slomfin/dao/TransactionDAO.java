@@ -176,6 +176,11 @@ public class TransactionDAO implements Serializable
 			
 			if (trx.getWdCategoryID() != null && trx.getWdCategoryID() != 0)
 			{
+				if (trx.getWdCategoryID() == -1)
+				{
+					logger.error("transaction has a -1 in wdcategoryID.  Trx id = " + trx.getTransactionID());
+				}
+				
 				if (!this.getWdCategoryMap().containsKey(trx.getWdCategoryID()))
 				{
 					this.getWdCategoryMap().put(trx.getWdCategoryID(), trx.getWdCategoryDescription());					

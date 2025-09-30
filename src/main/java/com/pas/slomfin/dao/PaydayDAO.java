@@ -54,15 +54,17 @@ public class PaydayDAO implements Serializable
         return payday2.getPaydayID(); //this is the key that was just added
     }
     
-    public void deletePayday(Payday payday) throws Exception
+    public void deletePayday(Integer paydayId) throws Exception
     {
-    	Key key = Key.builder().partitionValue(payday.getPaydayID()).build();
+    	Key key = Key.builder().partitionValue(paydayId).build();
 		DeleteItemEnhancedRequest deleteItemEnhancedRequest = DeleteItemEnhancedRequest.builder().key(key).build();
 		paydaysTable.deleteItem(deleteItemEnhancedRequest);
 
         logger.info("LoggedDBOperation: function-delete; table:payday; rows:1");
 
-        refreshListsAndMaps("delete", payday);
+        Payday tempPayday = new Payday();
+        tempPayday.setPaydayID(paydayId);
+        refreshListsAndMaps("delete", tempPayday);
 
         logger.info("deletePayday complete");
     }    

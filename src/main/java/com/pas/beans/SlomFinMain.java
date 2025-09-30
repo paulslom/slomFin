@@ -272,7 +272,9 @@ public class SlomFinMain implements Serializable
 		
 	private void refreshTrxList(Integer accountID)
 	{
+		//logger.info("BEFORE clear = Citi double cash trx list size: " + transactionDAO.getLast2YearsTransactionsMapByAccountID().get(accountID).size());
 		this.getTrxList().clear();
+		//logger.info("AFTER clear = Citi double cash trx list size: " + transactionDAO.getLast2YearsTransactionsMapByAccountID().get(accountID).size());
 		
 		Account acct = accountDAO.getAccountByAccountID(accountID);
 		
@@ -282,7 +284,8 @@ public class SlomFinMain implements Serializable
 		}
 		else
 	    {
-			this.setTrxList(new ArrayList<>(transactionDAO.getLast2YearsTransactionsMapByAccountID().get(accountID)));
+			List tempList = new ArrayList<>(transactionDAO.getLast2YearsTransactionsMapByAccountID().get(accountID));
+			this.setTrxList(tempList);
 	    }
 	    
 	    if (this.getTrxList() != null && this.getTrxList().size() > 0)
@@ -399,6 +402,12 @@ public class SlomFinMain implements Serializable
 		    refreshTrxList(this.getTrxSearchTerm());
 		    
             logger.info("successfully searched.  Found " + this.getTrxList().size() + " items");
+            
+            ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+            String targetURL = SlomFinUtil.getContextRoot() + "/transactionList.xhtml";
+		    ec.redirect(targetURL);
+		    
+            logger.info("successfully redirected to: " + targetURL);
         } 
         catch (Exception e) 
         {
@@ -2927,7 +2936,9 @@ public class SlomFinMain implements Serializable
 	{
 		try
 		{
-			paydayDAO.deletePayday(this.getSelectedPayday());			
+			ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+		    Integer paydayId = Integer.parseInt(ec.getRequestParameterMap().get("paydayId"));		    
+			paydayDAO.deletePayday(paydayId);			
 		}
 		catch (Exception e)
 		{
