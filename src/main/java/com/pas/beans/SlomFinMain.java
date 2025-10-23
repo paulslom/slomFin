@@ -2824,6 +2824,16 @@ public class SlomFinMain implements Serializable
 				{
 					this.getSelectedTransaction().setWdCategoryDescription(transactionDAO.getWdCategoryMap().get(this.getSelectedTransaction().getWdCategoryID()));
 				}
+				else
+				{
+					if (this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strCheckWithdrawal)
+					||  this.getSelectedTransaction().getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strCashWithdrawal))
+					{
+						FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "WD Cat not selected", "Withdrawal Category not selected");
+					 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
+					 	return "";
+					}
+				}
 				
 				this.getSelectedTransaction().setTransactionDate(DateToStringConverter.convertDateToDynamoStringFormat(this.getSelectedTransaction().getEntryDateJava()));
 				this.getSelectedTransaction().setTransactionEntryDate(DateToStringConverter.convertDateToDynamoStringFormat(this.getSelectedTransaction().getEntryDateJava()));
