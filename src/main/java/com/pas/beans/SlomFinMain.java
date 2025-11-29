@@ -1481,68 +1481,7 @@ public class SlomFinMain implements Serializable
         {		    
 		    logger.info("Portfolio History report selected from menu");
 		    
-		    portfolioHistoryDAO.sortFullPhListDateAsc();
-		    
-		    BigDecimal yearlyGainLossSubTotal = new BigDecimal(0.0);
-			BigDecimal firstYearlyAmount = new BigDecimal(0.0);
-			BigDecimal percentGainLoss = new BigDecimal(0.0);
-			BigDecimal oneHundred = new BigDecimal(100.00);	
-			
-			oneHundred = oneHundred.setScale(4, java.math.RoundingMode.HALF_UP); 
-			
-			int previousYear = 1900;
-			int phYear = 0;
-			int i;
-			
-			for (i = 0; i < this.getPortfolioHistoryList().size(); i++) 
-		    {
-				PortfolioHistory ph = this.getPortfolioHistoryList().get(i);
-				
-				Calendar tempCal = Calendar.getInstance();
-				
-				tempCal.setTimeInMillis(ph.getHistoryDateJava().getTime());
-								
-				phYear = tempCal.get(Calendar.YEAR);
-				
-				if (phYear != previousYear) //set list items then reset total
-				{
-					if (i != 0) //don't want to do anything first time through
-					{
-						PortfolioHistory ph2 = this.getPortfolioHistoryList().get(i-1); //This is the previous entry
-						yearlyGainLossSubTotal = yearlyGainLossSubTotal.add(ph2.getTotalValue().subtract(firstYearlyAmount));
-						ph2.setThisYearsDollars(yearlyGainLossSubTotal);						
-						percentGainLoss = percentGainLoss.multiply(yearlyGainLossSubTotal.divide(firstYearlyAmount,4,java.math.RoundingMode.HALF_UP));
-						ph2.setThisYearsPercent(percentGainLoss);
-						String pctStr = percentGainLoss.toPlainString();
-						pctStr = pctStr.substring(0, 6) + "%";
-						ph2.setThisYearsPercentDisplay(pctStr);
-						ph2.setRenderThisYearsStuff(true);
-						this.getPortfolioHistoryList().set(i-1, ph2);
-					}
-					
-					firstYearlyAmount = firstYearlyAmount.subtract(firstYearlyAmount);
-					firstYearlyAmount = firstYearlyAmount.add(ph.getTotalValue());
-					yearlyGainLossSubTotal = yearlyGainLossSubTotal.subtract(yearlyGainLossSubTotal);
-					percentGainLoss = percentGainLoss.subtract(percentGainLoss);
-					percentGainLoss = percentGainLoss.add(oneHundred);
-					previousYear = phYear;					
-				}												
-			}
-			
-			//this is for the last item in the list
-			
-			PortfolioHistory ph2 = this.getPortfolioHistoryList().get(i-1); //This is the previous entry
-			yearlyGainLossSubTotal = yearlyGainLossSubTotal.add(ph2.getTotalValue().subtract(firstYearlyAmount));
-			ph2.setThisYearsDollars(yearlyGainLossSubTotal);						
-			percentGainLoss = percentGainLoss.multiply(yearlyGainLossSubTotal.divide(firstYearlyAmount,4,java.math.RoundingMode.HALF_UP));
-			ph2.setThisYearsPercent(percentGainLoss);
-			String pctStr = percentGainLoss.toPlainString();
-			pctStr = pctStr.substring(0, 6) + "%";
-			ph2.setThisYearsPercentDisplay(pctStr);
-			ph2.setRenderThisYearsStuff(true);
-			this.getPortfolioHistoryList().set(i-1, ph2);
-					
-		    portfolioHistoryDAO.sortFullPhListDateDesc();
+		    setUpPortfolioHistoryForReport();
 		    
 		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
 		    String targetURL = SlomFinUtil.getContextRoot() + "/reportPortfolioHistory.xhtml";
@@ -1754,7 +1693,7 @@ public class SlomFinMain implements Serializable
 			ph.setTotalValue(portfolioHistoryBalance);
 			portfolioHistoryDAO.addPortfolioHistory(ph);
 			
-			portfolioHistoryDAO.sortFullPhListDateDesc();
+			setUpPortfolioHistoryForReport();
 			
 			FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Investment prices successfully updated", "Investment prices successfully updated");
 			FacesContext.getCurrentInstance().addMessage(null, facesMessage);	
@@ -1769,6 +1708,73 @@ public class SlomFinMain implements Serializable
 		return "/reportPortfolioHistory.xhtml";
 	}
 	
+	private void setUpPortfolioHistoryForReport() 
+	{
+		portfolioHistoryDAO.sortFullPhListDateAsc();
+	    
+	    BigDecimal yearlyGainLossSubTotal = new BigDecimal(0.0);
+		BigDecimal firstYearlyAmount = new BigDecimal(0.0);
+		BigDecimal percentGainLoss = new BigDecimal(0.0);
+		BigDecimal oneHundred = new BigDecimal(100.00);	
+		
+		oneHundred = oneHundred.setScale(4, java.math.RoundingMode.HALF_UP); 
+		
+		int previousYear = 1900;
+		int phYear = 0;
+		int i;
+		
+		for (i = 0; i < this.getPortfolioHistoryList().size(); i++) 
+	    {
+			PortfolioHistory ph = this.getPortfolioHistoryList().get(i);
+			
+			Calendar tempCal = Calendar.getInstance();
+			
+			tempCal.setTimeInMillis(ph.getHistoryDateJava().getTime());
+							
+			phYear = tempCal.get(Calendar.YEAR);
+			
+			if (phYear != previousYear) //set list items then reset total
+			{
+				if (i != 0) //don't want to do anything first time through
+				{
+					PortfolioHistory ph2 = this.getPortfolioHistoryList().get(i-1); //This is the previous entry
+					yearlyGainLossSubTotal = yearlyGainLossSubTotal.add(ph2.getTotalValue().subtract(firstYearlyAmount));
+					ph2.setThisYearsDollars(yearlyGainLossSubTotal);						
+					percentGainLoss = percentGainLoss.multiply(yearlyGainLossSubTotal.divide(firstYearlyAmount,4,java.math.RoundingMode.HALF_UP));
+					ph2.setThisYearsPercent(percentGainLoss);
+					String pctStr = percentGainLoss.toPlainString();
+					pctStr = pctStr.substring(0, 6) + "%";
+					ph2.setThisYearsPercentDisplay(pctStr);
+					ph2.setRenderThisYearsStuff(true);
+					this.getPortfolioHistoryList().set(i-1, ph2);
+				}
+				
+				firstYearlyAmount = firstYearlyAmount.subtract(firstYearlyAmount);
+				firstYearlyAmount = firstYearlyAmount.add(ph.getTotalValue());
+				yearlyGainLossSubTotal = yearlyGainLossSubTotal.subtract(yearlyGainLossSubTotal);
+				percentGainLoss = percentGainLoss.subtract(percentGainLoss);
+				percentGainLoss = percentGainLoss.add(oneHundred);
+				previousYear = phYear;					
+			}												
+		}
+		
+		//this is for the last item in the list
+		
+		PortfolioHistory ph2 = this.getPortfolioHistoryList().get(i-1); //This is the previous entry
+		yearlyGainLossSubTotal = yearlyGainLossSubTotal.add(ph2.getTotalValue().subtract(firstYearlyAmount));
+		ph2.setThisYearsDollars(yearlyGainLossSubTotal);						
+		percentGainLoss = percentGainLoss.multiply(yearlyGainLossSubTotal.divide(firstYearlyAmount,4,java.math.RoundingMode.HALF_UP));
+		ph2.setThisYearsPercent(percentGainLoss);
+		String pctStr = percentGainLoss.toPlainString();
+		pctStr = pctStr.substring(0, 6) + "%";
+		ph2.setThisYearsPercentDisplay(pctStr);
+		ph2.setRenderThisYearsStuff(true);
+		this.getPortfolioHistoryList().set(i-1, ph2);
+				
+	    portfolioHistoryDAO.sortFullPhListDateDesc();
+		
+	}
+
 	public String getStockQuotes()
 	{
 		RetrieveStockQuotesService rqs = new RetrieveStockQuotesService();
@@ -2431,13 +2437,31 @@ public class SlomFinMain implements Serializable
 			setRenderTrxCheckNumber(false);
 			setRenderTrxDividendTaxableYear(false);
 			setRenderTrxCashDepositType(false);
-			setRenderTrxXferAccount(true);
+
+			if ("Add".equalsIgnoreCase(this.getTransactionAcidSetting()))
+			{
+				setRenderTrxXferAccount(true);
+			}
+			else
+			{
+				setRenderTrxXferAccount(false);
+			}
+			
 			setRenderTrxCashDescription(false);
 			setRenderTrxLastOfBillingCycle(false);
 			setRenderTrxInvestmentType(true);
 			setRenderTrxInvestment(true);	
 			setRenderOwnedInvestmentsCheckbox(false);
-			setGenerateCorrespondingXfer(false);
+			
+			if ("Add".equalsIgnoreCase(this.getTransactionAcidSetting()))
+			{
+				setGenerateCorrespondingXfer(true);
+			}
+			else
+			{
+				setGenerateCorrespondingXfer(false);
+			}
+					
 			setRenderTrxPostedDate(false);
 		}
 		else if (selectedTrxTypeDesc.equalsIgnoreCase(SlomFinUtil.strTransferOut))
@@ -2449,13 +2473,31 @@ public class SlomFinMain implements Serializable
 			setRenderTrxCheckNumber(false);
 			setRenderTrxDividendTaxableYear(false);
 			setRenderTrxCashDepositType(false);
-			setRenderTrxXferAccount(true);
+			
+			if ("Add".equalsIgnoreCase(this.getTransactionAcidSetting()))
+			{
+				setRenderTrxXferAccount(true);
+			}
+			else
+			{
+				setRenderTrxXferAccount(false);
+			}
+			
 			setRenderTrxCashDescription(false);
 			setRenderTrxLastOfBillingCycle(false);
 			setRenderTrxInvestmentType(true);
 			setRenderTrxInvestment(false);
 			setRenderOwnedInvestmentsCheckbox(false);
-			setGenerateCorrespondingXfer(true);
+			
+			if ("Add".equalsIgnoreCase(this.getTransactionAcidSetting()))
+			{
+				setGenerateCorrespondingXfer(true);
+			}
+			else
+			{
+				setGenerateCorrespondingXfer(false);
+			}
+			
 			setRenderTrxPostedDate(false);
 		}
 		
@@ -3500,7 +3542,7 @@ public class SlomFinMain implements Serializable
 
 	public void setGenerateCorrespondingXfer(boolean generateCorrespondingXfer) {
 		this.generateCorrespondingXfer = generateCorrespondingXfer;
-	}
+	} 
 
 	public List<SelectItem> getTrxTypeDropdownList() {
 		return trxTypeDropdownList;
