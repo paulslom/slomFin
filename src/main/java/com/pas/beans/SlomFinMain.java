@@ -6,6 +6,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1974,6 +1975,8 @@ public class SlomFinMain implements Serializable
 			    	dynamoTrx.setTransactionTypeDescription(SlomFinUtil.trxTypesMap.get(dynamoTrx.getTransactionTypeID()));		
 			    	dynamoTrx.setCostProceeds(pd.getDefaultAmount());
 			    	dynamoTrx.setTransactionDescription(pd.getPaydayDescription());
+			    	dynamoTrx.setWdCategoryID(82); //82 is the id for unknown
+			    	dynamoTrx.setWdCategoryDescription("Unknown");;
 			    	
 			    	if (dynamoTrx.getTransactionTypeDescription().equalsIgnoreCase(SlomFinUtil.strTransferOut))
 					{
@@ -2124,6 +2127,9 @@ public class SlomFinMain implements Serializable
             	
             }
         }
+		
+		returnList.sort(Comparator.comparing(SelectItem::getLabel, Comparator.nullsLast(Comparator.naturalOrder())));
+
 		return returnList;
 	}
 
@@ -2633,7 +2639,9 @@ public class SlomFinMain implements Serializable
 		    	dynamoTrx.setAccountID(Integer.parseInt(accountId));
 		    	Account acct = getAccountByAccountID(dynamoTrx.getAccountID());
 		    	dynamoTrx.setEntryDateJava(new Date());
-		    	dynamoTrx.setPostedDateJava(SlomFinUtil.getTwoDaysFromNowDate());
+		    	
+		    	dynamoTrx.setPostedDateJava(new Date()); //assume today - if credit card, tested later, adjust it
+		    	
 		    	dynamoTrx.setAccountName(acct.getsAccountName());
 		    	
 		    	String accountType = SlomFinUtil.accountTypesMap.get(acct.getiAccountTypeID());
@@ -2643,12 +2651,21 @@ public class SlomFinMain implements Serializable
 		    		this.setRenderTrxAddAnother(true);
 		    	}
 		    	
-		    	if (accountType != null 
-		    	&& (accountType.equalsIgnoreCase(SlomFinUtil.strCreditCard) || accountType.equalsIgnoreCase(SlomFinUtil.strChecking)))
+		    	if (accountType != null)
 		    	{
-		    		dynamoTrx.setTransactionTypeID(SlomFinUtil.CashWithdrawal);
-		    		dynamoTrx.setTransactionTypeDescription(SlomFinUtil.strCashWithdrawal);		    			
+		    		if (accountType.equalsIgnoreCase(SlomFinUtil.strCreditCard))
+			    	{
+			    		dynamoTrx.setTransactionTypeID(SlomFinUtil.CashWithdrawal);
+			    		dynamoTrx.setTransactionTypeDescription(SlomFinUtil.strCashWithdrawal);	
+			    		dynamoTrx.setPostedDateJava(SlomFinUtil.getTwoDaysFromNowDate());
+			    	}
+			    	else if (accountType.equalsIgnoreCase(SlomFinUtil.strChecking))
+			    	{
+			    		dynamoTrx.setTransactionTypeID(SlomFinUtil.CashWithdrawal);
+			    		dynamoTrx.setTransactionTypeDescription(SlomFinUtil.strCashWithdrawal);		    			
+			    	}
 		    	}
+		    	
 		    	
 		    	this.setSelectedTransaction(dynamoTrx);	
 		    }
