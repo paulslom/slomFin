@@ -69,7 +69,7 @@
 						  
 						  <p:column style="width:4%" headerText="Y/N">			
                               <p:selectBooleanCheckbox value="#{pd.processInd}">
-                                 <p:ajax event="change" update="paycheckTableID" listener="#{pc_SlomFinMain.paydayRowChecked}" />
+                                 <p:ajax event="change" process="paycheckTableID" update="paycheckTableID" listener="#{pc_SlomFinMain.paydayRowChecked}" />
                               </p:selectBooleanCheckbox>					   
                           </p:column>
                                                    

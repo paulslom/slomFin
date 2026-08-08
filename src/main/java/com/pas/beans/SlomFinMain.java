@@ -1462,7 +1462,7 @@ public class SlomFinMain implements Serializable
                 this.getHoldingPercentagesList().add(hpInv);
             }
 		     
-		    Collections.sort(this.getHoldingPercentagesList(), new InvestmentComparator());
+		    Collections.sort(this.getHoldingPercentagesList(), InvestmentComparator.byHoldingPercentage());
 		    
             String targetURL = SlomFinUtil.getContextRoot() + "/holdingPercentages.xhtml";
 		    ec.redirect(targetURL);
@@ -1583,7 +1583,7 @@ public class SlomFinMain implements Serializable
 	            }
 	        }
 		    
-		    Collections.sort(this.getReportUnitsOwnedList(), new InvestmentComparator());
+		    Collections.sort(this.getReportUnitsOwnedList(), InvestmentComparator.byDescription());
 		    
 		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
 		    String targetURL = SlomFinUtil.getContextRoot() + "/reportUnitsOwned.xhtml";
@@ -1635,7 +1635,7 @@ public class SlomFinMain implements Serializable
 	            }
 	        }
 		    
-		    Collections.sort(this.getReportUnitsOwnedList(), new InvestmentComparator());
+		    Collections.sort(this.getReportUnitsOwnedList(), InvestmentComparator.byDescription());
 		    
 		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
 		    String targetURL = SlomFinUtil.getContextRoot() + "/updateSecurityPrices.xhtml";

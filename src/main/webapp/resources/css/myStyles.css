@@ -6,23 +6,31 @@
 
 .resultGreen {
 	white-space: pre-line;
-    background-color: #32cd32;
-    color:  #000000;
-    font-weight: normal;
+	background-color: #32cd32;
+	color: #000000;
+	font-size: 1.4rem;     /* perfect for 200% scaling */
+	font-weight: normal;
+	letter-spacing: 0.5px;
 }
+
 .resultRed {
 	white-space: pre-line;
-    background-color:  #F08080;
-    color:  #000000;
-    font-weight: normal;
+	background-color: #F08080;
+	color: #000000;
+	font-size: 1.4rem;     /* perfect for 200% scaling */
+	font-weight: normal;
+	letter-spacing: 0.5px;
 }
+
 .resultRedBigBold {
 	white-space: pre-line;
-    background-color:  #F08080;
-    color:  #000000;
-    font: bold 20px "Verdana";
-    font-weight: bold;
+	background-color: #F08080;
+	color: #000000;
+	font-size: 1.6rem;     /* stands out clearly at 200% */
+	font-weight: bold;
+	letter-spacing: 0.5px;
 }
+
 .resultYellow {
 	white-space: pre-line;
     background-color:  #fcc200;
@@ -145,6 +153,14 @@ body.custom-background
 	justify-content: center; 
 	align-items: center;
 }
+
+.balanceColumnText {
+	font-size: 1.25rem;       /* noticeably larger */
+	color: #000000;           /* pure black for max contrast */
+	font-weight: normal;      /* keep non-bold so your Java bold stands out */
+	letter-spacing: 0.5px;    /* optional: improves clarity on laptop screens */
+}
+
 
 
 

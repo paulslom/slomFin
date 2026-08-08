@@ -84,23 +84,23 @@
 							  <h:outputText value="#{trx.transactionID}"/>															
 						  </p:column>
 						   						   
-						  <p:column style="width:10%" headerText="Entered Date" sortBy="#{trx.entryDateJava}">                          							
+						  <p:column style="width:8%" headerText="Entered Date" sortBy="#{trx.entryDateJava}">
 							  <h:outputText value="#{trx.entryDateJava}">
 							      <f:convertDateTime type="date" pattern="EEE yyyy-MM-dd"/>					
 							  </h:outputText>														
 						  </p:column>
 						  
-                          <p:column style="width:10%" headerText="Posted Date" sortBy="#{trx.postedDateJava}">                          							
+                          <p:column style="width:8%" headerText="Posted Date" sortBy="#{trx.postedDateJava}">
 							  <h:outputText value="#{trx.postedDateJava}">
 							      <f:convertDateTime type="date" pattern="yyyy-MM-dd"/>					
 							  </h:outputText>														
 						  </p:column>
 						       	 				       				  
-						  <p:column style="width:13%" headerText="Investment" sortBy="#{trx.investmentDescription}">												
+						  <p:column style="width:11%" headerText="Investment" sortBy="#{trx.investmentDescription}">
 							  <h:outputText value="#{trx.investmentDescription}"/>															
 						  </p:column>
 						  
-						  <p:column style="width:10%" headerText="Trx Type" sortBy="#{trx.transactionTypeDescription}">												
+						  <p:column style="width:15%" headerText="Trx Type" sortBy="#{trx.transactionTypeDescription}">
 							  <h:outputText value="#{trx.transactionTypeDescription}" styleClass="#{trx.trxStyleClass}"/>															
 						  </p:column>
 						  
@@ -110,18 +110,18 @@
 							  </h:outputText>   														
 						  </p:column>
 						  
-						  <p:column style="width:7%" headerText="Units" sortBy="#{trx.displayUnits}">												
+						  <p:column style="width:5%" headerText="Units" sortBy="#{trx.displayUnits}">
 							  <h:outputText value="#{trx.displayUnits}" styleClass="#{trx.unitsStyleClass}"/>	
 							  <f:facet name="footer">
 					             <h:outputText value="#{pc_SlomFinMain.unitsTotal}"/>							     
 					          </f:facet>  														
 						  </p:column>
 						  
-						  <p:column style="width:16%" headerText="Description" sortBy="#{trx.transactionDescription}">												
+						  <p:column style="width:17%" headerText="Description" sortBy="#{trx.transactionDescription}">
 							  <h:outputText value="#{trx.transactionDescription}"/>															
 						  </p:column>	
 						  
-						  <p:column style="width:9%" headerText="Balance" sortBy="#{trx.currentBalance}">												
+						  <p:column style="width:11%" headerText="Balance" sortBy="#{trx.currentBalance}">
 							  <h:outputText value="#{trx.currentBalance}" styleClass="#{trx.balanceStyleClass}">
 							      <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
 							  </h:outputText>   												
