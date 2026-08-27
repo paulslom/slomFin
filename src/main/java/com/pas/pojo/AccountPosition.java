@@ -11,6 +11,7 @@ public class AccountPosition implements Serializable
 	
 	private Integer accountID;
     private String accountName;
+    private String accountType;
     private Integer investmentID;
     private String investmentName;
     private BigDecimal investmentPrice;
@@ -29,6 +30,12 @@ public class AccountPosition implements Serializable
 	}
 	public void setAccountName(String accountName) {
 		this.accountName = accountName;
+	}
+	public String getAccountType() {
+		return accountType;
+	}
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
 	}
 	public Integer getInvestmentID() {
 		return investmentID;

@@ -247,7 +247,7 @@ public class SlomFinMain implements Serializable
 		logger.info("entering loadPaydays");
 		paydayDAO = new PaydayDAO(dynamoClients);
 		paydayDAO.readPaydaysFromDB();
-		logger.info("Paydays read in. List size = " + portfolioHistoryDAO.getFullPortfolioHistoryList().size());
+		logger.info("Paydays read in. List size = " + paydayDAO.getFullPaydaysList().size());
 	}
 	
 	public String getSignedOnUserName()
@@ -496,17 +496,25 @@ public class SlomFinMain implements Serializable
 		this.setActiveAccountsList(new ArrayList<>(this.getActiveTaxableAccountsList()));
 		this.getActiveAccountsList().addAll(this.getActiveRetirementAccountsList());
 		
-		Map<Integer, List<Investment>> activeAccountsMap = SlomFinUtil.getActiveAccountValues(this.getActiveAccountsList(), transactionDAO.getFullTransactionsList(), investmentDAO.getFullInvestmentsMap(), getCashInvestmentID()); 
-		
+		Map<Integer, List<Investment>> activeAccountsMap = SlomFinUtil.getActiveAccountValues(this.getActiveAccountsList(), transactionDAO.getFullTransactionsList(), investmentDAO.getFullInvestmentsMap(), getCashInvestmentID());
+
 		this.getAccountPositionsList().clear();
-		this.setPortfolioValue(new BigDecimal(0.0));				
-		this.setTaxableValue(new BigDecimal(0.0));		
-		this.setRetirementValue(new BigDecimal(0.0));		
-		
-		for (Integer accountID : activeAccountsMap.keySet()) 
-		{			    
-			Account acct = accountDAO.getAccountByAccountID(accountID);					
-					
+		this.setPortfolioValue(new BigDecimal(0.0));
+		this.setTaxableValue(new BigDecimal(0.0));
+		this.setRetirementValue(new BigDecimal(0.0));
+
+		//taxable accounts first, retirement accounts last; alphabetical by account name within each group
+		List<Account> sortedAccountsForPositions = new ArrayList<>(this.getActiveAccountsList());
+		sortedAccountsForPositions.removeIf(a -> !activeAccountsMap.containsKey(a.getiAccountID()));
+		sortedAccountsForPositions.sort(
+			Comparator.comparing(Account::getbTaxableInd).reversed()
+				.thenComparing(Account::getsAccountName, String.CASE_INSENSITIVE_ORDER)
+		);
+
+		for (Account acct : sortedAccountsForPositions)
+		{
+			Integer accountID = acct.getiAccountID();
+
 			List<Investment> investmentList = activeAccountsMap.get(accountID);
             
 			BigDecimal tempTotal = new BigDecimal(0.0);
@@ -522,17 +530,20 @@ public class SlomFinMain implements Serializable
 				
 				if (doSubtotals)
 				{
-					acctPos.setAccountName(acct.getsAccountName());					   
+					acctPos.setAccountName(acct.getsAccountName());
+					acctPos.setAccountType(acct.getsAccountType());
 				}
 				else
 				{
 					if (i == 0)
 					{
-						acctPos.setAccountName(acct.getsAccountName());				
+						acctPos.setAccountName(acct.getsAccountName());
+						acctPos.setAccountType(acct.getsAccountType());
 					}
 					else
 					{
 						acctPos.setAccountName("");
+						acctPos.setAccountType("");
 					}
 				}
 				
@@ -558,22 +569,6 @@ public class SlomFinMain implements Serializable
 				this.getAccountPositionsList().add(acctPos);
 			}
 			
-			//this is to subtotal by account
-			if (doSubtotals)
-			{
-				AccountPosition acctPos1 = new AccountPosition();
-				this.getAccountPositionsList().add(acctPos1);
-				
-				AccountPosition acctPos2 = new AccountPosition();
-				acctPos2.setAccountName(acct.getsAccountName());
-				acctPos2.setInvestmentName("Total Account Value");
-				acctPos2.setPositionValue(accountSubTotal);
-				this.getAccountPositionsList().add(acctPos2);
-				
-				AccountPosition acctPos3 = new AccountPosition();
-				this.getAccountPositionsList().add(acctPos3);	
-			}
-						
 			portfolioValue = portfolioValue.add(accountSubTotal);
 			
 			if (acct.getbTaxableInd())
