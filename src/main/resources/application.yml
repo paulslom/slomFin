@@ -8,10 +8,21 @@ server:
     relaxed-query-chars: "|,{,},[,]"
   port: 8443
   ssl:
-    key-store: ${KEYSTORE_LOCATION}/TomcatJava17.jks
-    key-store-password: ${KEYSTORE_PASS}
+    bundle: slomfinbundle
     enabled: true
- 
+
+spring:
+  ssl:
+    bundle:
+      jks:
+        slomfinbundle:
+          key:
+            alias: tomcat17
+          keystore:
+            location: file:${KEYSTORE_LOCATION}/TomcatJava17.jks
+            password: ${KEYSTORE_PASS}
+            type: PKCS12
+
 management:
   info:
     env:
