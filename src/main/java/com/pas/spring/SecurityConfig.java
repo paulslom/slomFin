@@ -13,9 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-//import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -39,22 +37,22 @@ public class SecurityConfig
 
     @Bean
     @Order(1)
-    public SecurityFilterChain customFilterChain(HttpSecurity http, UserDetailsService userDetailsService, HandlerMappingIntrospector introspector) throws Exception 
+    public SecurityFilterChain customFilterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception
     {
-    	logger.info("entering customFilterChain of SecurityConfig");     	
-    	
-    	MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
+    	logger.info("entering customFilterChain of SecurityConfig");
+
+    	PathPatternRequestMatcher.Builder pathMatcherBuilder = PathPatternRequestMatcher.withDefaults();
 
     	http.csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
         	.requestMatchers(
-                mvcMatcherBuilder.pattern("/resources/**"),
-                mvcMatcherBuilder.pattern("/webapp/**"),
-                mvcMatcherBuilder.pattern("/actuator/**"),
-                mvcMatcherBuilder.pattern("/jakarta.faces.resource/**"),
-                mvcMatcherBuilder.pattern("/index.html"))
+                pathMatcherBuilder.matcher("/resources/**"),
+                pathMatcherBuilder.matcher("/webapp/**"),
+                pathMatcherBuilder.matcher("/actuator/**"),
+                pathMatcherBuilder.matcher("/jakarta.faces.resource/**"),
+                pathMatcherBuilder.matcher("/index.html"))
             .permitAll().anyRequest().authenticated()
-        );      
+        );
     	    	
     	http.formLogin(formLogin -> formLogin            
                 .permitAll()

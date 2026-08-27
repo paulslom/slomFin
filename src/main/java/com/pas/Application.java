@@ -14,15 +14,15 @@ import org.springframework.context.annotation.ComponentScan;
     "com.pas.services"
 })
 
-public class Application extends SpringBootServletInitializer 
+public class Application extends SpringBootServletInitializer
 {
-	private static Logger logger = LogManager.getLogger(Application.class);	
-	public static void main(String[] args) 
+	private static Logger logger = LogManager.getLogger(Application.class);
+	public static void main(String[] args)
 	{
 		logger.info("about to kick off Slom Fin Spring boot application");
 		System.setProperty(org.apache.tomcat.util.scan.Constants.SKIP_JARS_PROPERTY,"*.jar");
 		SpringApplication.run(Application.class, args);
 		logger.info("Spring boot application started");
 	}
-	
+
 }
