@@ -32,6 +32,7 @@ public class Investment implements Serializable
 	private BigDecimal unitsOwned;
 	private BigDecimal currentValue;
 	private BigDecimal holdingPercentage;
+	private String accountName;
 	
 	@DynamoDbPartitionKey
 	public Integer getiInvestmentID() {
@@ -133,5 +134,15 @@ public class Investment implements Serializable
 	public void setHoldingPercentage(BigDecimal holdingPercentage) {
 		this.holdingPercentage = holdingPercentage;
 	}
-   	
+
+	@DynamoDbIgnore
+	public String getAccountName() {
+		return accountName;
+	}
+
+	@DynamoDbIgnore
+	public void setAccountName(String accountName) {
+		this.accountName = accountName;
+	}
+
 }

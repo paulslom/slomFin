@@ -15,14 +15,18 @@
 			  <h:outputText value="#{rowIndex + 1}"/>															
 		   </p:column>
 						  
-		   <p:column style="width:30%" headerText="Investment" sortBy="#{inv.description}">												
-			  <h:outputText value="#{inv.description}"/>															
-		   </p:column>		
-						  
-		   <p:column style="width:67%" headerText="Units Owned" sortBy="#{inv.unitsOwned}">												
+		   <p:column style="width:30%" headerText="Investment" sortBy="#{inv.description}">
+			  <h:outputText value="#{inv.description}"/>
+		   </p:column>
+
+		   <p:column style="width:30%" headerText="Account" sortBy="#{inv.accountName}">
+			  <h:outputText value="#{inv.accountName}"/>
+		   </p:column>
+
+		   <p:column style="width:37%" headerText="Units Owned" sortBy="#{inv.unitsOwned}">
 			   <h:outputText value="#{inv.unitsOwned}">
-			  </h:outputText>   														
-		   </p:column>	 				 
+			  </h:outputText>
+		   </p:column>
 										  
 		</p:dataTable>
 		   

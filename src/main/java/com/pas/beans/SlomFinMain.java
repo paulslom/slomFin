@@ -1555,41 +1555,77 @@ public class SlomFinMain implements Serializable
         }
 	}
 	
-	public void reportUnitsOwned(ActionEvent event) 
+	public void reportUnitsOwned(ActionEvent event)
 	{
-		try 
-        {		    
+		try
+        {
 		    logger.info("units owned report selected from menu");
-		    
+
 		    this.getReportUnitsOwnedList().clear();
-		    
-		    Map<Integer, BigDecimal> unitsOwnedMap = SlomFinUtil.getUnitsOwned(transactionDAO.getFullTransactionsList());
-		    
-		    for (Integer key : unitsOwnedMap.keySet()) 
+
+		    Map<Integer, Map<Integer, BigDecimal>> unitsOwnedByAccountMap = SlomFinUtil.getUnitsOwnedByAccount(transactionDAO.getFullTransactionsList());
+
+		    for (Integer investmentID : unitsOwnedByAccountMap.keySet())
 			{
-	            BigDecimal totalUnitsOwned = unitsOwnedMap.get(key);
-	            
-	            if (totalUnitsOwned != null
-	        	&&  totalUnitsOwned.compareTo(BigDecimal.ZERO) != 0)
+	            Map<Integer, BigDecimal> accountTotalsMap = unitsOwnedByAccountMap.get(investmentID);
+
+	            List<Integer> accountIDsHoldingThisInvestment = new ArrayList<>();
+	            BigDecimal grandTotal = new BigDecimal(0.0);
+
+	            for (Integer accountID : accountTotalsMap.keySet())
 	            {
-	            	Investment inv = investmentDAO.getInvestmentByInvestmentID(key);
-	            	inv.setUnitsOwned(totalUnitsOwned);
-	            	this.getReportUnitsOwnedList().add(inv);	            	
+	            	BigDecimal accountUnitsOwned = accountTotalsMap.get(accountID);
+
+	            	if (accountUnitsOwned != null && accountUnitsOwned.compareTo(BigDecimal.ZERO) != 0)
+	            	{
+	            		accountIDsHoldingThisInvestment.add(accountID);
+	            		grandTotal = grandTotal.add(accountUnitsOwned);
+	            	}
+	            }
+
+	            if (accountIDsHoldingThisInvestment.isEmpty())
+	            {
+	            	continue;
+	            }
+
+	            Investment investment = investmentDAO.getInvestmentByInvestmentID(investmentID);
+
+	            accountIDsHoldingThisInvestment.sort(Comparator.comparing(
+	            	accountID -> accountDAO.getAccountByAccountID(accountID).getsAccountName(), String.CASE_INSENSITIVE_ORDER));
+
+	            for (Integer accountID : accountIDsHoldingThisInvestment)
+	            {
+	            	Investment rowInv = new Investment();
+	            	rowInv.setiInvestmentID(investmentID);
+	            	rowInv.setDescription(investment.getDescription());
+	            	rowInv.setUnitsOwned(accountTotalsMap.get(accountID));
+	            	rowInv.setAccountName(accountDAO.getAccountByAccountID(accountID).getsAccountName());
+	            	this.getReportUnitsOwnedList().add(rowInv);
+	            }
+
+	            if (accountIDsHoldingThisInvestment.size() > 1)
+	            {
+	            	Investment totalInv = new Investment();
+	            	totalInv.setiInvestmentID(investmentID);
+	            	totalInv.setDescription(investment.getDescription());
+	            	totalInv.setUnitsOwned(grandTotal);
+	            	totalInv.setAccountName("Total");
+	            	this.getReportUnitsOwnedList().add(totalInv);
 	            }
 	        }
-		    
+
 		    Collections.sort(this.getReportUnitsOwnedList(), InvestmentComparator.byDescription());
-		    
-		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();		    
+
+		    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
 		    String targetURL = SlomFinUtil.getContextRoot() + "/reportUnitsOwned.xhtml";
 		    ec.redirect(targetURL);
             logger.info("successfully redirected to: " + targetURL);
-        } 
-        catch (Exception e) 
+        }
+        catch (Exception e)
         {
             logger.error("exception: " + e.getMessage(), e);
             FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
-		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);		 	
+		 	FacesContext.getCurrentInstance().addMessage(null, facesMessage);
         }
 	}
 	

@@ -542,33 +542,51 @@ public class SlomFinUtil
 	
 	
 	//Assumes input parameter list is already sorted.
-	public static Map<Integer, BigDecimal> getUnitsOwned(List<DynamoTransaction> transactionsList) 
+	//Key = investmentID, Value = (Key = accountID, Value = units owned of that investment in that account).
+	//Each account's running total is tracked independently so that one account's transactions never affect another account's total.
+	public static Map<Integer, Map<Integer, BigDecimal>> getUnitsOwnedByAccount(List<DynamoTransaction> transactionsList)
 	{
-		Map<Integer, BigDecimal> returnMap = new HashMap<>();
-		
+		Map<Integer, Map<Integer, BigDecimal>> returnMap = new HashMap<>();
+
 		for (int i = 0; i < transactionsList.size(); i++)
 	    {
 	    	DynamoTransaction trx = transactionsList.get(i);
-	    	
+
 	    	if (trx.getUnits() != null
 	    	&&  trx.getUnits().compareTo(BigDecimal.ZERO) != 0)
 	    	{
-	    		if (returnMap.containsKey(trx.getInvestmentID()))
-				{
-	    			BigDecimal currentTotal = returnMap.get(trx.getInvestmentID());
-					BigDecimal newAmount = transactAnAmount(trx, currentTotal, "units");
-					returnMap.replace(trx.getInvestmentID(), newAmount);
-				}
-				else
-				{
-					BigDecimal newAmount = transactAnAmount(trx, new BigDecimal(0.0), "units");
-					returnMap.put(trx.getInvestmentID(), newAmount);
-				}
-	    		
+	    		Map<Integer, BigDecimal> accountTotalsMap = returnMap.computeIfAbsent(trx.getInvestmentID(), k -> new HashMap<>());
+
+	    		BigDecimal currentTotal = accountTotalsMap.getOrDefault(trx.getAccountID(), new BigDecimal(0.0));
+	    		BigDecimal newAmount = transactAnAmount(trx, currentTotal, "units");
+	    		accountTotalsMap.put(trx.getAccountID(), newAmount);
 	    	}
-	    		    	
+
 		}
-	    	    
+
+		return returnMap;
+	}
+
+	//Assumes input parameter list is already sorted.
+	//Key = investmentID, Value = total units owned across all accounts.
+	public static Map<Integer, BigDecimal> getUnitsOwned(List<DynamoTransaction> transactionsList)
+	{
+		Map<Integer, BigDecimal> returnMap = new HashMap<>();
+
+		Map<Integer, Map<Integer, BigDecimal>> unitsOwnedByAccountMap = getUnitsOwnedByAccount(transactionsList);
+
+		for (Integer investmentID : unitsOwnedByAccountMap.keySet())
+		{
+			BigDecimal total = new BigDecimal(0.0);
+
+			for (BigDecimal accountUnits : unitsOwnedByAccountMap.get(investmentID).values())
+			{
+				total = total.add(accountUnits);
+			}
+
+			returnMap.put(investmentID, total);
+		}
+
 		return returnMap;
 	}
 	
