@@ -249,13 +249,13 @@
 		        <tr>
 	  		
 	 			   <td align="right">	        
-		              <p:outputLabel for="cknoID" value="Check Number" rendered="#{pc_SlomFinMain.renderTrxCheckNumber}"/>
+		              <p:outputLabel for="cknoID" value="Check Number" rendered="#{pc_SlomFinMain.renderTrxCheckNumber or (!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.selectedTransaction.checkNo ne null)}"/>
 		           </td>
 				 
 		           <td align="left">
 		               <p:inputText id="cknoID" size="8" value="#{pc_SlomFinMain.selectedTransaction.checkNo}" required="true" 
 		                            rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxCheckNumber}"/>
-		               <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.checkNo}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxCheckNumber}"/>		
+		               <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.checkNo}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and (pc_SlomFinMain.renderTrxCheckNumber or pc_SlomFinMain.selectedTransaction.checkNo ne null)}"/>
 		            </td>
 		            
 		        </tr>
@@ -312,14 +312,16 @@
 		           <td align="left">
 		               <p:inputText id="amtID" size="8" value="#{pc_SlomFinMain.selectedTransaction.costProceeds}" 
 		                            rendered="#{pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxAmount}"/>
-		               <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.costProceeds}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxAmount}"/>		
+		               <p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.costProceeds}" rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.renderTrxAmount}">
+		                   <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="2" />
+		               </p:outputLabel>
 		            </td>
 		            
 		        </tr>
          
 			    <tr>
 		            <td align="right">	        
-		               <p:outputLabel for="wdCatListID" value="Withdrawal Category" rendered="#{pc_SlomFinMain.renderTrxWDCategoriesList}"/>
+		               <p:outputLabel for="wdCatListID" value="Withdrawal Category" rendered="#{pc_SlomFinMain.renderTrxWDCategoriesList or (!pc_SlomFinMain.renderTransactionUpdateFields and pc_SlomFinMain.selectedTransaction.wdCategoryDescription ne null)}"/>
 		            </td>
 		            
 		            <td align="left">	        
@@ -329,8 +331,8 @@
 					        <f:selectItems value="#{pc_SlomFinMain.wdCategoriesDropdownList}"/>		
 						</p:selectOneMenu>
 						
-						<p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.wdCategoryDescription}" 
-							rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields  and pc_SlomFinMain.renderTrxWDCategoriesList}}"/>
+						<p:outputLabel value="#{pc_SlomFinMain.selectedTransaction.wdCategoryDescription}"
+							rendered="#{!pc_SlomFinMain.renderTransactionUpdateFields and (pc_SlomFinMain.renderTrxWDCategoriesList or pc_SlomFinMain.selectedTransaction.wdCategoryDescription ne null)}"/>
 						
 					</td>
 			    </tr>	       	   

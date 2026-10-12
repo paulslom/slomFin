@@ -257,11 +257,18 @@
 						<p:submenu label="Work">
 						
 							<p:menuitem value="Paycheck outflow List" actionListener="#{pc_SlomFinMain.showPaydayList}"
-									onclick="PF('blockWidgetVar').show()" 
-	                                oncomplete="PF('blockWidgetVar').hide()"		  
+									onclick="PF('blockWidgetVar').show()"
+	                                oncomplete="PF('blockWidgetVar').hide()"
 									update="menuForm">
-							</p:menuitem>	
-										
+							</p:menuitem>
+
+							<p:menuitem value="Add Paycheck Outflow" actionListener="#{pc_SlomFinMain.selectPaydayAcid}"
+									onclick="PF('blockWidgetVar').show()"
+	                                oncomplete="PF('blockWidgetVar').hide()"
+									update="menuForm">
+								<f:param name="operation" value="Add" />
+							</p:menuitem>
+
 							<p:menuitem value="Add Paycheck" actionListener="#{pc_SlomFinMain.addPaycheckShowForm}"
 									onclick="PF('blockWidgetVar').show()" 
 	                                oncomplete="PF('blockWidgetVar').hide()"		  
